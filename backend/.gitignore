@@ -1,0 +1,29 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Environment
+.env
+.env.local
+.env*.local
+
+# Build
+.next/
+dist/
+build/
+out/
+
+# Misc
+.DS_Store
+*.log
+.vscode/
+.idea/
+
+# Database
+prisma/*.db
+prisma/*.db-journal
+
+# PWA
+public/sw.js
+public/workbox-*.js

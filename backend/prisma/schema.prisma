@@ -1,0 +1,76 @@
+generator client {
+    provider = "prisma-client"
+    output   = "../generated/prisma"
+}
+
+datasource db {
+    provider = "postgresql"
+}
+
+model User {
+    id        String   @id @default(uuid())
+    name      String
+    email     String   @unique
+    phone     String?  @unique
+    password  String
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    preferences UserPreference?
+    locations   Location[]
+    trips       Trip[]
+
+    @@index([email])
+}
+
+model UserPreference {
+    id     String @id @default(uuid())
+    userId String @unique
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    maxBudget      Float    @default(1000)
+    preferredModes String[] // ["moto", "bus"]
+    avoidanceZones String[] // ["Carrefour", "Melen"]
+    priorityType   String   @default("balanced") // fastest, cheapest, balanced
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+}
+
+model Location {
+    id     String @id @default(uuid())
+    userId String
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    name       String // "Home", "Work"
+    address    String
+    latitude   Float
+    longitude  Float
+    isFavorite Boolean @default(false)
+
+    createdAt DateTime @default(now())
+
+    @@index([userId])
+}
+
+model Trip {
+    id     String @id @default(uuid())
+    userId String
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    origin        String
+    destination   String
+    transportMode String // bus, moto, taxi, walk
+    actualCost    Float
+    actualTime    Int // minutes
+    distance      Float // km
+
+    startTime DateTime
+    endTime   DateTime?
+    rating    Int? // 1-5
+
+    createdAt DateTime @default(now())
+
+    @@index([userId])
+    @@index([createdAt])
+}
