@@ -3,7 +3,7 @@ import cors from "cors";
 import helmet from "helmet";
 import morgan from "morgan";
 import dotenv from "dotenv";
-
+import authRoutes from "./routes/auth.routes";
 
 dotenv.config();
 
@@ -17,7 +17,7 @@ app.use(
     origin: [
       "http://localhost:4200",
       "http://localhost:4201",
-      "http://localhost:5173", 
+      "http://localhost:5173",
     ],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
@@ -37,6 +37,9 @@ app.get("/health", (req: Request, res: Response) => {
     environment: process.env.NODE_ENV || "development",
   });
 });
+
+// Routes
+app.use("/api/auth", authRoutes);
 
 // 404 handler
 app.use((req: Request, res: Response) => {
@@ -61,7 +64,7 @@ app.use((err: any, req: Request, res: Response, next: any) => {
 
 // Start server
 app.listen(PORT, () => {
-  console.log(`🚀 WayFinder backend API running on port ${PORT}`);
+  console.log(`🚀 WayFinder backend running on port ${PORT}`);
   console.log(`📍 Health check: http://localhost:${PORT}/health`);
   console.log(`📍 API endpoint: http://localhost:${PORT}/api`);
   console.log(`🔧 Environment: ${process.env.NODE_ENV || "development"}`);
