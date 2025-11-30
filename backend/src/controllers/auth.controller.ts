@@ -25,6 +25,7 @@ export class AuthController {
         });
       }
 
+      //Call services
       const result = await authService.register(data);
 
       return res.status(201).json({

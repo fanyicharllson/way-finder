@@ -38,7 +38,7 @@ app.get("/health", (req: Request, res: Response) => {
   });
 });
 
-// Routes
+// Routes(Rest Apis==========================)
 app.use("/api/auth", authRoutes);
 
 // 404 handler
