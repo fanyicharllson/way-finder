@@ -2,6 +2,8 @@ import { Stack } from "expo-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { StatusBar } from "expo-status-bar";
 import "./globals.css";
+import Toast from "react-native-toast-message";
+import { toastConfig } from "./components/ToastConfig";
 
 const queryClient = new QueryClient();
 // const prefix = createURL("/");
@@ -18,8 +20,9 @@ function App() {
         <Stack.Screen name="screens/(auth)" />
         <Stack.Screen name="screens/(tabs)" />
       </Stack>
-      {/* Toast config */}
-      {/* <Toast config={getToastConfig(actualTheme)} /> */}
+      
+      {/* Global Toast Component */}
+      <Toast config={toastConfig} />
 
       {/* Update modal in case any updates */}
       {/* <AppUpdateModal

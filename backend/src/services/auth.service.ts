@@ -43,15 +43,15 @@ export class AuthService {
     });
 
     // Create default preferences
-    await prisma.userPreference.create({
-      data: {
-        userId: user.id,
-        maxBudget: 1000,
-        preferredModes: ["moto", "bus"],
-        avoidanceZones: [],
-        priorityType: "balanced",
-      },
-    });
+    // await prisma.userPreference.create({
+    //   data: {
+    //     userId: user.id,
+    //     maxBudget: 1000,
+    //     preferredModes: ["moto", "bus"],
+    //     avoidanceZones: [],
+    //     priorityType: "balanced",
+    //   },
+    // });
 
     // Generate JWT token
     const token = JWTUtil.generate({

@@ -17,6 +17,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useColorScheme } from "nativewind";
 import InputField from "@/app/components/form.input.component";
 import { LoginFormData, loginSchema } from "@/utils/form.validation.util";
+import { useLogin } from "@/hooks/useAuth";
 
 // --- ICON COMPONENTS ---
 const EyeIcon: React.FC<{ visible: boolean }> = ({ visible }) => (
@@ -33,8 +34,8 @@ const LoginScreenComponent: React.FC<LoginScreenProps> = ({
   onForgotPassword,
 }) => {
   const [showPassword, setShowPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const { colorScheme } = useColorScheme();
+  const loginMutation = useLogin();
 
   const {
     control,
@@ -49,32 +50,21 @@ const LoginScreenComponent: React.FC<LoginScreenProps> = ({
   });
 
   const onSubmit = async (data: LoginFormData) => {
-    setIsLoading(true);
-
     const loginDTO: LoginDTO = {
       email: data.email,
       password: data.password,
     };
 
-    try {
-      // TODO: Replace with actual API call using React Query hook
-      console.log("Logging in user:", loginDTO);
-
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      // Mock success
-      console.log("Login successful!");
-      onLoginSuccess();
-    } catch (error) {
-      console.error("Login error:", error);
-      // TODO: Show error toast/alert
-    } finally {
-      setIsLoading(false);
-    }
+    loginMutation.mutate(loginDTO, {
+      onSuccess: () => {
+        // Navigate to main app
+        onLoginSuccess();
+      },
+    });
   };
 
   const isDark = colorScheme === "dark";
+  const isLoading = loginMutation.isPending;
 
   return (
     <LinearGradient

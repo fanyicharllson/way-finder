@@ -42,6 +42,9 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "BACKEND_ENDPOINT": " https://0a9e379add4b.ngrok-free.app/api"
     }
   }
 }

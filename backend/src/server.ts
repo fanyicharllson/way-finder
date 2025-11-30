@@ -18,6 +18,7 @@ app.use(
       "http://localhost:4200",
       "http://localhost:4201",
       "http://localhost:5173",
+      "https://0a9e379add4b.ngrok-free.app", //ngrok url to allow mobile on physical device to connect to backend(NB can change dynamically base on the url you got when u run ngrok http 5000)
     ],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
@@ -54,7 +55,7 @@ app.use((err: any, req: Request, res: Response, next: any) => {
   console.error("Error:", err);
   res.status(err.status || 500).json({
     success: false,
-    message: err.message || "Internal server error",
+    message: err.message || "Internal server error! Please try again later",
     ...(process.env.NODE_ENV === "development" && {
       stack: err.stack,
       details: err,

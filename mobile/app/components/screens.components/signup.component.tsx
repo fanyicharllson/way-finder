@@ -16,6 +16,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useColorScheme } from "nativewind";
 import { RegisterFormData, registerSchema } from "@/utils/form.validation.util";
 import { InputField } from "@/app/components/form.input.component";
+import { useRegister } from "@/hooks/useAuth";
 
 // --- ICON COMPONENTS ---
 const EyeIcon: React.FC<{ visible: boolean }> = ({ visible }) => (
@@ -27,7 +28,6 @@ const EmailIcon = () => <Text className="text-xl">📧</Text>;
 const PhoneIcon = () => <Text className="text-xl">📱</Text>;
 const LockIcon = () => <Text className="text-xl">🔒</Text>;
 
-
 // --- MAIN REGISTER SCREEN ---
 const RegisterScreenComponent: React.FC<RegisterScreenProps> = ({
   onNavigateToLogin,
@@ -35,8 +35,8 @@ const RegisterScreenComponent: React.FC<RegisterScreenProps> = ({
 }) => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
   const { colorScheme } = useColorScheme();
+  const registerMutation = useRegister();
 
   const {
     control,
@@ -54,8 +54,6 @@ const RegisterScreenComponent: React.FC<RegisterScreenProps> = ({
   });
 
   const onSubmit = async (data: RegisterFormData) => {
-    setIsLoading(true);
-
     // Transform to DTO format (remove confirmPassword)
     const registerDTO: RegisterDTO = {
       name: data.name,
@@ -64,25 +62,16 @@ const RegisterScreenComponent: React.FC<RegisterScreenProps> = ({
       password: data.password,
     };
 
-    try {
-      // TODO: Replace with actual API call
-      console.log("Registering user:", registerDTO);
-
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      // Mock success
-      console.log("Registration successful!");
-      onRegisterSuccess();
-    } catch (error) {
-      console.error("Registration error:", error);
-      // TODO: Show error toast/alert
-    } finally {
-      setIsLoading(false);
-    }
+    registerMutation.mutate(registerDTO, {
+      onSuccess: () => {
+        // Navigate to main app
+        onRegisterSuccess();
+      },
+    });
   };
 
   const isDark = colorScheme === "dark";
+  const isLoading = registerMutation.isPending;
 
   return (
     <LinearGradient
@@ -234,10 +223,7 @@ const RegisterScreenComponent: React.FC<RegisterScreenProps> = ({
               }}
             >
               {isLoading ? (
-                <ActivityIndicator
-                  color="#FFFFFF"
-                  size="small"
-                />
+                <ActivityIndicator color="#FFFFFF" size="small" />
               ) : (
                 <Text className="text-white text-lg font-bold">
                   Create Account
