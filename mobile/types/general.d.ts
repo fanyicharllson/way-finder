@@ -94,3 +94,22 @@ interface ResultScreenProps {
   onRetry?: () => void; // Optional retry button (for errors)
   showTimer?: boolean; // Show countdown timer (default: true)
 }
+//! **************************** PREFERENCES API INTERFACE TYPES *******************************
+ interface UserPreferenceDTO {
+  maxBudget: number;
+  preferredModes: string[];
+  avoidanceZones: string[];
+  priorityType: 'speed' | 'cost' | 'balanced';
+  isComplete: boolean;
+}
+ interface UserPreferenceResponse {
+  id: string;
+  userId: string;
+  maxBudget: number;
+  preferredModes: string[];
+  avoidanceZones: string[];
+  priorityType: string;
+  isComplete?: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}

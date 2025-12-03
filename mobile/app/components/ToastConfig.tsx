@@ -83,3 +83,8 @@ export const toastConfig = {
     </View>
   ),
 };
+
+// Provide a default no-op component so Expo Router doesn't warn about a missing default export
+export default function ToastConfigNoop(): React.ReactElement | null {
+  return null;
+}

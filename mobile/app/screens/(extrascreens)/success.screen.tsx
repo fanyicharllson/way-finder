@@ -8,7 +8,7 @@ export default function PreferencesSuccessRoute() {
       title="Preferences Saved!"
       message="Your journey is now personalized. Get ready for optimized routes tailored just for you."
       animationSource={require("../../../assets/lottie/success.json")}
-      autoRedirectSeconds={3}
+      autoRedirectSeconds={10}
       onContinue={() => router.replace("/screens/(tabs)")}
       showTimer={true}
     />

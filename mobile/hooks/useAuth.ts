@@ -13,6 +13,9 @@ import { ApiError } from "@/app/api/types";
 // --- REGISTER HOOK ---
 export const useRegister = () => {
   const queryClient = useQueryClient();
+  
+  // remover all auth data to prevent user from having multiple tokens
+  clearAuthData();
 
   return useMutation({
     mutationFn: authApi.register,

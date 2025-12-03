@@ -20,7 +20,7 @@ export default function UserPreferenceScreen() {
 
         <Text className="text-white text-3xl font-bold mt-6">WayFinder</Text>
 
-        <Text className="text-white/60 text-sm mt-2 italic animate-pulse">
+        <Text className="text-white/90 text-sm mt-2 italic animate-pulse">
           Please give me a sec while I load your preferences...
         </Text>
       </View>

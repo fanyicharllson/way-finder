@@ -12,6 +12,8 @@ export const updatePreferenceSchema = z.object({
   priorityType: z.enum(["speed", "cost", "balanced"] as const, {
     message: "Please select a priority",
   }),
+  // Optional flag to mark preferences as complete or incomplete
+  isComplete: z.boolean().optional(),
 });
 
 export const createLocationSchema = z.object({

@@ -39,20 +39,21 @@ const SuccessErrorScreen: React.FC<ResultScreenProps> = ({
 
   useEffect(() => {
     if (!showTimer) return;
-
     const timer = setInterval(() => {
-      setCountdown((prev) => {
-        if (prev <= 1) {
-          clearInterval(timer);
-          onContinue();
-          return 0;
-        }
-        return prev - 1;
-      });
+      setCountdown((prev) => (prev <= 1 ? 0 : prev - 1));
     }, 1000);
 
     return () => clearInterval(timer);
   }, [showTimer, onContinue]);
+
+  // Separate effect: perform navigation/callback after countdown reaches 0
+  useEffect(() => {
+    if (!showTimer) return;
+    if (countdown === 0) {
+      // call onContinue in an effect (not during render or inside state updater)
+      onContinue();
+    }
+  }, [countdown, showTimer, onContinue]);
 
   return (
     <LinearGradient

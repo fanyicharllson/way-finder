@@ -8,7 +8,7 @@ export default function PreferencesErrorRoute() {
       title="Something Went Wrong"
       message="We couldn't save your preferences. Please check your connection and try again."
       animationSource={require("../../../assets/lottie/error.json")}
-      autoRedirectSeconds={5}
+      autoRedirectSeconds={7}
       onContinue={() => router.back()}
       onRetry={() => router.back()}
       showTimer={true}

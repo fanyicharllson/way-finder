@@ -16,6 +16,7 @@ export class PreferenceService {
       throw new Error("Preferences already exist!");
     }
 
+
     //create preferences
     const preferences = await prisma.userPreference.create({
       data: {
@@ -24,7 +25,7 @@ export class PreferenceService {
         preferredModes: data.preferredModes ?? [], // Use provided or empty
         avoidanceZones: data.avoidanceZones ?? [], // Use provided or empty
         priorityType: data.priorityType ?? "balanced",
-        isComplete: false, // Always incomplete on create
+        isComplete: (data as any).isComplete ?? false,
       },
       cacheStrategy: { ttl: 60, swr: 30 },
     });

@@ -1,3 +1,5 @@
+import React from "react";
+
 // Request DTOs
 export interface RegisterDTO {
   name: string;
@@ -33,4 +35,9 @@ export interface ApiError {
   success: false;
   message: string;
   errors?: Record<string, string[]>;
+}
+
+
+export default function _ApiTypesRoute(): React.ReactElement | null {
+  return null;
 }

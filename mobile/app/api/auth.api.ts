@@ -1,3 +1,4 @@
+import React from "react";
 import { apiClient } from "./client";
 import { RegisterDTO, LoginDTO, AuthData, ApiResponse } from "./types";
 
@@ -33,3 +34,8 @@ export const authApi = {
     await apiClient.post<ApiResponse<null>>("/auth/logout");
   },
 };
+
+
+export default function _AuthApiRoute(): React.ReactElement | null {
+  return null;
+}

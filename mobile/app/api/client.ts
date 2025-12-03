@@ -1,12 +1,15 @@
+import React from "react";
 import axios, { AxiosError } from "axios";
 import { getToken } from "@/utils/storage";
 import { showToast } from "@/utils/toast";
 import { router } from "expo-router";
 import { ApiError } from "./types";
-import Constants from 'expo-constants';
+import Constants from "expo-constants";
 
-const BASE_URL = Constants.expoConfig?.extra?.BACKEND_ENDPOINT || " https://0a9e379add4b.ngrok-free.app/api";
 
+const BASE_URL =
+  Constants.expoConfig?.extra?.BACKEND_ENDPOINT ||
+  "https://0a9e379add4b.ngrok-free.app/api";
 
 export const apiClient = axios.create({
   baseURL: BASE_URL,
@@ -16,11 +19,10 @@ export const apiClient = axios.create({
   timeout: 15000,
 });
 
-console.log("\n")
-console.log("######################################")
-console.log('🌐 API Base URL:', BASE_URL);
-console.log("######################################")
-
+console.log("\n");
+console.log("######################################");
+console.log("🌐 API Base URL:", BASE_URL);
+console.log("######################################");
 
 // Request Interceptor - Add token to requests
 apiClient.interceptors.request.use(
@@ -35,6 +37,11 @@ apiClient.interceptors.request.use(
     return Promise.reject(error);
   }
 );
+
+// Default export to satisfy Expo Router route checks (no-op component)
+export default function _ApiClientRoute(): React.ReactElement | null {
+  return null;
+}
 
 // Response Interceptor - Handle errors globally
 apiClient.interceptors.response.use(

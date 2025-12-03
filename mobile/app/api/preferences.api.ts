@@ -1,3 +1,4 @@
+import React from "react";
 import { apiClient } from "./client";
 import { ApiResponse } from "./types";
 
@@ -6,7 +7,7 @@ export const preferencesApi = {
   getPreferences: async (): Promise<UserPreferenceResponse | null> => {
     try {
       const response = await apiClient.get<ApiResponse<UserPreferenceResponse>>(
-        "/preferences"
+        "/user/preferences"
       );
       return response.data.data || null;
     } catch (error: any) {
@@ -23,7 +24,7 @@ export const preferencesApi = {
     data: UserPreferenceDTO
   ): Promise<UserPreferenceResponse> => {
     const response = await apiClient.post<ApiResponse<UserPreferenceResponse>>(
-      "/preferences",
+      "/user/preferences",
       data
     );
     return response.data.data!;
@@ -34,9 +35,14 @@ export const preferencesApi = {
     data: Partial<UserPreferenceDTO>
   ): Promise<UserPreferenceResponse> => {
     const response = await apiClient.put<ApiResponse<UserPreferenceResponse>>(
-      "/preferences",
+      "/user/preferences",
       data
     );
     return response.data.data!;
   },
 };
+
+// Default export to satisfy Expo Router route checks (no-op component)
+export default function _PreferencesApiRoute(): React.ReactElement | null {
+  return null;
+}

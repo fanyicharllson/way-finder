@@ -297,6 +297,8 @@ const PreferencesScreenComponent: React.FC<PreferencesScreenProps> = ({
   const isDark = colorScheme === "dark";
 
   const savePreferencesMutation = useSavePreferences();
+  // separate mutation for "Save for Later" so each action has its own loading state
+  const saveLaterMutation = useSavePreferences();
 
   const {
     control,
@@ -370,10 +372,12 @@ const PreferencesScreenComponent: React.FC<PreferencesScreenProps> = ({
       isComplete: false,
     };
 
-    savePreferencesMutation.mutate(preferenceDTO);
+    // Use separate mutation instance so the Save Later button can show its own loading
+    saveLaterMutation.mutate(preferenceDTO);
   };
 
   const isLoading = savePreferencesMutation.isPending;
+  const isSavingLater = saveLaterMutation.isPending;
 
   return (
     <LinearGradient
@@ -389,7 +393,7 @@ const PreferencesScreenComponent: React.FC<PreferencesScreenProps> = ({
         <ScrollView
           className="flex-1 px-6"
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingTop: 20, paddingBottom: 40 }}
+          contentContainerStyle={{ paddingTop: 20, paddingBottom: 60 }}
         >
           {/* Header */}
           <View className="mb-8">
@@ -556,13 +560,17 @@ const PreferencesScreenComponent: React.FC<PreferencesScreenProps> = ({
 
             <TouchableOpacity
               onPress={handleSaveLater}
-              disabled={isLoading}
+              disabled={isSavingLater}
               activeOpacity={0.7}
               className="w-full h-14 rounded-2xl items-center justify-center border-2 border-gray-300 dark:border-gray-700"
             >
-              <Text className="text-base font-semibold text-gray-700 dark:text-gray-300">
-                Save for Later
-              </Text>
+              {isSavingLater ? (
+                <ActivityIndicator size="small" color={isDark ? "#FFFFFF" : "#0A0F1A"} />
+              ) : (
+                <Text className="text-base font-semibold text-gray-700 dark:text-gray-300">
+                  Save for Later
+                </Text>
+              )}
             </TouchableOpacity>
           </View>
         </ScrollView>

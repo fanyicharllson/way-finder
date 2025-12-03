@@ -85,7 +85,7 @@ const Index = () => {
       // Import apiClient dynamically to avoid circular dependencies
       const { apiClient } = await import("@/app/api/client");
 
-      const response = await apiClient.get("/preferences");
+      const response = await apiClient.get("/user/preferences");
 
       if (response.data?.data) {
         return response.data.data;
