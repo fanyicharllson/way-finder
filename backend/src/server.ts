@@ -4,6 +4,8 @@ import helmet from "helmet";
 import morgan from "morgan";
 import dotenv from "dotenv";
 import authRoutes from "./routes/auth.routes";
+import preferenceRoutes from "./routes/preference.routes";
+import locationRoutes from "./routes/location.routes";
 
 dotenv.config();
 
@@ -33,14 +35,23 @@ app.use(morgan("dev")); // Logging
 app.get("/health", (req: Request, res: Response) => {
   res.json({
     success: true,
-    message: "WayFinder API is running",
+    message: "WayFinder API is running 🚀",
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || "development",
+    endPoints: {
+      auth: "/api/auth",
+      user: "/api/user",
+    },
   });
 });
 
-// Routes(Rest Apis==========================)
+
+//? *************************************** REST APIs ********************************************
 app.use("/api/auth", authRoutes);
+app.use("/api/user", preferenceRoutes);
+app.use("/api/user", locationRoutes);
+//? ***********************************************************************************
+
 
 // 404 handler
 app.use((req: Request, res: Response) => {
@@ -50,7 +61,7 @@ app.use((req: Request, res: Response) => {
   });
 });
 
-// Global error handler
+//* Global error handler
 app.use((err: any, req: Request, res: Response, next: any) => {
   console.error("Error:", err);
   res.status(err.status || 500).json({

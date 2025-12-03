@@ -19,6 +19,7 @@ function App() {
         <Stack.Screen name="screens/onboarding.screen" />
         <Stack.Screen name="screens/(auth)" />
         <Stack.Screen name="screens/(tabs)" />
+        <Stack.Screen name="screens/(extrascreens)" />
       </Stack>
       
       {/* Global Toast Component */}

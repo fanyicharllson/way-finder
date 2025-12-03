@@ -6,8 +6,8 @@ export default function RegisterRoute() {
     <RegisterScreenComponent
       onNavigateToLogin={() => router.push("/screens/(auth)/login")}
       onRegisterSuccess={() => {
-        // After successful registration, go to main app
-        router.replace("/");
+        // After successful registration, go to preference ui
+        router.replace("/screens/(extrascreens)/preferences");
       }}
     />
   );

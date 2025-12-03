@@ -16,7 +16,11 @@ export const apiClient = axios.create({
   timeout: 15000,
 });
 
+console.log("\n")
+console.log("######################################")
 console.log('🌐 API Base URL:', BASE_URL);
+console.log("######################################")
+
 
 // Request Interceptor - Add token to requests
 apiClient.interceptors.request.use(

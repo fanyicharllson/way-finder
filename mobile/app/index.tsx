@@ -7,7 +7,6 @@ import { getToken } from "@/utils/storage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const ONBOARDING_KEY = "@wayfinder_onboarding_completed";
-const USER_PREFERENCES_KEY = "@wayfinder_user_preferences";
 
 const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -34,41 +33,43 @@ const Index = () => {
       if (!token) {
         // No token - user needs to login or register
         console.log("🔐 No token found - showing login");
-        router.replace("/screens/(auth)/login");
+        router.replace("/screens/login");
         return;
       }
 
       // Step 3: User is authenticated - check preferences
-      // TODO: Verify token validity with backend (optional)
-      // const isValidToken = await verifyToken(token);
-      // if (!isValidToken) {
-      //   await clearAuthData();
-      //   router.replace("/(auth)/login");
-      //   return;
-      // }
+      console.log("✅ User authenticated - checking preferences");
 
-      // TODO: Step 4 - Check if user has completed preferences setup
-      // This will be implemented when you design the preferences screen
-      const hasCompletedPreferences = await checkUserPreferences();
+      try {
+        // Check if user has preferences in backend
+        const preferences = await checkUserPreferences();
 
-      if (!hasCompletedPreferences) {
-        // User is authenticated but hasn't set preferences
-        console.log("⚙️ Authenticated user - showing preferences setup");
-        // TODO: Uncomment when preferences screen is ready
-        // router.replace("/(preferences)/setup");
+        if (!preferences) {
+          // No preferences found - show preferences setup
+          console.log("⚙️ No preferences found - showing preferences setup");
+          router.replace("/screens/(extrascreens)/preferences");
+          return;
+        }
 
-        // For now, go to main app
+        if (!preferences.isComplete) {
+          // Preferences exist but incomplete - show preferences setup
+          console.log("⚙️ Incomplete preferences - showing preferences setup");
+          router.replace("/screens/(extrascreens)/preferences");
+          return;
+        }
+
+        // Preferences are complete - go to home
+        console.log("🎉 Complete preferences found - showing home");
         router.replace("/screens/(tabs)");
-        return;
+      } catch (error) {
+        console.error("❌ Error checking preferences:", error);
+        // On error, still go to home (graceful fallback)
+        router.replace("/screens/(tabs)");
       }
-
-      // Step 5: All checks passed - go to main app
-      console.log("✅ Authenticated user with preferences - showing dashboard");
-      router.replace("/screens/(tabs)");
     } catch (error) {
       console.error("❌ Error checking app state:", error);
       // On error, default to login screen for safety
-      router.replace("/screens/(auth)/login");
+      router.replace("/screens/login");
     } finally {
       setIsLoading(false);
     }
@@ -76,22 +77,28 @@ const Index = () => {
 
   /**
    * Check if user has completed their preferences
-   * TODO: Replace with actual API call to check preferences in database
-   * @returns Promise<boolean>
+   * Calls backend API to verify preferences status
+   * @returns Promise<UserPreferenceResponse | null>
    */
-  const checkUserPreferences = async (): Promise<boolean> => {
+  const checkUserPreferences = async (): Promise<any | null> => {
     try {
-      // TODO: Call backend API to check if user has preferences
-      // const response = await fetch('YOUR_API/user/preferences');
-      // const data = await response.json();
-      // return data.hasPreferences;
+      // Import apiClient dynamically to avoid circular dependencies
+      const { apiClient } = await import("@/app/api/client");
 
-      // For now, check local storage
-      const preferences = await AsyncStorage.getItem(USER_PREFERENCES_KEY);
-      return !!preferences;
-    } catch (error) {
-      console.error("Error checking preferences:", error);
-      return false;
+      const response = await apiClient.get("/preferences");
+
+      if (response.data?.data) {
+        return response.data.data;
+      }
+
+      return null;
+    } catch (error: any) {
+      if (error.response?.status === 404) {
+        // 404 means user has no preferences - this is expected for new users
+        return null;
+      }
+      // For other errors, re-throw to be handled by caller
+      throw error;
     }
   };
 
@@ -103,7 +110,7 @@ const Index = () => {
       {/* App name or logo */}
       <Text className="text-white text-2xl font-bold mt-6">WayFinder</Text>
 
-      <Text className="text-white/60 text-sm mt-2 animate-pulse">
+      <Text className="text-white/60 text-sm mt-2">
         Loading your journey...
       </Text>
     </View>
