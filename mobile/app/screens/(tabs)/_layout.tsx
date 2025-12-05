@@ -11,20 +11,20 @@ export default function TabsLayout() {
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: "#3b82f6", // Blue primary color
-        tabBarInactiveTintColor:  "#64748b", // Slate for inactive
+        tabBarInactiveTintColor:  "#e5e7eb", // Slate for inactive
         tabBarStyle: {
-          backgroundColor:  "#ffffff", // slate-800 : white
-          borderTopColor:  "#e2e8f0", // slate-700 : slate-200
+          backgroundColor:  "#111827", // slate-800 : white
+          borderTopColor:  "#374151", // slate-700 : slate-200
           borderTopWidth: 1,
           // Perfect spacing for all devices
-          height: 60 + (insets.bottom || 20), // Auto-adjusts for home indicator
-          paddingBottom: Math.max(insets.bottom, 20), // Minimum 20px padding
+          height: 60 + (insets.bottom || 50), // Auto-adjusts for home indicator
+          paddingBottom: Math.max(insets.bottom, 40), // Minimum 20px padding
           paddingTop: 10,
         },
         tabBarLabelStyle: {
           fontSize: 13,
           fontWeight: "600",
-          marginBottom: 4,
+          marginBottom: 6,
         },
         headerShown: false,
       }}

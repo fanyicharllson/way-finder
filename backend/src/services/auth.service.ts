@@ -1,6 +1,8 @@
 import { PasswordUtil } from "../utils/password.util";
 import { JWTUtil } from "../utils/jwt.util";
 import { prisma } from "../config/database";
+import { eventBus } from "../events/eventBus";
+import { Events, UserRegisteredPayload, UserLoggedInPayload } from "../events/eventTypes";
 
 export class AuthService {
   async register(data: RegisterDTO): Promise<AuthResponse> {
@@ -59,6 +61,16 @@ export class AuthService {
       email: user.email,
     });
 
+    // 🎯 Emit USER_REGISTERED event
+    // This triggers email sending, default preferences creation, etc.
+    const eventPayload: UserRegisteredPayload = {
+      userId: user.id,
+      email: user.email,
+      name: user.name,
+      timestamp: new Date(),
+    };
+    eventBus.emitEvent(Events.USER_REGISTERED, eventPayload);
+
     return {
       user,
       token,
@@ -90,6 +102,15 @@ export class AuthService {
       userId: user.id,
       email: user.email,
     });
+
+    // 🎯 Emit USER_LOGGED_IN event
+    // This tracks user activity and analytics
+    const eventPayload: UserLoggedInPayload = {
+      userId: user.id,
+      email: user.email,
+      timestamp: new Date(),
+    };
+    eventBus.emitEvent(Events.USER_LOGGED_IN, eventPayload);
 
     return {
       user: {

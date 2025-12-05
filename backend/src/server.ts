@@ -1,57 +1,81 @@
 import express, { Express, Request, Response } from "express";
-import cors from "cors";
 import helmet from "helmet";
-import morgan from "morgan";
 import dotenv from "dotenv";
-import authRoutes from "./routes/auth.routes";
-import preferenceRoutes from "./routes/preference.routes";
-import locationRoutes from "./routes/location.routes";
+
+// 🎯 Import event system - registers all event listeners
+import "./events/listeners/user.listener";
+import "./events/listeners/preference.listener";
+import "./events/listeners/trip.listener";
+
+// 🚪 Import API Gateway - handles routing and middleware
+import {
+  setupGatewayRoutes,
+  requestLogger,
+  authGateway,
+  rateLimitGateway,
+  corsGateway,
+  cleanupRateLimitRecords,
+} from "./gateway";
 
 dotenv.config();
 
 const app: Express = express();
 const PORT = process.env.PORT || 3000;
 
-// Middleware
-app.use(helmet()); // Security headers
-app.use(
-  cors({
-    origin: [
-      "http://localhost:4200",
-      "http://localhost:4201",
-      "http://localhost:5173",
-      "https://571c58353266.ngrok-free", //ngrok url to allow mobile on physical device to connect to backend(NB can change dynamically base on the url you got when u run ngrok http 5000)
-    ],
-    credentials: true,
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-  })
-);
+// ═══════════════════════════════════════════════════════════════
+// API GATEWAY MIDDLEWARE STACK
+// ═══════════════════════════════════════════════════════════════
+
+// Security
+app.use(helmet());
+
+// Body parsing
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(morgan("dev")); // Logging
 
-// Health check endpoint
+// API Gateway Middleware (in order)
+app.use(requestLogger); // 1. Log all requests
+app.use(corsGateway); // 2. Handle CORS
+app.use(rateLimitGateway); // 3. Rate limiting
+app.use(authGateway); // 4. Authentication check
+
+// ═══════════════════════════════════════════════════════════════
+// HEALTH CHECK ENDPOINT
+// ═══════════════════════════════════════════════════════════════
+
 app.get("/health", (req: Request, res: Response) => {
   res.json({
     success: true,
     message: "WayFinder API is running 🚀",
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || "development",
-    endPoints: {
+    uptime: process.uptime(),
+    apiGateway: {
+      status: "active",
+      features: [
+        "request-logging",
+        "auth-verification",
+        "rate-limiting",
+        "cors",
+      ],
+    },
+    eventSystem: {
+      status: "active",
+      listeners: ["user", "preference", "trip"],
+    },
+    endpoints: {
       auth: "/api/auth",
-      user: "/api/user",
+      preferences: "/api/preferences",
+      locations: "/api/locations",
     },
   });
 });
 
+// ═══════════════════════════════════════════════════════════════
+// API GATEWAY ROUTE SETUP
+// ═══════════════════════════════════════════════════════════════
 
-//? *************************************** REST APIs ********************************************
-app.use("/api/auth", authRoutes);
-app.use("/api/user", preferenceRoutes);
-app.use("/api/user", locationRoutes);
-//? ***********************************************************************************
-
+setupGatewayRoutes(app);
 
 // 404 handler
 app.use((req: Request, res: Response) => {
@@ -74,12 +98,35 @@ app.use((err: any, req: Request, res: Response, next: any) => {
   });
 });
 
+// Start cleanup task for rate limiting
+cleanupRateLimitRecords();
+
 // Start server
 app.listen(PORT, () => {
-  console.log(`🚀 WayFinder backend running on port ${PORT}`);
-  console.log(`📍 Health check: http://localhost:${PORT}/health`);
-  console.log(`📍 API endpoint: http://localhost:${PORT}/api`);
-  console.log(`🔧 Environment: ${process.env.NODE_ENV || "development"}`);
+  console.log(`
+╔═══════════════════════════════════════════════════════════╗
+║                 🚀 WayFinder Backend                      ║
+╚═══════════════════════════════════════════════════════════╝
+
+🌐 Server Details:
+   Port       : ${PORT}
+   Environment: ${process.env.NODE_ENV || "development"}
+   
+📊 Features Enabled:
+   ✅ API Gateway (request routing & middleware)
+   ✅ Request Logging (with Request IDs)
+   ✅ Authentication (JWT verification)
+   ✅ Rate Limiting (per-user/IP)
+   ✅ Event System (async side effects)
+   ✅ Resend Email Integration
+   
+🔗 Quick Links:
+   Health Check : http://localhost:${PORT}/health
+   API Docs     : http://localhost:${PORT}/api/*
+   
+🚀 Ready to accept requests!
+
+  `);
 });
 
 export default app;

@@ -2,6 +2,8 @@ import {
   UpdatePreferenceDTO,
 } from "../validators/preference.validator";
 import { prisma } from "../config/database";
+import { eventBus } from "../events/eventBus";
+import { Events, PreferenceCreatedPayload, PreferenceUpdatedPayload } from "../events/eventTypes";
 
 export class PreferenceService {
   // ===== PREFERENCES =====
@@ -29,6 +31,16 @@ export class PreferenceService {
       },
       cacheStrategy: { ttl: 60, swr: 30 },
     });
+
+    // 🎯 Emit PREFERENCE_CREATED event
+    const eventPayload: PreferenceCreatedPayload = {
+      userId,
+      preferenceId: preferences.id,
+      maxBudget: preferences.maxBudget,
+      preferredModes: preferences.preferredModes,
+      timestamp: new Date(),
+    };
+    eventBus.emitEvent(Events.PREFERENCE_CREATED, eventPayload);
 
     return preferences;
   }
@@ -67,6 +79,15 @@ export class PreferenceService {
       },
       cacheStrategy: { ttl: 60, swr: 30 },
     });
+
+    // 🎯 Emit PREFERENCE_UPDATED event
+    const eventPayload: PreferenceUpdatedPayload = {
+      userId,
+      preferenceId: updated.id,
+      changes: data,
+      timestamp: new Date(),
+    };
+    eventBus.emitEvent(Events.PREFERENCE_UPDATED, eventPayload);
 
     return updated;
   }

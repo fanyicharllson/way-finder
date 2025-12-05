@@ -3,6 +3,8 @@ import {
   UpdateLocationDTO,
 } from "../validators/preference.validator";
 import { prisma } from "../config/database";
+import { eventBus } from "../events/eventBus";
+import { Events, LocationSavedPayload } from "../events/eventTypes";
 
 export class LocationService {
   // ===== LOCATIONS =====
@@ -51,6 +53,22 @@ export class LocationService {
       },
     });
 
+    // 🎯 Emit LOCATION_SAVED event
+    const eventPayload: LocationSavedPayload = {
+      userId,
+      locationId: location.id,
+      name: location.name,
+      address: location.address,
+      isFavorite: location.isFavorite,
+      timestamp: new Date(),
+    };
+    eventBus.emitEvent(Events.LOCATION_SAVED, eventPayload);
+
+    // If it's a favorite, emit additional event
+    if (location.isFavorite) {
+      eventBus.emitEvent(Events.LOCATION_FAVORITED, eventPayload);
+    }
+
     return location;
   }
 
@@ -81,6 +99,22 @@ export class LocationService {
       where: { id: locationId },
       data,
     });
+
+    // 🎯 Emit event if favorited status changed
+    if (data.isFavorite !== undefined && data.isFavorite !== existing.isFavorite) {
+      const eventPayload: LocationSavedPayload = {
+        userId,
+        locationId: updated.id,
+        name: updated.name,
+        address: updated.address,
+        isFavorite: updated.isFavorite,
+        timestamp: new Date(),
+      };
+      
+      if (updated.isFavorite) {
+        eventBus.emitEvent(Events.LOCATION_FAVORITED, eventPayload);
+      }
+    }
 
     return updated;
   }
