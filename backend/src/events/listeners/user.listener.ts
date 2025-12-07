@@ -5,7 +5,6 @@ import {
   UserLoggedInPayload,
 } from "../eventTypes";
 import { sendWelcomeEmail } from "../../config/email";
-import { prisma } from "../../config/database";
 
 /**
  * User Event Listeners
@@ -36,25 +35,7 @@ eventBus.onEvent<UserRegisteredPayload>(
       // 1. Send welcome email
       await sendWelcomeEmail(data.email, data.name);
 
-      // 2. Create default preferences if not exists
-      const existingPreference = await prisma.userPreference.findUnique({
-        where: { userId: data.userId },
-      });
-
-      if (!existingPreference) {
-        await prisma.userPreference.create({
-          data: {
-            userId: data.userId,
-            maxBudget: 1000,
-            preferredModes: ["moto", "bus"],
-            avoidanceZones: [],
-            priorityType: "balanced",
-            isComplete: false,
-          },
-        });
-        console.log(`✅ Default preferences created for user: ${data.userId}`);
-      }
-
+      
       // 3. Log analytics (placeholder - could send to external service)
       console.log(`📊 Analytics: New user registered - ${data.email}`);
 

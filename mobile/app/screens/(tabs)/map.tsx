@@ -3,7 +3,7 @@ import React from "react";
 
 const MapScreen = () => {
   return (
-    <View>
+    <View className="flex-1 justify-center items-center bg-slate-900">
       <Text>MapScreen</Text>
     </View>
   );

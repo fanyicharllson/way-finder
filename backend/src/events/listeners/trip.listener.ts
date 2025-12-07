@@ -5,7 +5,7 @@ import {
   TripRatedPayload,
 } from "../eventTypes";
 import { sendTripSummaryEmail } from "../../config/email";
-import prisma from "../../config/database";
+import {prisma} from "../../config/database";
 
 /**
  * Trip Event Listeners

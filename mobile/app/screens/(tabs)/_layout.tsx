@@ -17,14 +17,14 @@ export default function TabsLayout() {
           borderTopColor:  "#374151", // slate-700 : slate-200
           borderTopWidth: 1,
           // Perfect spacing for all devices
-          height: 60 + (insets.bottom || 50), // Auto-adjusts for home indicator
-          paddingBottom: Math.max(insets.bottom, 40), // Minimum 20px padding
+          height: 60 + (insets.bottom || 30), // Auto-adjusts for home indicator
+          paddingBottom: Math.max(insets.bottom, 20), // Minimum 20px padding
           paddingTop: 10,
         },
         tabBarLabelStyle: {
           fontSize: 13,
           fontWeight: "600",
-          marginBottom: 6,
+          marginBottom: 5,
         },
         headerShown: false,
       }}

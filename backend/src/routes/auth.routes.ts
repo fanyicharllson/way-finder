@@ -9,7 +9,7 @@ const authController = new AuthController();
 
 // Public routes
 router.post("/register", validate(registerSchema), (req, res) =>
-  authController.register(req, res)
+authController.register(req, res)
 );
 router.post("/login", validate(loginSchema), (req, res) => authController.login(req, res));
 

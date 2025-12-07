@@ -7,21 +7,24 @@ import { updatePreferenceSchema } from "../validators/preference.validator";
 const router = Router();
 const preferenceController = new PreferenceController();
 
-// All routes are protected
+// All routes are protected (gateway also applies auth)
 router.use(authMiddleware);
-router.post("/preferences", validate(updatePreferenceSchema), (req, res) =>
+
+// Create preferences
+router.post("/", validate(updatePreferenceSchema), (req, res) =>
   preferenceController.createPreferences(req, res)
 );
 
-// Preferences routes
-router.get("/preferences", (req, res) =>
-  preferenceController.getPreferences(req, res)
-);
+// Get preferences
+router.get("/", (req, res) => preferenceController.getPreferences(req, res));
 
-router.put("/preferences", validate(updatePreferenceSchema), (req, res) =>
+// Update preferences
+router.put("/", validate(updatePreferenceSchema), (req, res) =>
   preferenceController.updatePreferences(req, res)
 );
-router.delete("/preferences", (req, res) =>
+
+// Delete preferences
+router.delete("/", (req, res) =>
   preferenceController.deletePreferences(req, res)
 );
 
