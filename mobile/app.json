@@ -37,6 +37,12 @@
           }
         }
       ],
+      [
+        "expo-location",
+        {
+          "locationAlwaysAndWhenInUsePermission": "Allow WayFinder to use your location for route planning."
+        }
+      ],
       "expo-secure-store"
     ],
     "experiments": {
@@ -44,7 +50,7 @@
       "reactCompiler": true
     },
     "extra": {
-      "BACKEND_ENDPOINT": "https://97a4a61374e4.ngrok-free.app/api"
+      "BACKEND_ENDPOINT": "https://1ced7189dd6d.ngrok-free.app/api"
     }
   }
 }

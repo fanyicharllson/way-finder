@@ -113,3 +113,49 @@ interface ResultScreenProps {
   createdAt: Date;
   updatedAt: Date;
 }
+//! **************************** HOME TYPES *******************************
+
+interface HomeHeaderProps {
+  userName: string;
+  temperature?: number;
+  onNotificationPress: () => void;
+  isDark: boolean;
+}
+interface RouteSearchCardProps {
+  onSearch: (from: string, to: string) => void;
+  onChooseFavorite: () => void;
+  isDark: boolean;
+}
+
+interface Recommendation {
+  from: string;
+  to: string;
+  mode: 'bus' | 'moto' | 'taxi' | 'walk';
+  cost: number;
+  duration: string;
+}
+
+interface RecommendationCardProps {
+  recommendation: Recommendation;
+  onViewDetails: () => void;
+  isDark: boolean;
+}
+interface RecentSearch {
+  id: string;
+  from: string;
+  to: string;
+}
+
+interface RecentSearchesProps {
+  searches: RecentSearch[];
+  onSelectSearch: (search: RecentSearch) => void;
+  isDark: boolean;
+}
+
+interface RouteSearchCardProps {
+  onSearch: (from: string, to: string) => void;
+  onChooseFavorite: () => void;
+  onEditPreferences: () => void;
+  isDark: boolean;
+}
+

@@ -5,11 +5,14 @@ import React, { useEffect, useState } from "react";
 import { router } from "expo-router";
 import { getToken } from "@/utils/storage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useProfile } from "@/hooks/useAuth";
 
 const ONBOARDING_KEY = "@wayfinder_onboarding_completed";
 
 const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
+  const { data: user } = useProfile();
+  const userName = user?.name.split(" ")[0] || "";
 
   useEffect(() => {
     checkAppState();
@@ -111,7 +114,7 @@ const Index = () => {
       <Text className="text-white text-2xl font-bold mt-6">WayFinder</Text>
 
       <Text className="text-white/60 text-sm mt-2">
-        Loading your journey...
+        Just a moment, {userName || ""}...
       </Text>
     </View>
   );

@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import "./events/listeners/user.listener";
 import "./events/listeners/preference.listener";
 import "./events/listeners/trip.listener";
+import "./events/listeners/route.listener";
 
 // 🚪 Import API Gateway - handles routing and middleware
 import {

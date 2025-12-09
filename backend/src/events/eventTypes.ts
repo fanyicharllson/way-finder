@@ -20,6 +20,25 @@ export const Events = {
   TRIP_STARTED: "trip.started",
   TRIP_COMPLETED: "trip.completed",
   TRIP_RATED: "trip.rated",
+
+  // Route Events
+  ROUTE_SEARCH_STARTED: "route.search.started",
+  ROUTE_SEARCH_COMPLETED: "route.search.completed",
+  ROUTE_SEARCH_FAILED: "route.search.failed",
+  PREFERENCES_FETCHED: "preferences.fetched",
+  PREFERENCES_FETCH_FAILED: "preferences.fetch.failed",
+  MAPS_API_CALLED: "maps.api.called",
+  MAPS_API_SUCCESS: "maps.api.success",
+  MAPS_API_FAILED: "maps.api.failed",
+
+  // Traffic/Weather Events (Phase 2)
+  TRAFFIC_UPDATE_RECEIVED: "traffic.update.received",
+  WEATHER_UPDATE_RECEIVED: "weather.update.received",
+  ROUTE_CONDITION_CHANGED: "route.condition.changed",
+
+  //Analitics Events
+
+  ANALITICS_EVENTS: "analitics.tracked",
 } as const;
 
 /**
@@ -40,6 +59,22 @@ export interface UserLoggedInPayload {
   timestamp: Date;
 }
 
+export interface RouteSearchStartedPayload {
+  userId: string;
+  from: string;
+  to: string;
+  timestamp: Date;
+}
+
+export interface RouteSearchCompletedPayload {
+  userId: string;
+  from: string;
+  to: string;
+  routes: any[]; // Will be typed properly in route.types.ts
+  duration: number; // ms
+  timestamp: Date;
+}
+
 export interface PreferenceCreatedPayload {
   userId: string;
   preferenceId: string;
@@ -57,6 +92,28 @@ export interface PreferenceUpdatedPayload {
     avoidanceZones?: string[];
     priorityType?: string;
   };
+  timestamp: Date;
+}
+
+export interface RouteSearchFailedPayload {
+  userId: string;
+  from: string;
+  to: string;
+  error: string;
+  timestamp: Date;
+}
+
+export interface PreferencesFetchedPayload {
+  userId: string;
+  preferences: any; // Will be typed properly
+  hasFallback: boolean; // true if using default preferences
+  timestamp: Date;
+}
+
+export interface PreferencesFetchFailedPayload {
+  userId: string;
+  error: string;
+  usingDefaults: boolean;
   timestamp: Date;
 }
 
@@ -85,5 +142,29 @@ export interface TripRatedPayload {
   userId: string;
   tripId: string;
   rating: number;
+  timestamp: Date;
+}
+
+export interface MapsApiCalledPayload {
+  userId: string;
+  origin: string;
+  destination: string;
+  timestamp: Date;
+}
+
+export interface MapsApiSuccessPayload {
+  userId: string;
+  origin: string;
+  destination: string;
+  distance: number;
+  duration: number;
+  timestamp: Date;
+}
+
+export interface MapsApiFailedPayload {
+  userId: string;
+  origin: string;
+  destination: string;
+  error: string;
   timestamp: Date;
 }

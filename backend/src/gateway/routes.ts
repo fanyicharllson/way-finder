@@ -2,10 +2,11 @@ import { Express } from "express";
 import authRoutes from "../routes/auth.routes";
 import preferenceRoutes from "../routes/preference.routes";
 import locationRoutes from "../routes/location.routes";
+import routeRoutes from "../routes/route.routes";
 
 /**
  * API Gateway - Route Configuration
- * 
+ *
  * Central routing configuration for all API endpoints
  * Routes are processed through middleware stack before reaching handlers
  */
@@ -31,10 +32,24 @@ export function setupGatewayRoutes(app: Express) {
   app.use("/api/preferences", preferenceRoutes);
 
   console.log("✅ Preference routes mounted:");
-  console.log("   POST   /api/preferences        - Create preferences (protected)");
-  console.log("   GET    /api/preferences        - Get preferences (protected)");
-  console.log("   PUT    /api/preferences        - Update preferences (protected)");
-  console.log("   DELETE /api/preferences        - Delete preferences (protected)\n");
+  console.log(
+    "   POST   /api/preferences        - Create preferences (protected)"
+  );
+  console.log(
+    "   GET    /api/preferences        - Get preferences (protected)"
+  );
+  console.log(
+    "   PUT    /api/preferences        - Update preferences (protected)"
+  );
+  console.log(
+    "   DELETE /api/preferences        - Delete preferences (protected)\n"
+  );
+
+  // ═══════════════════════════════════════════════════════════════
+  // Routes ROUTES (Protected)
+  // ═══════════════════════════════════════════════════════════════
+  app.use("/api/routes", routeRoutes);
+  console.log("Route routes mounted")
 
   // ═══════════════════════════════════════════════════════════════
   // LOCATION ROUTES (Protected)

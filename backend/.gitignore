@@ -4,9 +4,10 @@ node_modules/
 .pnp.js
 
 # Environment
-.env
+.env*
 .env.local
 .env*.local
+.env.example
 
 # Build
 .next/

@@ -1,14 +1,71 @@
 import React from "react";
-import { View, Text } from "react-native";
+import { ScrollView, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { useColorScheme } from "nativewind";
+import { router } from "expo-router";
+import { HomeHeader } from "@/app/components/home/HomeHeader";
+import { RecentSearches } from "@/app/components/home/RecentSearches";
+import { RecommendationCard } from "@/app/components/home/RecommendationCard";
+import { RouteSearchCard } from "@/app/components/home/RouteSearchCard";
+import { useProfile } from "@/hooks/useAuth";
 
-function HomeScreen() {
+export default function HomeScreen() {
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === "dark";
+  const { data: user } = useProfile();
+
+  const userName = user?.name.split(" ")[0] || "";
+  const mockRecommendation = {
+    from: "Mokolo",
+    to: "Carrefour Nlongkak",
+    mode: "moto" as const,
+    cost: 500,
+    duration: "15m",
+  };
+
+  const mockRecentSearches = [
+    { id: "1", from: "Home", to: "Office" },
+    { id: "2", from: "Mvog-Mbi", to: "Tsinga" },
+    { id: "3", from: "Bastos", to: "Centre Ville" },
+  ];
+
+  const handleSearch = (from: string, to: string) => {
+    console.log("Searching route:", { from, to });
+    // TODO: Navigate to route results
+    // router.push(`/route-results?from=${from}&to=${to}`);
+  };
+
   return (
-    <View className="bg-gray-900 flex-1 items-center justify-center min-h-screen`">
-      <Text className="text-blue-500 italic font-bold text-4xl">
-        Welcome to WayFinder Home
-      </Text>
-    </View>
+    <SafeAreaView className="flex-1 bg-gray-50 dark:bg-gray-900">
+      <ScrollView showsVerticalScrollIndicator={false}>
+        <HomeHeader
+          userName={userName}
+          temperature={28}
+          onNotificationPress={() => console.log("Notifications")}
+          isDark={isDark}
+        />
+
+        <RouteSearchCard
+          onSearch={handleSearch}
+          onChooseFavorite={() => router.push("/screens/(tabs)/favorite")}
+          onEditPreferences={() => router.push("/screens/(extrascreens)/preferences")}
+          isDark={isDark}
+        />
+
+        <RecommendationCard
+          recommendation={mockRecommendation}
+          onViewDetails={() => console.log("View details")}
+          isDark={isDark}
+        />
+
+        <RecentSearches
+          searches={mockRecentSearches}
+          onSelectSearch={(search) => handleSearch(search.from, search.to)}
+          isDark={isDark}
+        />
+
+        <View className="h-8" />
+      </ScrollView>
+    </SafeAreaView>
   );
 }
-
-export default HomeScreen;
