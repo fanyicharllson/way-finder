@@ -63,6 +63,8 @@ export const RouteSearchCard: React.FC<RouteSearchCardProps> = ({
     setTo(temp);
   };
 
+ 
+
   const getPriorityIcon = () => {
     switch (preferences?.priorityType) {
       case "speed":

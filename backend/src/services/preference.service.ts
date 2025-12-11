@@ -49,6 +49,7 @@ export class PreferenceService {
   async getUserPreferences(userId: string) {
     const preferences = await prisma.userPreference.findUnique({
       where: { userId },
+      cacheStrategy: { ttl: 60, swr: 30 },
     });
 
     if (!preferences) {

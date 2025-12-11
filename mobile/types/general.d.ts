@@ -159,3 +159,74 @@ interface RouteSearchCardProps {
   isDark: boolean;
 }
 
+//! **************************** Routes TYPES *******************************
+
+interface RouteStep {
+  instruction: string;
+  distance: number;
+  duration: number;
+  startLocation: { lat: number; lng: number };
+  endLocation: { lat: number; lng: number };
+}
+ 
+interface RouteOption {
+  id: string;
+  mode: 'bus' | 'moto' | 'taxi' | 'walk';
+  cost: number;
+  duration: number;
+  distance: number;
+  polyline: string;
+  recommendation?: 'best-value' | 'fastest' | 'cheapest';
+  steps: RouteStep[];
+}
+interface LocationInput {
+  address?: string;
+  lat?: number;
+  lng?: number;
+}
+ 
+interface RouteSearchRequest {
+  from: LocationInput;
+  to: LocationInput;
+  departureTime?: string;
+}
+
+ interface RouteOption {
+  id: string;
+  mode: "bus" | "moto" | "taxi" | "walking";
+  cost: number; // XAF
+  duration: number; // minutes
+  distance: number; // kilometers
+  polyline: string; // For Google Maps rendering
+  steps: RouteStep[];
+  recommendation?: "best-value" | "fastest" | "cheapest" | "recommended";
+}
+
+ interface RouteStep {
+  instruction: string;
+  distance: number; // meters
+  duration: number; // seconds
+  startLocation: { lat: number; lng: number };
+  endLocation: { lat: number; lng: number };
+}
+
+ interface RouteSearchResponse {
+  success: boolean;
+  routes: RouteOption[];
+  origin: {
+    address: string;
+    coordinates: { lat: number; lng: number };
+  };
+  destination: {
+    address: string;
+    coordinates: { lat: number; lng: number };
+  };
+  userPreferences?: {
+    priorityType: "fastest" | "cheapest" | "balanced";
+    maxBudget: number;
+    preferredModes: string[];
+  };
+  message?: string;
+}
+
+

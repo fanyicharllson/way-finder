@@ -27,6 +27,7 @@ export const Events = {
   ROUTE_SEARCH_FAILED: "route.search.failed",
   PREFERENCES_FETCHED: "preferences.fetched",
   PREFERENCES_FETCH_FAILED: "preferences.fetch.failed",
+  CALLING_PREFERENCE_SERVICE: "calling.preference.service",
   MAPS_API_CALLED: "maps.api.called",
   MAPS_API_SUCCESS: "maps.api.success",
   MAPS_API_FAILED: "maps.api.failed",

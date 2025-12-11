@@ -31,9 +31,10 @@ export default function HomeScreen() {
 
   const handleSearch = (from: string, to: string) => {
     console.log("Searching route:", { from, to });
-    // TODO: Navigate to route results
-    // router.push(`/route-results?from=${from}&to=${to}`);
+    // router.push("/")
+    router.push(`/screens/(extrascreens)/route-results?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`);
   };
+  
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50 dark:bg-gray-900">

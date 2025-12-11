@@ -14,11 +14,29 @@ import {
  */
 
 /**
- * Handle PREFERENCE_CREATED event
+ * Handle CALLING_PREFERENCE_SERVICE event
  * Actions:
  * 1. Mark user onboarding as progressing
  * 2. Log analytics
  */
+eventBus.onEvent<CallingPreferenceServicePayload>(Events.CALLING_PREFERENCE_SERVICE,
+  async (data) => {
+    try {
+      console.log(
+        `⚙️================= Calling Preference Service for user:================= ${data.userId}\n`
+      );
+
+      // 1. Future: Could trigger
+      // - Generate initial route recommendations
+      // - Send push notification: "Your preferences are set! Start planning trips."
+      // - Update onboarding checklist
+    } catch (error) {
+      console.error(`❌ Error calling Preference Service:`, error);
+    }
+  }
+);
+
+
 eventBus.onEvent<PreferenceCreatedPayload>(
   Events.PREFERENCE_CREATED,
   async (data) => {

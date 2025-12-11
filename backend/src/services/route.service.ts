@@ -16,16 +16,17 @@ import {
   TransportMode,
   OptimizationType,
 } from "../types/route.type";
-import { prisma } from "../config/database";
 import { eventBus } from "../events";
 import { StrategyFactory } from "../factory/strategy/optimaization.stategy";
 import { TransportFactory } from "../factory/transport.factory";
+import { PreferenceService } from "./preference.service";
 
 /**
  * Route Service
  * Main business logic for route searching
  */
 export class RouteService {
+  private preferenceService: PreferenceService = new PreferenceService();
   /**
    * Search for routes with graceful preference fetching
    */
@@ -65,7 +66,6 @@ export class RouteService {
 
       // 5. Filter routes by user's budget
       routes = this.filterByBudget(routes, preferences.maxBudget);
-     
 
       // 6. Apply optimization strategy (Strategy Pattern)
       const strategy = StrategyFactory.getStrategy(preferences.priorityType);
@@ -117,33 +117,20 @@ export class RouteService {
 
   /**
    * Fetch user preferences with graceful degradation
-   * If fetch fails, use default preferences and emit event
+   * Uses PreferenceService, falls back to defaults on error
    */
   private async getUserPreferencesGracefully(
     userId: string
   ): Promise<UserPreferences> {
     try {
-      const userPref = await prisma.userPreference.findUnique({
-        where: { userId },
-        cacheStrategy: { ttl: 60, swr: 30 }, // Cache for 60s
-      });
 
-      if (!userPref) {
-        // User has no preferences set, use defaults
-        console.log(`ℹ️ User ${userId} has no preferences, using defaults`);
-
-        eventBus.emitEvent<PreferencesFetchedPayload>(
-          Events.PREFERENCES_FETCHED,
-          {
-            userId,
-            preferences: DEFAULT_PREFERENCES,
-            hasFallback: true,
-            timestamp: new Date(),
-          }
-        );
-
-        return DEFAULT_PREFERENCES;
-      }
+      
+      eventBus.emitEvent<CallingPreferenceServicePayload>(
+        Events.CALLING_PREFERENCE_SERVICE,
+        { userId, timestamp: new Date() }
+      );
+      // Call PreferenceService to fetch preferences
+      const userPref = await this.preferenceService.getUserPreferences(userId);
 
       // Convert database format to our type
       const preferences: UserPreferences = {
@@ -166,10 +153,9 @@ export class RouteService {
 
       return preferences;
     } catch (error: any) {
-      // Database fetch failed, use defaults
-      console.error(
-        `⚠️ Failed to fetch preferences for user ${userId}:`,
-        error.message
+      // Preferences not found or fetch failed, use defaults gracefully
+      console.warn(
+        `⚠️ Failed to fetch preferences for user ${userId}: ${error.message}`
       );
       console.log("Using default preferences instead");
 
@@ -207,8 +193,8 @@ export class RouteService {
     routes: RouteOption[],
     maxBudget: number
   ): RouteOption[] {
-    
-    return routes.filter((route) => route.cost <= maxBudget);
+    // return routes.filter((route) => route.cost <= maxBudget);
+    return routes;
   }
 
   /**

@@ -20,3 +20,8 @@ interface LocationResponse {
   isFavorite: boolean;
   createdAt: Date;
 }
+
+interface CallingPreferenceServicePayload {
+  userId: string;
+  timestamp: Date;
+}

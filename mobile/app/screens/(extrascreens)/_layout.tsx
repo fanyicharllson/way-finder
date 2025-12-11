@@ -6,6 +6,7 @@ export default function ExtraScreensLayout() {
       <Stack.Screen name="preferences" />
       <Stack.Screen name="success.screen" />
       <Stack.Screen name="error.screen" />
+      <Stack.Screen name="route-results" />
     </Stack>
   );
 }
