@@ -9,6 +9,7 @@ import {
   NativeScrollEvent,
   NativeSyntheticEvent,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { Ionicons } from "@expo/vector-icons";
 import { useColorScheme } from "react-native";
 import {
@@ -33,10 +34,7 @@ const HistoryScreen = () => {
   const [showFilter, setShowFilter] = useState(false);
   const [filters, setFilters] = useState<any>({});
   const [showAddTrip, setShowAddTrip] = useState(false);
-  const [fabVisible, setFabVisible] = useState(true);
   const [showAIModal, setShowAIModal] = useState(false);
-  const scrollY = useRef(0);
-  const lastScrollY = useRef(0);
 
   const {
     data: tripsData,
@@ -67,21 +65,6 @@ const HistoryScreen = () => {
     }
   };
 
-  const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const currentScrollY = event.nativeEvent.contentOffset.y;
-    const scrollingDown = currentScrollY > lastScrollY.current && currentScrollY > 50;
-    const scrollingUp = currentScrollY < lastScrollY.current;
-
-    if (scrollingDown && fabVisible) {
-      setFabVisible(false);
-    } else if (scrollingUp && !fabVisible) {
-      setFabVisible(true);
-    }
-
-    lastScrollY.current = currentScrollY;
-    scrollY.current = currentScrollY;
-  };
-
   const handleAddTrip = () => {
     setShowAddTrip(true);
   };
@@ -94,11 +77,7 @@ const HistoryScreen = () => {
       text2: "AI features coming soon!",
     });
   };
-
-  const handleTripSubmit = (tripData: any) => {
-    // TODO: Integrate with backend API to save manual trip
-    console.log("Manual trip data:", tripData);
-  };
+  
 
   const groupTripsByDate = (trips: any[]) => {
     const grouped: { [key: string]: any[] } = {};
@@ -138,8 +117,10 @@ const HistoryScreen = () => {
     return (
       <View className="flex-1 bg-gray-50 dark:bg-gray-900">
         <View className="px-6 pt-6 pb-4 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-          <Skeleton width="40%" height={28} style={{ marginBottom: 8 }} />
-          <Skeleton width="30%" height={16} />
+          <View className="mt-7">
+            <Skeleton width="40%" height={28} style={{ marginBottom: 8 }} />
+            <Skeleton width="30%" height={16} />
+          </View>
         </View>
 
         <View className="mt-4">
@@ -169,7 +150,7 @@ const HistoryScreen = () => {
     return (
       <View className="flex-1 bg-gray-50 dark:bg-gray-900">
         <View className="px-6 pt-6 pb-4 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-          <View className="flex-row items-center justify-between">
+          <View className="flex-row items-center justify-between mt-7">
             <View>
               <Text className="text-gray-900 dark:text-white font-bold text-2xl">
                 Trip History
@@ -219,7 +200,7 @@ const HistoryScreen = () => {
   // Empty State
   if (!tripsData || tripsData.trips.length === 0) {
     return (
-      <View className="flex-1 bg-gray-50 dark:bg-gray-900">
+      <SafeAreaView className="flex-1 bg-gray-50 dark:bg-gray-900">
         <View className="px-6 pt-6 pb-4 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
           <View className="flex-row items-center justify-between">
             <View>
@@ -258,8 +239,11 @@ const HistoryScreen = () => {
             <Text className="text-gray-600 dark:text-gray-400 text-center mt-2">
               Start your first journey and track your travel history here
             </Text>
-            <TouchableOpacity className="mt-6 bg-blue-600 dark:bg-blue-500 px-6 py-3 rounded-full">
-              <Text className="text-white font-semibold">Search Routes</Text>
+            <TouchableOpacity 
+              onPress={handleAddTrip}
+              className="mt-6 bg-blue-600 dark:bg-blue-500 px-6 py-3 rounded-full"
+            >
+              <Text className="text-white font-semibold">Add Manual Trip</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -273,34 +257,35 @@ const HistoryScreen = () => {
         <AddTripModal
           visible={showAddTrip}
           onClose={() => setShowAddTrip(false)}
-          onSubmit={handleTripSubmit}
           isDark={isDark}
         />
 
         {/* Floating Action Buttons */}
-        <FloatingActionButton
-          onPress={handleAddTrip}
-          icon="add"
-          visible={fabVisible}
-          bottom={24}
-          right={24}
-          testID="add-trip-fab"
-        />
+        <View style={{ position: 'absolute', bottom: 0, right: 0, width: 100, height: 200 }}>
+          <FloatingActionButton
+            onPress={handleAddTrip}
+            icon="add"
+            visible={true}
+            bottom={24}
+            right={24}
+            testID="add-trip-fab"
+          />
 
-        <AIFloatingButton
-          onPress={handleAIPress}
-          visible={fabVisible}
-          bottom={92}
-          right={24}
-          testID="ai-fab"
-        />
-      </View>
+          <AIFloatingButton
+            onPress={handleAIPress}
+            visible={true}
+            bottom={92}
+            right={24}
+            testID="ai-fab"
+          />
+        </View>
+      </SafeAreaView>
     );
   }
   // Success State
   const sections = groupTripsByDate(tripsData.trips);
   return (
-    <View className="flex-1 bg-gray-50 dark:bg-gray-900">
+    <SafeAreaView className="flex-1 bg-gray-50 dark:bg-gray-900">
       <View className="px-6 pt-6 pb-4 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
         <View className="flex-row items-center justify-between">
           <View className="flex-1">
@@ -355,8 +340,6 @@ const HistoryScreen = () => {
         }
         contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 100 }}
         stickySectionHeadersEnabled={true}
-        onScroll={handleScroll}
-        scrollEventThrottle={16}
       />
 
       <FilterModal
@@ -369,27 +352,30 @@ const HistoryScreen = () => {
       <AddTripModal
         visible={showAddTrip}
         onClose={() => setShowAddTrip(false)}
-        onSubmit={handleTripSubmit}
         isDark={isDark}
       />
 
       {/* Floating Action Buttons */}
-      <FloatingActionButton
-        onPress={handleAddTrip}
-        icon="add"
-        visible={fabVisible}
-        bottom={24}
-        right={24}
-        testID="add-trip-fab"
-      />
+      <View style={{ position: 'absolute', bottom: 0, right: 0, width: 100, height: 200 }}>
+        <FloatingActionButton
+          onPress={handleAddTrip}
+          icon="add"
+          visible={true}
+          bottom={24}
+          right={24}
+          testID="add-trip-fab"
+        />
 
-      <AIFloatingButton
-        onPress={handleAIPress}
-        visible={fabVisible}
-        bottom={92}
-        right={24}
-        testID="ai-fab"
-      />
-    </View>
+        <AIFloatingButton
+          onPress={handleAIPress}
+          visible={true}
+          bottom={92}
+          right={24}
+          testID="ai-fab"
+        />
+      </View>
+    </SafeAreaView>
   );
 };
+
+export default HistoryScreen;

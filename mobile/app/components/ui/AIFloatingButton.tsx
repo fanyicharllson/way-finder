@@ -24,51 +24,15 @@ export const AIFloatingButton: React.FC<AIFloatingButtonProps> = ({
   right = 24,
   testID,
 }) => {
-  const scaleAnim = useRef(new Animated.Value(0)).current;
-  const translateYAnim = useRef(new Animated.Value(100)).current;
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+  const translateYAnim = useRef(new Animated.Value(0)).current;
   const pressAnim = useRef(new Animated.Value(1)).current;
   const glowAnim = useRef(new Animated.Value(0)).current;
 
-  // Entrance animation on mount
+  // Entrance animation on mount - DISABLED FOR VISIBILITY
   useEffect(() => {
-    Animated.parallel([
-      Animated.spring(scaleAnim, {
-        toValue: 1,
-        friction: 5,
-        tension: 40,
-        delay: 200, // Slight delay after regular FAB
-        useNativeDriver: true,
-      }),
-      Animated.spring(translateYAnim, {
-        toValue: 0,
-        friction: 8,
-        tension: 40,
-        delay: 200,
-        useNativeDriver: true,
-      }),
-    ]).start();
-
-    // Continuous glow animation for AI button
-    const glowSequence = Animated.loop(
-      Animated.sequence([
-        Animated.timing(glowAnim, {
-          toValue: 1,
-          duration: 2000,
-          useNativeDriver: true,
-        }),
-        Animated.timing(glowAnim, {
-          toValue: 0,
-          duration: 2000,
-          useNativeDriver: true,
-        }),
-      ])
-    );
-
-    glowSequence.start();
-
-    return () => {
-      glowSequence.stop();
-    };
+    // Skip entrance animation - start visible immediately
+    return () => {};
   }, []);
 
   // Visibility animation
@@ -116,6 +80,7 @@ export const AIFloatingButton: React.FC<AIFloatingButtonProps> = ({
         { bottom, right },
         animatedStyle,
       ]}
+      pointerEvents="box-none"
       testID={testID}
     >
       {/* Glow Effect */}
@@ -143,14 +108,9 @@ export const AIFloatingButton: React.FC<AIFloatingButtonProps> = ({
         onPressOut={handlePressOut}
         style={styles.touchable}
       >
-        <LinearGradient
-          colors={["#8B5CF6", "#EC4899"]} // Purple to Pink gradient
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.gradient}
-        >
+        <View style={styles.button}>
           <Ionicons name="sparkles" size={20} color="#FFFFFF" />
-        </LinearGradient>
+        </View>
       </TouchableOpacity>
     </Animated.View>
   );
@@ -159,7 +119,8 @@ export const AIFloatingButton: React.FC<AIFloatingButtonProps> = ({
 const styles = StyleSheet.create({
   container: {
     position: "absolute",
-    zIndex: 999,
+    zIndex: 9998,
+    elevation: 10,
   },
   glowContainer: {
     position: "absolute",
@@ -187,6 +148,7 @@ const styles = StyleSheet.create({
   },
   touchable: {
     borderRadius: 24,
+    overflow: "visible",
     ...Platform.select({
       ios: {
         shadowColor: "#8B5CF6",
@@ -195,18 +157,21 @@ const styles = StyleSheet.create({
         shadowRadius: 8,
       },
       android: {
-        elevation: 8,
+        elevation: 12,
       },
       web: {
         boxShadow: "0 4px 8px rgba(139, 92, 246, 0.4)",
       },
     }),
   },
-  gradient: {
+  button: {
     width: 48,
     height: 48,
     borderRadius: 24,
+    backgroundColor: "#A855F7",
     justifyContent: "center",
     alignItems: "center",
+    borderWidth: 2,
+    borderColor: "#FFFFFF",
   },
 });

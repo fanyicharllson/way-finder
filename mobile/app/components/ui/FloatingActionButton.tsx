@@ -28,60 +28,15 @@ export const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({
   right = 24,
   testID,
 }) => {
-  const scaleAnim = useRef(new Animated.Value(0)).current;
-  const translateYAnim = useRef(new Animated.Value(100)).current;
+  const scaleAnim = useRef(new Animated.Value(1)).current;
+  const translateYAnim = useRef(new Animated.Value(0)).current;
   const pressAnim = useRef(new Animated.Value(1)).current;
   const pulseAnim = useRef(new Animated.Value(1)).current;
 
-  // Entrance animation on mount
+  // Entrance animation on mount - DISABLED FOR VISIBILITY
   useEffect(() => {
-    Animated.parallel([
-      Animated.spring(scaleAnim, {
-        toValue: 1,
-        friction: 5,
-        tension: 40,
-        useNativeDriver: true,
-      }),
-      Animated.spring(translateYAnim, {
-        toValue: 0,
-        friction: 8,
-        tension: 40,
-        useNativeDriver: true,
-      }),
-    ]).start();
-
-    // Subtle pulse animation on first visit
-    const pulseSequence = Animated.loop(
-      Animated.sequence([
-        Animated.timing(pulseAnim, {
-          toValue: 1.05,
-          duration: 1500,
-          useNativeDriver: true,
-        }),
-        Animated.timing(pulseAnim, {
-          toValue: 1,
-          duration: 1500,
-          useNativeDriver: true,
-        }),
-      ])
-    );
-
-    // Start pulse for first 5 seconds
-    pulseSequence.start();
-
-    const timeout = setTimeout(() => {
-      pulseSequence.stop();
-      Animated.timing(pulseAnim, {
-        toValue: 1,
-        duration: 300,
-        useNativeDriver: true,
-      }).start();
-    }, 5000);
-
-    return () => {
-      clearTimeout(timeout);
-      pulseSequence.stop();
-    };
+    // Skip entrance animation - start visible immediately
+    return () => {};
   }, []);
 
   // Visibility animation
@@ -124,6 +79,7 @@ export const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({
         { bottom, right },
         animatedStyle,
       ]}
+      pointerEvents="box-none"
       testID={testID}
     >
       <TouchableOpacity
@@ -133,14 +89,9 @@ export const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({
         onPressOut={handlePressOut}
         style={styles.touchable}
       >
-        <LinearGradient
-          colors={["#14B8A6", "#3B82F6"]} // Teal to Blue gradient
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 1 }}
-          style={styles.gradient}
-        >
+        <View style={styles.button}>
           <Ionicons name={icon} size={iconSize} color="#FFFFFF" />
-        </LinearGradient>
+        </View>
       </TouchableOpacity>
     </Animated.View>
   );
@@ -149,10 +100,12 @@ export const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({
 const styles = StyleSheet.create({
   container: {
     position: "absolute",
-    zIndex: 1000,
+    zIndex: 9999,
+    elevation: 10,
   },
   touchable: {
     borderRadius: 28,
+    overflow: "visible",
     ...Platform.select({
       ios: {
         shadowColor: "#000",
@@ -161,18 +114,21 @@ const styles = StyleSheet.create({
         shadowRadius: 8,
       },
       android: {
-        elevation: 8,
+        elevation: 12,
       },
       web: {
         boxShadow: "0 4px 8px rgba(0, 0, 0, 0.3)",
       },
     }),
   },
-  gradient: {
+  button: {
     width: 56,
     height: 56,
     borderRadius: 28,
+    backgroundColor: "#06B6D4",
     justifyContent: "center",
     alignItems: "center",
+    borderWidth: 3,
+    borderColor: "#FFFFFF",
   },
 });

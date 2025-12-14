@@ -9,26 +9,8 @@ import {
   ScrollView,
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { useForm, Controller } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import { z } from 'zod';
+import { useForm } from 'react-hook-form';
 
-const filterSchema = z.object({
-  startDate: z.string().optional(),
-  endDate: z.string().optional(),
-  modes: z.array(z.string()),
-  minCost: z.number().optional(),
-  maxCost: z.number().optional(),
-});
-
-type FilterFormData = z.infer<typeof filterSchema>;
-
-interface FilterModalProps {
-  visible: boolean;
-  onClose: () => void;
-  onApply: (filters: FilterFormData) => void;
-  isDark: boolean;
-}
 
 export const FilterModal: React.FC<FilterModalProps> = ({
   visible,
@@ -37,7 +19,6 @@ export const FilterModal: React.FC<FilterModalProps> = ({
   isDark,
 }) => {
   const { control, handleSubmit, watch, setValue } = useForm<FilterFormData>({
-    resolver: zodResolver(filterSchema),
     defaultValues: {
       modes: [],
     },
@@ -74,7 +55,10 @@ export const FilterModal: React.FC<FilterModalProps> = ({
           style={{ maxHeight: '80%' }}
           onPress={(e) => e.stopPropagation()}
         >
-          <ScrollView className="pt-6 px-6">
+          <ScrollView 
+            className="pt-6 px-6"
+            contentContainerStyle={{ paddingBottom: 40 }}
+          >
             <View className="flex-row items-center justify-between mb-6">
               <Text className="text-gray-900 dark:text-white font-bold text-xl">
                 Filter Trips

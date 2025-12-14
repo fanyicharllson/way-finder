@@ -1,6 +1,5 @@
-// components/ui/Skeleton.tsx
 import React from 'react';
-import { View, ViewStyle } from 'react-native';
+import { View, ViewStyle, StyleProp } from 'react-native';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -13,7 +12,7 @@ interface SkeletonProps {
   width?: number | string;
   height?: number | string;
   borderRadius?: number;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
 }
 
 export const Skeleton: React.FC<SkeletonProps> = ({
@@ -39,18 +38,19 @@ export const Skeleton: React.FC<SkeletonProps> = ({
     opacity: opacity.value,
   }));
 
+  const staticStyle = React.useMemo(
+    () => ({
+      width,
+      height,
+      borderRadius,
+      backgroundColor: '#E5E7EB',
+    }),
+    [width, height, borderRadius]
+  );
+
   return (
     <Animated.View
-      style={[
-        {
-          width,
-          height,
-          borderRadius,
-          backgroundColor: '#E5E7EB',
-        },
-        animatedStyle,
-        style,
-      ]}
+      style={[staticStyle as any, animatedStyle, style]}
       className="dark:bg-gray-700"
     />
   );

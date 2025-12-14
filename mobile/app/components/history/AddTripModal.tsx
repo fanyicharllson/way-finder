@@ -7,18 +7,14 @@ import {
   TouchableOpacity,
   ScrollView,
   Pressable,
-  Platform,
+  ActivityIndicator,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 // import DateTimePicker from "@react-native-community/datetimepicker";
 import { showToast } from "@/utils/toast";
+import { useSaveTrip } from "@/hooks/useTrip";
 
-interface AddTripModalProps {
-  visible: boolean;
-  onClose: () => void;
-  isDark: boolean;
-  onSubmit?: (tripData: any) => void;
-}
+
 
 const TRANSPORT_MODES = [
   { id: "WALKING", label: "Walking", icon: "walk" as const },
@@ -33,7 +29,6 @@ export const AddTripModal: React.FC<AddTripModalProps> = ({
   visible,
   onClose,
   isDark,
-  onSubmit,
 }) => {
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
@@ -47,6 +42,7 @@ export const AddTripModal: React.FC<AddTripModalProps> = ({
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showStartTimePicker, setShowStartTimePicker] = useState(false);
   const [showEndTimePicker, setShowEndTimePicker] = useState(false);
+  const { mutate: saveTrip, isPending } = useSaveTrip();
 
   const handleSubmit = () => {
     if (!from.trim() || !to.trim()) {
@@ -59,39 +55,43 @@ export const AddTripModal: React.FC<AddTripModalProps> = ({
     }
 
     const tripData = {
-      from: from.trim(),
-      to: to.trim(),
-      mode,
-      date: date.toISOString(),
+      origin: from.trim(),
+      destination: to.trim(),
+      transportMode: mode,
+      actualCost: cost ? parseFloat(cost) : 0,
+      actualTime: Math.round((endTime.getTime() - startTime.getTime()) / 1000 / 60),
+      distance: distance ? parseFloat(distance) : 0,
       startTime: startTime.toISOString(),
       endTime: endTime.toISOString(),
-      distance: distance ? parseFloat(distance) : undefined,
-      cost: cost ? parseFloat(cost) : undefined,
-      notes: notes.trim() || undefined,
     };
 
-    if (onSubmit) {
-      onSubmit(tripData);
-    }
-
-    // Reset form
-    setFrom("");
-    setTo("");
-    setMode("BUS");
-    setDate(new Date());
-    setStartTime(new Date());
-    setEndTime(new Date());
-    setDistance("");
-    setCost("");
-    setNotes("");
-
-    showToast({
-      type: "success",
-      text1: "Trip Added",
-      text2: "Your manual trip has been logged",
+    saveTrip(tripData, {
+      onSuccess: () => {
+        showToast({
+          type: "success",
+          text1: "Trip Added",
+          text2: "Your manual trip has been logged",
+        });
+        // Reset form
+        setFrom("");
+        setTo("");
+        setMode("BUS");
+        setDate(new Date());
+        setStartTime(new Date());
+        setEndTime(new Date());
+        setDistance("");
+        setCost("");
+        setNotes("");
+        onClose();
+      },
+      onError: () => {
+        showToast({
+          type: "error",
+          text1: "Error",
+          text2: "Failed to save trip",
+        });
+      },
     });
-
-    onClose();
   };
 
   const formatDate = (d: Date) => {
@@ -141,7 +141,11 @@ export const AddTripModal: React.FC<AddTripModalProps> = ({
             </TouchableOpacity>
           </View>
 
-          <ScrollView className="px-6 py-4" showsVerticalScrollIndicator={false}>
+          <ScrollView 
+            className="px-6 py-4" 
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ paddingBottom: 40 }}
+          >
             {/* From Input */}
             <View className="mb-4">
               <Text
@@ -449,11 +453,17 @@ export const AddTripModal: React.FC<AddTripModalProps> = ({
             {/* Submit Button */}
             <TouchableOpacity
               onPress={handleSubmit}
+              disabled={isPending}
               className="bg-blue-600 rounded-xl py-4 items-center mb-4"
+              style={{ opacity: isPending ? 0.6 : 1 }}
             >
-              <Text className="text-white font-semibold text-base">
-                Add Trip
-              </Text>
+              {isPending ? (
+                <ActivityIndicator size="small" color="#FFFFFF" />
+              ) : (
+                <Text className="text-white font-semibold text-base">
+                  Add Trip
+                </Text>
+              )}
             </TouchableOpacity>
           </ScrollView>
 

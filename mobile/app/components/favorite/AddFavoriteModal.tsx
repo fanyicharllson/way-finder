@@ -11,13 +11,9 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { showToast } from "@/utils/toast";
+import { useAddFavorite } from "@/hooks/useFavorite";
 
-interface AddFavoriteModalProps {
-  visible: boolean;
-  onClose: () => void;
-  isDark: boolean;
-  onSubmit?: (favoriteData: any) => void;
-}
+
 
 const QUICK_LABELS = [
   { id: "home", label: "Home", icon: "home" as const },
@@ -32,7 +28,6 @@ export const AddFavoriteModal: React.FC<AddFavoriteModalProps> = ({
   visible,
   onClose,
   isDark,
-  onSubmit,
 }) => {
   const [searchFrom, setSearchFrom] = useState("");
   const [searchTo, setSearchTo] = useState("");
@@ -40,6 +35,7 @@ export const AddFavoriteModal: React.FC<AddFavoriteModalProps> = ({
   const [selectedLabel, setSelectedLabel] = useState<string | null>(null);
   const [notes, setNotes] = useState("");
   const [isSearching, setIsSearching] = useState(false);
+  const { mutate: addFavorite, isPending } = useAddFavorite();
 
   const handleSubmit = () => {
     if (!searchFrom.trim() || !searchTo.trim()) {
@@ -62,30 +58,39 @@ export const AddFavoriteModal: React.FC<AddFavoriteModalProps> = ({
 
     const favoriteData = {
       name: favoriteName.trim() || selectedLabel || "",
-      from: searchFrom.trim(),
-      to: searchTo.trim(),
-      label: selectedLabel,
+      fromAddress: searchFrom.trim(),
+      toAddress: searchTo.trim(),
+      fromLat: 0,
+      fromLng: 0,
+      toLat: 0,
+      toLng: 0,
+      preferredMode: selectedLabel || undefined,
       notes: notes.trim() || undefined,
     };
 
-    if (onSubmit) {
-      onSubmit(favoriteData);
-    }
-
-    // Reset form
-    setSearchFrom("");
-    setSearchTo("");
-    setFavoriteName("");
-    setSelectedLabel(null);
-    setNotes("");
-
-    showToast({
-      type: "success",
-      text1: "Favorite Added",
-      text2: "Route saved to your favorites",
+    addFavorite(favoriteData, {
+      onSuccess: () => {
+        showToast({
+          type: "success",
+          text1: "Favorite Added",
+          text2: "Route saved to your favorites",
+        });
+        // Reset form
+        setSearchFrom("");
+        setSearchTo("");
+        setFavoriteName("");
+        setSelectedLabel(null);
+        setNotes("");
+        onClose();
+      },
+      onError: () => {
+        showToast({
+          type: "error",
+          text1: "Error",
+          text2: "Failed to save favorite",
+        });
+      },
     });
-
-    onClose();
   };
 
   const handleLabelSelect = (labelId: string, labelText: string) => {
@@ -149,7 +154,11 @@ export const AddFavoriteModal: React.FC<AddFavoriteModalProps> = ({
             </TouchableOpacity>
           </View>
 
-          <ScrollView className="px-6 py-4" showsVerticalScrollIndicator={false}>
+          <ScrollView 
+            className="px-6 py-4" 
+            showsVerticalScrollIndicator={false}
+            contentContainerStyle={{ paddingBottom: 40 }}
+          >
             {/* Quick Labels */}
             <View className="mb-6">
               <Text
@@ -365,17 +374,23 @@ export const AddFavoriteModal: React.FC<AddFavoriteModalProps> = ({
             {/* Submit Button */}
             <TouchableOpacity
               onPress={handleSubmit}
+              disabled={isPending}
               className="bg-gradient-to-r from-pink-600 to-purple-600 rounded-xl py-4 items-center mb-4"
               style={{
                 backgroundColor: "#EC4899",
+                opacity: isPending ? 0.6 : 1,
               }}
             >
-              <View className="flex-row items-center">
-                <Ionicons name="heart" size={20} color="#FFFFFF" />
-                <Text className="text-white font-semibold text-base ml-2">
-                  Save Favorite
-                </Text>
-              </View>
+              {isPending ? (
+                <ActivityIndicator size="small" color="#FFFFFF" />
+              ) : (
+                <View className="flex-row items-center">
+                  <Ionicons name="heart" size={20} color="#FFFFFF" />
+                  <Text className="text-white font-semibold text-base ml-2">
+                    Save Favorite
+                  </Text>
+                </View>
+              )}
             </TouchableOpacity>
           </ScrollView>
         </View>

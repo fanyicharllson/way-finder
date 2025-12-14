@@ -242,6 +242,32 @@ interface Trip {
   rating?: number;
   createdAt: string;
 }
+interface AddTripModalProps {
+  visible: boolean;
+  onClose: () => void;
+  isDark: boolean;
+}
+
+interface AddFavoriteModalProps {
+  visible: boolean;
+  onClose: () => void;
+  isDark: boolean;
+}
+
+interface FilterFormData {
+  startDate?: string;
+  endDate?: string;
+  modes: string[];
+  minCost?: number;
+  maxCost?: number;
+}
+
+interface FilterModalProps {
+  visible: boolean;
+  onClose: () => void;
+  onApply: (filters: FilterFormData) => void;
+  isDark: boolean;
+}
 
 
 

@@ -15,7 +15,6 @@ import {
   setupGatewayRoutes,
   requestLogger,
   authGateway,
-  rateLimitGateway,
   corsGateway,
   cleanupRateLimitRecords,
 } from "./gateway";

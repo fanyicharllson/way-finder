@@ -15,6 +15,7 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useColorScheme } from "react-native";
+import { Skeleton } from "@/app/components/ui/Skeleton";
 import { showToast } from "@/utils/toast";
 import {
   useFavorites,
@@ -41,10 +42,7 @@ const FavoriteScreen: React.FC<FavoriteScreenProps> = ({
   const [editNotes, setEditNotes] = useState("");
   const [showEditModal, setShowEditModal] = useState(false);
   const [showAddFavorite, setShowAddFavorite] = useState(false);
-  const [fabVisible, setFabVisible] = useState(true);
   const [showAIModal, setShowAIModal] = useState(false);
-  const scrollY = useRef(0);
-  const lastScrollY = useRef(0);
 
   const { data, isLoading, isError, refetch } = useFavorites();
   const removeFavorite = useRemoveFavorite();
@@ -128,21 +126,6 @@ const FavoriteScreen: React.FC<FavoriteScreenProps> = ({
     }
   };
 
-  const handleScroll = (event: NativeSyntheticEvent<NativeScrollEvent>) => {
-    const currentScrollY = event.nativeEvent.contentOffset.y;
-    const scrollingDown = currentScrollY > lastScrollY.current && currentScrollY > 50;
-    const scrollingUp = currentScrollY < lastScrollY.current;
-
-    if (scrollingDown && fabVisible) {
-      setFabVisible(false);
-    } else if (scrollingUp && !fabVisible) {
-      setFabVisible(true);
-    }
-
-    lastScrollY.current = currentScrollY;
-    scrollY.current = currentScrollY;
-  };
-
   const handleAddFavorite = () => {
     setShowAddFavorite(true);
   };
@@ -155,22 +138,36 @@ const FavoriteScreen: React.FC<FavoriteScreenProps> = ({
       text2: "AI features coming soon!",
     });
   };
-
-  const handleFavoriteSubmit = (favoriteData: any) => {
-    // TODO: Integrate with backend API to save favorite
-    console.log("Favorite data:", favoriteData);
-  };
+  
 
   if (isLoading) {
     return (
-      <View className="flex-1 bg-gray-50 dark:bg-gray-900 justify-center items-center">
-        <ActivityIndicator
-          size="large"
-          color={isDark ? "#3B82F6" : "#2563EB"}
-        />
-        <Text className="text-gray-600 dark:text-gray-400 mt-4">
-          Loading favorites...
-        </Text>
+      <View className="flex-1 bg-gray-50 dark:bg-gray-900">
+        <View className="px-6 pt-6 pb-4 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+          <Skeleton width="40%" height={28} style={{ marginBottom: 8 }} />
+          <Skeleton width="30%" height={16} />
+        </View>
+
+        <ScrollView className="px-6 mt-6">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <View
+              key={i}
+              className="bg-white dark:bg-gray-800 rounded-2xl p-4 mb-4 border border-gray-200 dark:border-gray-700"
+            >
+              <View className="flex-row items-start mb-3">
+                <Skeleton width={40} height={40} borderRadius={20} style={{ marginRight: 12 }} />
+                <View className="flex-1">
+                  <Skeleton width="60%" height={18} style={{ marginBottom: 8 }} />
+                  <Skeleton width="80%" height={14} />
+                </View>
+              </View>
+              <View className="flex-row justify-between mt-2">
+                <Skeleton width="30%" height={14} />
+                <Skeleton width="20%" height={14} />
+              </View>
+            </View>
+          ))}
+        </ScrollView>
       </View>
     );
   }
@@ -254,7 +251,6 @@ const FavoriteScreen: React.FC<FavoriteScreenProps> = ({
         <AddFavoriteModal
           visible={showAddFavorite}
           onClose={() => setShowAddFavorite(false)}
-          onSubmit={handleFavoriteSubmit}
           isDark={isDark}
         />
 
@@ -262,7 +258,7 @@ const FavoriteScreen: React.FC<FavoriteScreenProps> = ({
         <FloatingActionButton
           onPress={handleAddFavorite}
           icon="add"
-          visible={fabVisible}
+          visible={true}
           bottom={24}
           right={24}
           testID="add-favorite-fab"
@@ -270,7 +266,7 @@ const FavoriteScreen: React.FC<FavoriteScreenProps> = ({
 
         <AIFloatingButton
           onPress={handleAIPress}
-          visible={fabVisible}
+          visible={true}
           bottom={92}
           right={24}
           testID="ai-fab"
@@ -286,7 +282,7 @@ const FavoriteScreen: React.FC<FavoriteScreenProps> = ({
           <View className="flex-row items-center justify-between mt-7">
             <View className="flex-1">
               <Text className="text-gray-900 dark:text-white font-bold text-2xl">
-                Favorites
+                My Favorites
               </Text>
               <Text className="text-gray-600 dark:text-gray-400 mt-1">
                 {data.count} saved {data.count === 1 ? "route" : "routes"}
@@ -308,8 +304,6 @@ const FavoriteScreen: React.FC<FavoriteScreenProps> = ({
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
           contentContainerStyle={{ padding: 24, paddingBottom: 100 }}
-          onScroll={handleScroll}
-          scrollEventThrottle={16}
         >
           {data.favorites.map((favorite) => (
             <TouchableOpacity
@@ -509,7 +503,6 @@ const FavoriteScreen: React.FC<FavoriteScreenProps> = ({
       <AddFavoriteModal
         visible={showAddFavorite}
         onClose={() => setShowAddFavorite(false)}
-        onSubmit={handleFavoriteSubmit}
         isDark={isDark}
       />
 
@@ -517,7 +510,7 @@ const FavoriteScreen: React.FC<FavoriteScreenProps> = ({
       <FloatingActionButton
         onPress={handleAddFavorite}
         icon="add"
-        visible={fabVisible}
+        visible={true}
         bottom={24}
         right={24}
         testID="add-favorite-fab"
@@ -525,7 +518,7 @@ const FavoriteScreen: React.FC<FavoriteScreenProps> = ({
 
       <AIFloatingButton
         onPress={handleAIPress}
-        visible={fabVisible}
+        visible={true}
         bottom={92}
         right={24}
         testID="ai-fab"
