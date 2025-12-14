@@ -3,6 +3,9 @@ import authRoutes from "../routes/auth.routes";
 import preferenceRoutes from "../routes/preference.routes";
 import locationRoutes from "../routes/location.routes";
 import routeRoutes from "../routes/route.routes";
+import recentSearchRoute from "../routes/recent.search.routes";
+import favoriteRoutes from "../routes/favorite.routes";
+import tripRoutes from "../routes/trip.routes"
 
 /**
  * API Gateway - Route Configuration
@@ -13,74 +16,35 @@ import routeRoutes from "../routes/route.routes";
 
 export function setupGatewayRoutes(app: Express) {
   console.log("🛣️ Setting up API Gateway routes...\n");
-
-  // ═══════════════════════════════════════════════════════════════
   // AUTH ROUTES (Public)
-  // ═══════════════════════════════════════════════════════════════
-
   app.use("/api/auth", authRoutes);
-
-  console.log("✅ Auth routes mounted:");
-  console.log("   POST   /api/auth/register - Register new user");
-  console.log("   POST   /api/auth/login    - Login user");
-  console.log("   GET    /api/auth/me       - Get current user (protected)\n");
-
-  // ═══════════════════════════════════════════════════════════════
-  // PREFERENCE ROUTES (Protected)
-  // ═══════════════════════════════════════════════════════════════
-
+  console.log("Auth routes mounted:");
+  //! PROTECTED ROUTES ********************************************************
+  // PREFERENCE ROUTES
   app.use("/api/preferences", preferenceRoutes);
+  console.log("Preference routes mounted:");
 
-  console.log("✅ Preference routes mounted:");
-  console.log(
-    "   POST   /api/preferences        - Create preferences (protected)"
-  );
-  console.log(
-    "   GET    /api/preferences        - Get preferences (protected)"
-  );
-  console.log(
-    "   PUT    /api/preferences        - Update preferences (protected)"
-  );
-  console.log(
-    "   DELETE /api/preferences        - Delete preferences (protected)\n"
-  );
-
-  // ═══════════════════════════════════════════════════════════════
-  // Routes ROUTES (Protected)
-  // ═══════════════════════════════════════════════════════════════
+  // Routes ROUTES
   app.use("/api/routes", routeRoutes);
-  console.log("Route routes mounted")
+  console.log("Route routes mounted");
 
-  // ═══════════════════════════════════════════════════════════════
-  // LOCATION ROUTES (Protected)
-  // ═══════════════════════════════════════════════════════════════
+  // recent search ROUTES
+  app.use("/api/searches", recentSearchRoute);
+  console.log("Recent search  routes mounted");
 
+  // Favorite ROUTES
+  app.use("/api/favorites", favoriteRoutes);
+  console.log("Favorite routes mounted");
+
+  // Trip ROUTES
+  app.use("/api/trips", tripRoutes);
+  console.log("Trip routes mounted");
+
+  // LOCATION ROUTES
   app.use("/api/locations", locationRoutes);
+  console.log("Location routes mounted:");
 
-  console.log("✅ Location routes mounted:");
-  console.log(
-    "   POST   /api/locations             - Create location (protected)"
-  );
-  console.log(
-    "   GET    /api/locations             - Get all locations (protected)"
-  );
-  console.log(
-    "   GET    /api/locations/:id         - Get location by ID (protected)"
-  );
-  console.log(
-    "   PUT    /api/locations/:id         - Update location (protected)"
-  );
-  console.log(
-    "   DELETE /api/locations/:id         - Delete location (protected)"
-  );
-  console.log(
-    "   GET    /api/locations/favorites   - Get favorite locations (protected)\n"
-  );
-
-  // ═══════════════════════════════════════════════════════════════
   // GATEWAY INFO
-  // ═══════════════════════════════════════════════════════════════
-
   console.log("═════════════════════════════════════════════════════════");
   console.log("📊 API GATEWAY SUMMARY");
   console.log("═════════════════════════════════════════════════════════");

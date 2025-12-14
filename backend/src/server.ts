@@ -7,6 +7,8 @@ import "./events/listeners/user.listener";
 import "./events/listeners/preference.listener";
 import "./events/listeners/trip.listener";
 import "./events/listeners/route.listener";
+import "./events/listeners/favorites.listeners";
+import "./events/listeners/search.listeners";
 
 // 🚪 Import API Gateway - handles routing and middleware
 import {
@@ -37,7 +39,7 @@ app.use(express.urlencoded({ extended: true }));
 // API Gateway Middleware (in order)
 app.use(requestLogger); // 1. Log all requests
 app.use(corsGateway); // 2. Handle CORS
-app.use(rateLimitGateway); // 3. Rate limiting
+// app.use(rateLimitGateway); // 3. Rate limiting
 app.use(authGateway); // 4. Authentication check
 
 // ═══════════════════════════════════════════════════════════════

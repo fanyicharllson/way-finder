@@ -1,5 +1,5 @@
 /**
- * Event Names - Centralized event constants
+ * Event Topics - Centralized event constants
  * Using namespace pattern for better organization
  */
 export const Events = {
@@ -7,6 +7,15 @@ export const Events = {
   USER_REGISTERED: "user.registered",
   USER_LOGGED_IN: "user.logged_in",
   USER_PROFILE_UPDATED: "user.profile.updated",
+
+  // Search Events
+  SEARCH_SAVED: "search.saved",
+  SEARCHES_CLEARED: "searches.cleared",
+
+  // Favorite Events
+  FAVORITE_ADDED: "favorite.added",
+  FAVORITE_REMOVED: "favorite.removed",
+
 
   // Preference Events
   PREFERENCE_CREATED: "preference.created",
@@ -38,7 +47,6 @@ export const Events = {
   ROUTE_CONDITION_CHANGED: "route.condition.changed",
 
   //Analitics Events
-
   ANALITICS_EVENTS: "analitics.tracked",
 } as const;
 
@@ -167,5 +175,31 @@ export interface MapsApiFailedPayload {
   origin: string;
   destination: string;
   error: string;
+  timestamp: Date;
+}
+
+export interface SearchSavedPayload {
+  userId: string;
+  fromAddress: string;
+  toAddress: string;
+  timestamp: Date;
+}
+
+export interface SearchesClearedPayload {
+  userId: string;
+  count: number;
+  timestamp: Date;
+}
+
+export interface FavoriteAddedPayload {
+  userId: string;
+  favoriteId: string;
+  name: string;
+  timestamp: Date;
+}
+
+export interface FavoriteRemovedPayload {
+  userId: string;
+  favoriteId: string;
   timestamp: Date;
 }

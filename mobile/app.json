@@ -9,7 +9,11 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.x200456.WayFinder",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -17,7 +21,12 @@
         "backgroundColor": "#0A0F1A"
       },
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "permissions": [
+        "android.permission.ACCESS_COARSE_LOCATION",
+        "android.permission.ACCESS_FINE_LOCATION"
+      ],
+      "package": "com.x200456.WayFinder"
     },
     "web": {
       "output": "static",
@@ -43,6 +52,12 @@
           "locationAlwaysAndWhenInUsePermission": "Allow WayFinder to use your location for route planning."
         }
       ],
+      [
+        "@rnmapbox/maps",
+        {
+          "RNMapboxMapsImpl": "mapbox"
+        }
+      ],
       "expo-secure-store"
     ],
     "experiments": {
@@ -50,7 +65,11 @@
       "reactCompiler": true
     },
     "extra": {
-      "BACKEND_ENDPOINT": "https://1ced7189dd6d.ngrok-free.app/api"
+      "BACKEND_ENDPOINT": "https://ecb348de63b2.ngrok-free.app/api", // Replace with the computer ip address to allow API requests from the mobile app
+      "router": {},
+      "eas": {
+        "projectId": "c417df1d-00bd-46b4-83e6-b59f9fc87c26"
+      }
     }
   }
 }

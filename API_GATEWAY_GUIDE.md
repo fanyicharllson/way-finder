@@ -1,8 +1,8 @@
 # API Gateway Implementation Guide 🚪
 
 ## What Was Implemented
-
-Your WayFinder backend now has a **Lightweight API Gateway** that sits between clients and your services. It provides:
+ 
+ WayFinder backend now has a **Lightweight API Gateway** that sits between clients and your services. It provides:
 
 ### 1. **Request Logging** 📝
 - Every request gets a unique `X-Request-ID`

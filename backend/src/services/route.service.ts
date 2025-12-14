@@ -27,6 +27,7 @@ import { PreferenceService } from "./preference.service";
  */
 export class RouteService {
   private preferenceService: PreferenceService = new PreferenceService();
+ 
   /**
    * Search for routes with graceful preference fetching
    */
@@ -74,6 +75,11 @@ export class RouteService {
       // 7. Get origin/destination addresses
       const origin = await this.resolveLocation(request.from);
       const destination = await this.resolveLocation(request.to);
+
+      // 8. Save search to recent searches (async, don't wait)
+      this.saveRecentSearch(userId, origin, destination).catch((err) =>
+        console.error("Failed to save recent search:", err)
+      );
 
       const duration = Date.now() - startTime;
 
@@ -225,6 +231,31 @@ export class RouteService {
     }
 
     throw new Error("Invalid location input");
+  }
+
+  /**
+   * Save recent search (async, non-blocking)
+   */
+  private async saveRecentSearch(
+    userId: string,
+    origin: { address: string; coordinates: { lat: number; lng: number } },
+    destination: { address: string; coordinates: { lat: number; lng: number } }
+  ): Promise<void> {
+    try {
+      const { recentSearchService } = await import("./recent-search.service");
+      await recentSearchService.saveSearch({
+        userId,
+        fromAddress: origin.address,
+        toAddress: destination.address,
+        fromLat: origin.coordinates.lat,
+        fromLng: origin.coordinates.lng,
+        toLat: destination.coordinates.lat,
+        toLng: destination.coordinates.lng,
+      });
+    } catch (error) {
+      // Silent fail - don't break route search if saving fails
+      console.error("Failed to save recent search:", error);
+    }
   }
 
   /**

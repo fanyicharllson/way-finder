@@ -229,4 +229,19 @@ interface RouteSearchRequest {
   message?: string;
 }
 
+interface Trip {
+  id: string;
+  origin: string;
+  destination: string;
+  transportMode: string;
+  actualCost: number;
+  actualTime: number;
+  distance: number;
+  startTime: string;
+  endTime?: string;
+  rating?: number;
+  createdAt: string;
+}
+
+
 

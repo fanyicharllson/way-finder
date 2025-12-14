@@ -15,9 +15,11 @@ model User {
     createdAt DateTime @default(now())
     updatedAt DateTime @updatedAt
 
-    preferences UserPreference?
-    locations   Location[]
-    trips       Trip[]
+    preferences    UserPreference?
+    locations      Location[]
+    trips          Trip[]
+    recentSearches RecentSearch[]
+    favoriteRoutes FavoriteRoute[]
 
     @@index([email])
 }
@@ -73,4 +75,46 @@ model Trip {
 
     @@index([userId])
     @@index([createdAt])
+}
+
+model RecentSearch {
+    id     String @id @default(uuid())
+    userId String
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    fromAddress String
+    toAddress   String
+    fromLat     Float?
+    fromLng     Float?
+    toLat       Float?
+    toLng       Float?
+
+    searchCount  Int      @default(1) // Increment if same search repeated
+    lastSearched DateTime @default(now())
+    createdAt    DateTime @default(now())
+
+    @@unique([userId, fromAddress, toAddress])
+    @@index([userId, lastSearched])
+}
+
+model FavoriteRoute {
+    id     String @id @default(uuid())
+    userId String
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    name        String // User-defined name like "Home to Work"
+    fromAddress String
+    toAddress   String
+    fromLat     Float
+    fromLng     Float
+    toLat       Float
+    toLng       Float
+
+    preferredMode String? // Optional: user's preferred mode for this route
+    notes         String? // Optional notes
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@index([userId])
 }

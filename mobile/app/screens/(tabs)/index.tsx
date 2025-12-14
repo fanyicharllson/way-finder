@@ -22,19 +22,16 @@ export default function HomeScreen() {
     cost: 500,
     duration: "15m",
   };
-
-  const mockRecentSearches = [
-    { id: "1", from: "Home", to: "Office" },
-    { id: "2", from: "Mvog-Mbi", to: "Tsinga" },
-    { id: "3", from: "Bastos", to: "Centre Ville" },
-  ];
+  
 
   const handleSearch = (from: string, to: string) => {
     console.log("Searching route:", { from, to });
-    // router.push("/")
-    router.push(`/screens/(extrascreens)/route-results?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`);
+    router.push(
+      `/screens/(extrascreens)/route-results?from=${encodeURIComponent(
+        from
+      )}&to=${encodeURIComponent(to)}`
+    );
   };
-  
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50 dark:bg-gray-900">
@@ -49,7 +46,9 @@ export default function HomeScreen() {
         <RouteSearchCard
           onSearch={handleSearch}
           onChooseFavorite={() => router.push("/screens/(tabs)/favorite")}
-          onEditPreferences={() => router.push("/screens/(extrascreens)/preferences")}
+          onEditPreferences={() =>
+            router.push("/screens/(extrascreens)/preferences")
+          }
           isDark={isDark}
         />
 
@@ -60,8 +59,7 @@ export default function HomeScreen() {
         />
 
         <RecentSearches
-          searches={mockRecentSearches}
-          onSelectSearch={(search) => handleSearch(search.from, search.to)}
+          onSelectSearch={(from, to) => handleSearch(from, to)}
           isDark={isDark}
         />
 

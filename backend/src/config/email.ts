@@ -61,6 +61,38 @@ export const sendWelcomeEmail = async (
   return sendEmail(email, template.subject, template.html);
 };
 
+export const sendFavoriteAddedEmail = async (
+  email: string,
+  name: string,
+  routeName: string,
+  fromAddress: string,
+  toAddress: string
+): Promise<boolean> => {
+  const template = emailTemplates.favoriteAdded(
+    name,
+    routeName,
+    fromAddress,
+    toAddress
+  );
+  return sendEmail(email, template.subject, template.html);
+};
+
+export const sendFrequentRouteEmail = async (
+  email: string,
+  name: string,
+  fromAddress: string,
+  toAddress: string,
+  searchCount: number
+): Promise<boolean> => {
+  const template = emailTemplates.frequentRoute(
+    name,
+    fromAddress,
+    toAddress,
+    searchCount
+  );
+  return sendEmail(email, template.subject, template.html);
+};
+
 export const sendTripSummaryEmail = async (
   email: string,
   name: string,

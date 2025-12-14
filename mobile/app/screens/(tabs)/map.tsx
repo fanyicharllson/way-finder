@@ -10,7 +10,6 @@ import { RouteCard } from '@/app/components/routes/RouteCard';
 
 const { height } = Dimensions.get('window');
 
-// TODO: Replace with your Mapbox token
 MapboxGL.setAccessToken('pk.eyJ1IjoiZWpvaGRhcnlsIiwiYSI6ImNtaXh1bnMzbzAwaHkzZXNkY2JxNXZzeGUifQ.XtXSXOW8DwHqnEiCpPwiLQ');
 
 export default function MapScreen() {
