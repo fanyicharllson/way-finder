@@ -96,8 +96,21 @@ export const sendFrequentRouteEmail = async (
 export const sendTripSummaryEmail = async (
   email: string,
   name: string,
-  tripData: any
+  tripData: {
+    origin: string;
+    destination: string;
+    transportMode: string;
+    actualCost: number;
+    actualTime?: number;
+    distance?: number;
+  }
 ): Promise<boolean> => {
-  const template = emailTemplates.tripSummary(name, tripData);
+  const template = emailTemplates.tripCompleted(
+    name,
+    tripData.origin,
+    tripData.destination,
+    tripData.actualCost,
+    tripData.transportMode
+  );
   return sendEmail(email, template.subject, template.html);
 };

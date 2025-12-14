@@ -1,3 +1,4 @@
+import type { Trip } from "@prisma/client";
 import { prisma } from "../config/database";
 import { eventBus } from "../events/eventBus";
 import { Events } from "../events/eventTypes";
@@ -39,8 +40,12 @@ export class TripService {
     eventBus.emitEvent(Events.TRIP_COMPLETED, {
       userId: data.userId,
       tripId: trip.id,
-      mode: data.transportMode,
-      cost: data.actualCost,
+      origin: data.origin,
+      destination: data.destination,
+      transportMode: data.transportMode,
+      actualCost: data.actualCost,
+      actualTime: data.actualTime,
+      distance: data.distance,
       timestamp: new Date(),
     });
 
@@ -129,7 +134,7 @@ export class TripService {
     const endDate = new Date(startDate);
     endDate.setMonth(endDate.getMonth() + 1);
 
-    const trips = await prisma.trip.findMany({
+    const trips: Trip[] = await prisma.trip.findMany({
       where: {
         userId,
         startTime: {
@@ -140,15 +145,25 @@ export class TripService {
     });
 
     // Calculate analytics
-    const totalSpent = trips.reduce((sum, trip) => sum + trip.actualCost, 0);
+    // Prisma decimals can surface as Decimal or number; normalize to number for math
+    const totalSpent = trips.reduce<number>((sum, trip: Trip) => {
+      const cost = Number(trip.actualCost ?? 0);
+      return sum + cost;
+    }, 0);
     const totalTrips = trips.length;
-    const totalDistance = trips.reduce((sum, trip) => sum + trip.distance, 0);
+    const totalDistance = trips.reduce<number>((sum, trip: Trip) => {
+      const distance = Number(trip.distance ?? 0);
+      return sum + distance;
+    }, 0);
 
     // Group by transport mode
-    const modeBreakdown = trips.reduce((acc, trip) => {
-      acc[trip.transportMode] = (acc[trip.transportMode] || 0) + 1;
-      return acc;
-    }, {} as Record<string, number>);
+    const modeBreakdown = trips.reduce<Record<string, number>>(
+      (acc, trip: Trip) => {
+        acc[trip.transportMode] = (acc[trip.transportMode] || 0) + 1;
+        return acc;
+      },
+      {} as Record<string, number>
+    );
 
     const mostUsedMode =
       Object.entries(modeBreakdown).sort((a, b) => b[1] - a[1])[0]?.[0] ||

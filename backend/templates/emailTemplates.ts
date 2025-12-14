@@ -57,8 +57,14 @@ export const emailTemplates = {
     `,
   }),
 
-  tripSummary: (name: string, tripData: any) => ({
-    subject: "Your Trip Summary 📊",
+  tripCompleted: (
+    name: string,
+    origin: string,
+    destination: string,
+    cost: number,
+    mode: string
+  ) => ({
+    subject: "🎉 Trip Saved - Rate Your Experience!",
     html: `
       <!DOCTYPE html>
       <html>
@@ -66,53 +72,30 @@ export const emailTemplates = {
           <style>
             body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
             .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-            .header { background: #667eea; color: white; padding: 20px; text-align: center; border-radius: 10px 10px 0 0; }
+            .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
             .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
-            .trip-details { background: white; padding: 20px; border-radius: 8px; margin: 20px 0; }
-            .detail-row { display: flex; justify-content: space-between; padding: 10px 0; border-bottom: 1px solid #eee; }
-            .label { font-weight: bold; color: #666; }
-            .value { color: #333; }
+            .trip-summary { background: white; padding: 20px; border-radius: 8px; margin: 20px 0; }
+            .footer { text-align: center; margin-top: 20px; color: #666; font-size: 12px; }
           </style>
         </head>
         <body>
           <div class="container">
             <div class="header">
-              <h1>🚗 Trip Saved!</h1>
+              <h1>🎉 Trip Saved!</h1>
             </div>
             <div class="content">
               <h2>Hi ${name}!</h2>
-              <p>Here's a summary of your saved trip:</p>
-              
-              <div class="trip-details">
-                <div class="detail-row">
-                  <span class="label">From:</span>
-                  <span class="value">${tripData.origin}</span>
-                </div>
-                <div class="detail-row">
-                  <span class="label">To:</span>
-                  <span class="value">${tripData.destination}</span>
-                </div>
-                <div class="detail-row">
-                  <span class="label">Transport:</span>
-                  <span class="value">${tripData.transportMode}</span>
-                </div>
-                <div class="detail-row">
-                  <span class="label">Cost:</span>
-                  <span class="value">${tripData.actualCost} XAF</span>
-                </div>
-                <div class="detail-row">
-                  <span class="label">Duration:</span>
-                  <span class="value">${tripData.actualTime} minutes</span>
-                </div>
-                <div class="detail-row">
-                  <span class="label">Distance:</span>
-                  <span class="value">${tripData.distance} km</span>
-                </div>
+              <p>Thanks for completing your trip with WayFinder!</p>
+              <div class="trip-summary">
+                <p><strong>From:</strong> ${origin}</p>
+                <p><strong>To:</strong> ${destination}</p>
+                <p><strong>Mode:</strong> ${mode}</p>
+                <p><strong>Cost:</strong> ${cost} XAF</p>
               </div>
-
-              <p>Keep tracking your trips to get personalized recommendations! 📈</p>
-              
-              <p><em>The WayFinder Team(Fanyi Charllson & Lum Ndchifor)</em></p>
+              <p>How was your experience? Rate your trip to help us improve! ⭐⭐⭐⭐⭐</p>
+            </div>
+            <div class="footer">
+              <p>© 2025 WayFinder. All rights reserved.</p>
             </div>
           </div>
         </body>

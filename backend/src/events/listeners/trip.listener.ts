@@ -27,7 +27,7 @@ eventBus.onEvent<TripCompletedPayload>(
   async (data) => {
     try {
       console.log(
-        `🚗 Processing TRIP_COMPLETED event for trip: ${data.tripId}`
+        `🚗 Processing TRIP_COMPLETED event for trip: `, data
       );
 
       // 1. Get user details for email
