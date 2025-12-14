@@ -116,7 +116,7 @@ const HistoryScreen = () => {
   if (tripsLoading && analyticsLoading) {
     return (
       <View className="flex-1 bg-gray-50 dark:bg-gray-900">
-        <View className="px-6 pt-6 pb-4 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+        <View className="px-6 pt-6 pb-4 bg-white dark:bg-gray-900">
           <View className="mt-7">
             <Skeleton width="40%" height={28} style={{ marginBottom: 8 }} />
             <Skeleton width="30%" height={16} />
@@ -201,7 +201,7 @@ const HistoryScreen = () => {
   if (!tripsData || tripsData.trips.length === 0) {
     return (
       <SafeAreaView className="flex-1 bg-gray-50 dark:bg-gray-900">
-        <View className="px-6 pt-6 pb-4 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+        <View className="px-6 pt-4 pb-4 bg-white dark:bg-gray-900">
           <View className="flex-row items-center justify-between">
             <View>
               <Text className="text-gray-900 dark:text-white font-bold text-2xl">
@@ -286,7 +286,7 @@ const HistoryScreen = () => {
   const sections = groupTripsByDate(tripsData.trips);
   return (
     <SafeAreaView className="flex-1 bg-gray-50 dark:bg-gray-900">
-      <View className="px-6 pt-6 pb-4 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+      <View className="px-6 pt-4 pb-4 bg-white dark:bg-gray-900">
         <View className="flex-row items-center justify-between">
           <View className="flex-1">
             <Text className="text-gray-900 dark:text-white font-bold text-2xl">

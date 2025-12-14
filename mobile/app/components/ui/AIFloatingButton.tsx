@@ -29,7 +29,6 @@ export const AIFloatingButton: React.FC<AIFloatingButtonProps> = ({
   const pressAnim = useRef(new Animated.Value(1)).current;
   const glowAnim = useRef(new Animated.Value(0)).current;
 
-  // Entrance animation on mount - DISABLED FOR VISIBILITY
   useEffect(() => {
     // Skip entrance animation - start visible immediately
     return () => {};

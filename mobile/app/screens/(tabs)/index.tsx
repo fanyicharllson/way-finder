@@ -8,6 +8,8 @@ import { RecentSearches } from "@/app/components/home/RecentSearches";
 import { RecommendationCard } from "@/app/components/home/RecommendationCard";
 import { RouteSearchCard } from "@/app/components/home/RouteSearchCard";
 import { useProfile } from "@/hooks/useAuth";
+import { AIFloatingButton } from "@/app/components/ui/AIFloatingButton";
+import { showToast } from "@/utils/toast";
 
 export default function HomeScreen() {
   const { colorScheme } = useColorScheme();
@@ -15,14 +17,6 @@ export default function HomeScreen() {
   const { data: user } = useProfile();
 
   const userName = user?.name.split(" ")[0] || "";
-  const mockRecommendation = {
-    from: "Mokolo",
-    to: "Carrefour Nlongkak",
-    mode: "moto" as const,
-    cost: 500,
-    duration: "15m",
-  };
-  
 
   const handleSearch = (from: string, to: string) => {
     console.log("Searching route:", { from, to });
@@ -32,6 +26,14 @@ export default function HomeScreen() {
       )}&to=${encodeURIComponent(to)}`
     );
   };
+
+  function handleAIPress(): void {
+    showToast({
+      type: "info",
+      text1: "AI Assistant is coming soon!",
+      text2: "Stay tuned for updates.",
+    })
+  }
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50 dark:bg-gray-900">
@@ -53,7 +55,6 @@ export default function HomeScreen() {
         />
 
         <RecommendationCard
-          recommendation={mockRecommendation}
           onViewDetails={() => console.log("View details")}
           isDark={isDark}
         />
@@ -65,6 +66,14 @@ export default function HomeScreen() {
 
         <View className="h-8" />
       </ScrollView>
+      <AIFloatingButton
+        onPress={handleAIPress}
+        visible={true}
+        bottom={60}
+        right={24}
+        testID="ai-fab"
+        
+      />
     </SafeAreaView>
   );
 }

@@ -25,6 +25,7 @@ import {
 import { FloatingActionButton } from "@/app/components/ui/FloatingActionButton";
 import { AIFloatingButton } from "@/app/components/ui/AIFloatingButton";
 import { AddFavoriteModal } from "@/app/components/favorite/AddFavoriteModal";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 interface FavoriteScreenProps {
   onSelectFavorite?: (favorite: any) => void;
@@ -198,10 +199,10 @@ const FavoriteScreen: React.FC<FavoriteScreenProps> = ({
 
   if (!data || data.favorites.length === 0) {
     return (
-      <View className="flex-1 bg-gray-50 dark:bg-gray-900">
-        <View className="px-6 pt-6 pb-4 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+      <SafeAreaView className="flex-1 bg-gray-50 dark:bg-gray-900">
+        <View className="px-6 pt-4 pb-4 bg-white dark:bg-gray-900">
           <Text className="text-gray-900 dark:text-white font-bold text-2xl">
-            Favorites
+            My Favorites
           </Text>
           <Text className="text-gray-600 dark:text-gray-400 mt-1">
             Quick access to your saved routes
@@ -271,15 +272,15 @@ const FavoriteScreen: React.FC<FavoriteScreenProps> = ({
           right={24}
           testID="ai-fab"
         />
-      </View>
+      </SafeAreaView>
     );
   }
 
   return (
-    <>
-      <View className="flex-1 bg-gray-50 dark:bg-gray-900">
-        <View className="px-6 pt-6 pb-4 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
-          <View className="flex-row items-center justify-between mt-7">
+    <SafeAreaView className="flex-1 bg-gray-50 dark:bg-gray-900">
+      <View className="flex-1">
+        <View className="px-6 pt-4 pb-4 bg-white dark:bg-gray-900">
+          <View className="flex-row items-center justify-between">
             <View className="flex-1">
               <Text className="text-gray-900 dark:text-white font-bold text-2xl">
                 My Favorites
@@ -288,13 +289,26 @@ const FavoriteScreen: React.FC<FavoriteScreenProps> = ({
                 {data.count} saved {data.count === 1 ? "route" : "routes"}
               </Text>
             </View>
-            <TouchableOpacity onPress={() => refetch()} className="p-2">
-              <Ionicons
-                name="refresh"
-                size={24}
-                color={isDark ? "#60A5FA" : "#2563EB"}
-              />
-            </TouchableOpacity>
+            <View className="flex-row items-center">
+              <TouchableOpacity 
+                onPress={handleAddFavorite}
+                className="p-2 mr-2"
+                activeOpacity={0.8}
+              >
+                <Ionicons 
+                  name="add-circle-outline" 
+                  size={24} 
+                  color={isDark ? "#60A5FA" : "#2563EB"}
+                />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => refetch()} className="p-2">
+                <Ionicons
+                  name="refresh"
+                  size={24}
+                  color={isDark ? "#60A5FA" : "#2563EB"}
+                />
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
 
@@ -472,7 +486,7 @@ const FavoriteScreen: React.FC<FavoriteScreenProps> = ({
                 />
               </View>
 
-              <View className="flex-row gap-3">
+              <View className="flex-row gap-3 mb-9">
                 <TouchableOpacity
                   onPress={() => setShowEditModal(false)}
                   className="flex-1 bg-gray-200 dark:bg-gray-700 py-4 rounded-full"
@@ -523,7 +537,7 @@ const FavoriteScreen: React.FC<FavoriteScreenProps> = ({
         right={24}
         testID="ai-fab"
       />
-    </>
+    </SafeAreaView>
   );
 };
 

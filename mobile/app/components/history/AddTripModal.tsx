@@ -65,6 +65,8 @@ export const AddTripModal: React.FC<AddTripModalProps> = ({
       endTime: endTime.toISOString(),
     };
 
+    console.log("************ Submitting Trip Data******: ", tripData);
+
     saveTrip(tripData, {
       onSuccess: () => {
         showToast({
@@ -144,7 +146,7 @@ export const AddTripModal: React.FC<AddTripModalProps> = ({
           <ScrollView 
             className="px-6 py-4" 
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={{ paddingBottom: 40 }}
+            contentContainerStyle={{ paddingBottom: 70 }}
           >
             {/* From Input */}
             <View className="mb-4">

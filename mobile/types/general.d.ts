@@ -136,7 +136,7 @@ interface Recommendation {
 }
 
 interface RecommendationCardProps {
-  recommendation: Recommendation;
+  recommendation?: Recommendation;
   onViewDetails: () => void;
   isDark: boolean;
 }

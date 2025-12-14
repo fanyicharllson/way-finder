@@ -1,11 +1,12 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
-import { ActivityIndicator, View, Text } from "react-native";
+import { View, Text } from "react-native";
 import React, { useEffect, useState } from "react";
 import { router } from "expo-router";
 import { getToken } from "@/utils/storage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useProfile } from "@/hooks/useAuth";
+import LottieView from "lottie-react-native";
 
 const ONBOARDING_KEY = "@wayfinder_onboarding_completed";
 
@@ -107,14 +108,18 @@ const Index = () => {
 
   return (
     <View className="flex-1 bg-[#0A0F1A] items-center justify-center">
-      {/* Loading indicator */}
-      <ActivityIndicator size="large" color="white" />
-
+      {/* Lottie Loading Animation */}
+      <LottieView
+        source={require("@/assets/lottie/loading.json")}
+        autoPlay
+        loop
+        style={{ width: 200, height: 200 }}
+      />
       {/* App name or logo */}
-      <Text className="text-white text-2xl font-bold mt-6">WayFinder</Text>
+      <Text className="text-white text-2xl font-bold">WayFinder</Text>
 
       <Text className="text-white/60 text-sm mt-2">
-        Just a moment, {userName || ""}...
+        Just a moment {userName || ""}...
       </Text>
     </View>
   );
