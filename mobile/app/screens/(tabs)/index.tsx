@@ -28,11 +28,7 @@ export default function HomeScreen() {
   };
 
   function handleAIPress(): void {
-    showToast({
-      type: "info",
-      text1: "AI Assistant is coming soon!",
-      text2: "Stay tuned for updates.",
-    })
+    router.push("/screens/(extrascreens)/ai-chat");
   }
 
   return (

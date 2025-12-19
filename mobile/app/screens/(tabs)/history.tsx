@@ -25,6 +25,7 @@ import { useTripHistory, useTripAnalytics } from "@/hooks/useTrip";
 import { FloatingActionButton } from "@/app/components/ui/FloatingActionButton";
 import { AIFloatingButton } from "@/app/components/ui/AIFloatingButton";
 import { AddTripModal } from "@/app/components/history/AddTripModal";
+import { router } from "expo-router";
 
 const HistoryScreen = () => {
   const colorScheme = useColorScheme();
@@ -34,7 +35,7 @@ const HistoryScreen = () => {
   const [showFilter, setShowFilter] = useState(false);
   const [filters, setFilters] = useState<any>({});
   const [showAddTrip, setShowAddTrip] = useState(false);
-  const [showAIModal, setShowAIModal] = useState(false);
+  
 
   const {
     data: tripsData,
@@ -70,12 +71,7 @@ const HistoryScreen = () => {
   };
 
   const handleAIPress = () => {
-    setShowAIModal(true);
-    showToast({
-      type: "info",
-      text1: "AI Assistant",
-      text2: "AI features coming soon!",
-    });
+    router.push("/screens/(extrascreens)/ai-chat");
   };
   
 

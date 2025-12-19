@@ -9,14 +9,6 @@ import {
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
 
-interface AIFloatingButtonProps {
-  onPress: () => void;
-  visible?: boolean;
-  bottom?: number;
-  right?: number;
-  testID?: string;
-}
-
 export const AIFloatingButton: React.FC<AIFloatingButtonProps> = ({
   onPress,
   visible = true,

@@ -19,6 +19,9 @@ export const apiClient = axios.create({
   timeout: 15000,
 });
 
+// Guard to avoid multiple simultaneous redirects to login
+let isRedirectingToLogin = false;
+
 console.log("\n");
 console.log("######################################");
 console.log("🌐 API Base URL:", BASE_URL);
@@ -31,9 +34,12 @@ apiClient.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+    
+
     return config;
   },
   (error) => {
+    console.error("❌ Request Error:", error);
     return Promise.reject(error);
   }
 );
@@ -45,12 +51,22 @@ export default function _ApiClientRoute(): React.ReactElement | null {
 
 // Response Interceptor - Handle errors globally
 apiClient.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    return response;
+  },
   async (error: AxiosError<ApiError>) => {
+    console.error(`\n❌ API Error:`, {
+      message: error.message,
+      code: error.code,
+      status: error.response?.status,
+      url: error.config?.url,
+      data: error.response?.data,
+    });
+
     if (error.response) {
       const { status, data } = error.response;
 
-      // Handle 401 - Token expired or invalid
+      // Handle 401 - Token expired or invalid (guarded)
       if (status === 401) {
         showToast({
           type: "error",
@@ -58,14 +74,23 @@ apiClient.interceptors.response.use(
           text2: "Please login again to continue",
         });
 
-        // Clear auth data and redirect to login
-        const { clearAuthData } = await import("@/utils/storage");
-        await clearAuthData();
+        if (!isRedirectingToLogin) {
+          isRedirectingToLogin = true;
+          try {
+            // Clear auth data then navigate once
+            const { clearAuthData } = await import("@/utils/storage");
+            await clearAuthData();
 
-        // Redirect to login after a short delay
-        setTimeout(() => {
-          router.replace("/screens/(auth)/login");
-        }, 1500);
+            // Small delay to allow toast to show briefly
+            setTimeout(() => {
+              router.replace("/screens/(auth)/login");
+            }, 800);
+          } catch (e) {
+            console.error("Error during 401 handling:", e);
+          }
+        } else {
+          console.log("Redirect to login already in progress, skipping duplicate redirect.");
+        }
       }
 
       // Handle 403 - Forbidden
@@ -96,6 +121,7 @@ apiClient.interceptors.response.use(
       }
     } else if (error.request) {
       // Network error - no response received
+      console.error("⚠️ Network Error - No response received from backend");
       showToast({
         type: "error",
         text1: "Network Error",

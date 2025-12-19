@@ -26,6 +26,7 @@ import { FloatingActionButton } from "@/app/components/ui/FloatingActionButton";
 import { AIFloatingButton } from "@/app/components/ui/AIFloatingButton";
 import { AddFavoriteModal } from "@/app/components/favorite/AddFavoriteModal";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { router } from "expo-router";
 
 interface FavoriteScreenProps {
   onSelectFavorite?: (favorite: any) => void;
@@ -43,7 +44,7 @@ const FavoriteScreen: React.FC<FavoriteScreenProps> = ({
   const [editNotes, setEditNotes] = useState("");
   const [showEditModal, setShowEditModal] = useState(false);
   const [showAddFavorite, setShowAddFavorite] = useState(false);
-  const [showAIModal, setShowAIModal] = useState(false);
+  
 
   const { data, isLoading, isError, refetch } = useFavorites();
   const removeFavorite = useRemoveFavorite();
@@ -132,12 +133,7 @@ const FavoriteScreen: React.FC<FavoriteScreenProps> = ({
   };
 
   const handleAIPress = () => {
-    setShowAIModal(true);
-    showToast({
-      type: "info",
-      text1: "AI Assistant",
-      text2: "AI features coming soon!",
-    });
+    router.push("/screens/(extrascreens)/ai-chat");
   };
   
 

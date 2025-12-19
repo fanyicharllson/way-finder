@@ -11,7 +11,6 @@ import { RouteCard } from '@/app/components/routes/RouteCard';
 
 export default function RouteResultsScreen() {
   const { from, to } = useLocalSearchParams<{ from: string; to: string }>();
-  console.log(`From, To: from useLocalSearchParams, ${from}:${to}`);
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
 
@@ -30,14 +29,28 @@ export default function RouteResultsScreen() {
 
   const handleSelectRoute = (route: any) => {
     console.log('Selected route:', route.id);
-    // TODO: Store selected route in state/context
-    router.push('/screens/(tabs)/map');
+    console.log("Selected routes: ", results?.routes)
+    if (!results) return;
+    router.push({
+      pathname: '/screens/(tabs)/map',
+      params: {
+        selectedRoute: JSON.stringify(route),
+        allRoutes: JSON.stringify(results.routes),
+      },
+    });
   };
 
   const handleViewOnMap = (route: any) => {
     console.log('View on map:', route.id);
-    // TODO: Store route and navigate
-    router.push('/screens/(tabs)/map');
+    console.log("View on map routes: ", results?.routes)
+    if (!results) return;
+    router.push({
+      pathname: '/screens/(tabs)/map',
+      params: {
+        selectedRoute: JSON.stringify(route),
+        allRoutes: JSON.stringify(results.routes),
+      },
+    });
   };
 
   if (isPending) {

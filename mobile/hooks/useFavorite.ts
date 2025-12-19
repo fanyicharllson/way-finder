@@ -5,20 +5,6 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
  * FAVORITES HOOKS
  */
 
-interface FavoriteRoute {
-  id: string;
-  name: string;
-  fromAddress: string;
-  toAddress: string;
-  fromLat: number;
-  fromLng: number;
-  toLat: number;
-  toLng: number;
-  preferredMode?: string;
-  notes?: string;
-  createdAt: string;
-}
-
 // Get favorites
 export const useFavorites = () => {
   return useQuery<{ favorites: FavoriteRoute[]; count: number }>({

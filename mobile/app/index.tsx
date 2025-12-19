@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable react-hooks/exhaustive-deps */
-import { View, Text } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
 import React, { useEffect, useState } from "react";
 import { router } from "expo-router";
 import { getToken } from "@/utils/storage";
@@ -12,6 +12,10 @@ const ONBOARDING_KEY = "@wayfinder_onboarding_completed";
 
 const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<{
+    message: string;
+    retryFn: () => void;
+  } | null>(null);
   const { data: user } = useProfile();
   const userName = user?.name.split(" ")[0] || "";
 
@@ -37,7 +41,7 @@ const Index = () => {
       if (!token) {
         // No token - user needs to login or register
         console.log("🔐 No token found - showing login");
-        router.replace("/screens/login");
+        router.replace("/screens/(auth)/login");
         return;
       }
 
@@ -65,15 +69,31 @@ const Index = () => {
         // Preferences are complete - go to home
         console.log("🎉 Complete preferences found - showing home");
         router.replace("/screens/(tabs)");
-      } catch (error) {
+      } catch (error: any) {
         console.error("❌ Error checking preferences:", error);
-        // On error, still go to home (graceful fallback)
-        router.replace("/screens/(tabs)");
+        // If auth error, let api client handle redirect (it will guard duplicates)
+        if (error?.response?.status === 401) {
+          return;
+        }
+        // On other errors, redirect to error screen with retry option
+        setError({
+          message:
+            "Unable to verify your preferences. Please check your internet connection and try again.",
+          retryFn: checkAppState,
+        });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("❌ Error checking app state:", error);
-      // On error, default to login screen for safety
-      router.replace("/screens/login");
+      // If auth error (invalid/expired token) let api client handle redirect
+      if (error?.response?.status === 401) {
+        return;
+      }
+      // Check if it's a token retrieval error
+      setError({
+        message:
+          "Unable to retrieve your authentication details. Please ensure you're connected to the internet and try again.",
+        retryFn: checkAppState,
+      });
     } finally {
       setIsLoading(false);
     }
@@ -107,21 +127,51 @@ const Index = () => {
   };
 
   return (
-    <View className="flex-1 bg-[#0A0F1A] items-center justify-center">
-      {/* Lottie Loading Animation */}
-      <LottieView
-        source={require("@/assets/lottie/loading.json")}
-        autoPlay
-        loop
-        style={{ width: 200, height: 200 }}
-      />
-      {/* App name or logo */}
-      <Text className="text-white text-2xl font-bold">WayFinder</Text>
+    <>
+      {error ? (
+        // Error State - Show error screen with retry option
+        <View className="flex-1 bg-[#0A0F1A] items-center justify-center">
+          <LottieView
+            source={require("@/assets/lottie/error.json")}
+            autoPlay
+            loop={false}
+            style={{ width: 200, height: 200 }}
+          />
+          <Text className="text-white text-2xl font-bold mt-6 text-center px-4">
+            Oops! Something Went Wrong
+          </Text>
+          <Text className="text-white/60 text-sm mt-4 text-center px-6 leading-5">
+            {error.message}
+          </Text>
+          <TouchableOpacity
+            onPress={() => {
+              setError(null);
+              error.retryFn();
+            }}
+            className="mt-8 bg-blue-600 px-8 py-3 rounded-lg"
+          >
+            <Text className="text-white font-semibold">Try Again</Text>
+          </TouchableOpacity>
+        </View>
+      ) : (
+        // Loading State
+        <View className="flex-1 bg-[#0A0F1A] items-center justify-center">
+          {/* Lottie Loading Animation */}
+          <LottieView
+            source={require("@/assets/lottie/loading.json")}
+            autoPlay
+            loop
+            style={{ width: 200, height: 200 }}
+          />
+          {/* App name or logo */}
+          <Text className="text-white text-2xl font-bold">WayFinder</Text>
 
-      <Text className="text-white/60 text-sm mt-2">
-        Just a moment {userName || ""}...
-      </Text>
-    </View>
+          <Text className="text-white/60 text-sm mt-2">
+            Just a moment {userName || ""}...
+          </Text>
+        </View>
+      )}
+    </>
   );
 };
 

@@ -269,5 +269,75 @@ interface FilterModalProps {
   isDark: boolean;
 }
 
+interface AIChatRequest {
+  message: string;
+  context?: {
+    currentLocation?: string;
+  };
+}
+
+interface AIChatResponse {
+  reply: string;
+  suggestions?: any[];
+  action?: string;
+  actionData?: any;
+}
+
+interface FavoriteRoute {
+  id: string;
+  name: string;
+  fromAddress: string;
+  toAddress: string;
+  fromLat: number;
+  fromLng: number;
+  toLat: number;
+  toLng: number;
+  preferredMode?: string;
+  notes?: string;
+  createdAt: string;
+}
+
+interface ChatBubbleProps {
+  role: 'user' | 'ai';
+  text: string;
+  timestamp?: string;
+  onActionPress?: () => void;
+  actionLabel?: string;
+  isDark: boolean;
+}
+interface ChatInputProps {
+  onSend: (message: string) => void;
+  isLoading: boolean;
+  isDark: boolean;
+}
+
+interface SuggestionChipProps {
+  icon: string;
+  text: string;
+  onPress: () => void;
+}
+
+interface Message {
+  id: string;
+  role: 'user' | 'ai';
+  text: string;
+  timestamp: string;
+  action?: {
+    type: string;
+    data: any;
+    label: string;
+  };
+}
+
+interface AIFloatingButtonProps {
+  onPress: () => void;
+  visible?: boolean;
+  bottom?: number;
+  right?: number;
+  testID?: string;
+}
+
+
+
 
 
