@@ -25,7 +25,7 @@ export const useAIChat = () => {
 export const useAIRecommendation = () => {
   return useMutation({
     mutationFn: async (query: string) => {
-      const response = await apiClient.post(`/ai/recommend`, query);
+      const response = await apiClient.post(`/ai/recommend`, { message: query });
       return response.data.data as AIChatResponse;
     },
   });

@@ -126,7 +126,7 @@ export const RecommendationCard: React.FC<RecommendationCardProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    marginHorizontal: 24,
+    marginHorizontal: 18,
     marginBottom: 24,
   },
   label: {

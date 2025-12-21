@@ -28,8 +28,6 @@ export default function RouteResultsScreen() {
   }, [from, to]);
 
   const handleSelectRoute = (route: any) => {
-    console.log('Selected route:', route.id);
-    console.log("Selected routes: ", results?.routes)
     if (!results) return;
     router.push({
       pathname: '/screens/(tabs)/map',
@@ -41,8 +39,6 @@ export default function RouteResultsScreen() {
   };
 
   const handleViewOnMap = (route: any) => {
-    console.log('View on map:', route.id);
-    console.log("View on map routes: ", results?.routes)
     if (!results) return;
     router.push({
       pathname: '/screens/(tabs)/map',

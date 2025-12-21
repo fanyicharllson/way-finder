@@ -5,7 +5,8 @@ import locationRoutes from "../routes/location.routes";
 import routeRoutes from "../routes/route.routes";
 import recentSearchRoute from "../routes/recent.search.routes";
 import favoriteRoutes from "../routes/favorite.routes";
-import tripRoutes from "../routes/trip.routes"
+import tripRoutes from "../routes/trip.routes";
+import aiRoutes from '../routes/ai.routes';
 
 /**
  * API Gateway - Route Configuration
@@ -42,7 +43,11 @@ export function setupGatewayRoutes(app: Express) {
 
   // LOCATION ROUTES
   app.use("/api/locations", locationRoutes);
-  console.log("Location routes mounted:");
+  console.log("Location routes mounted");
+
+  // AI ROUTES
+  app.use("/api/ai", aiRoutes);
+  console.log("AI routes mounted");
 
   // GATEWAY INFO
   console.log("═════════════════════════════════════════════════════════");

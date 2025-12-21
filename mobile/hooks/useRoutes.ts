@@ -21,7 +21,7 @@ export const useRouteSearch = () => {
         text2: `Found ${data.routes.length} route(s)`,
         duration: 3000,
       })  
-      console.log("✅ Route search successful:", data);
+      console.log("✅ Route search successful");
     },
     onError: (error) => {
       showToast({

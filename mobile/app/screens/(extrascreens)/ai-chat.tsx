@@ -103,8 +103,8 @@ export default function AIChatScreen() {
     <SafeAreaView className="flex-1 bg-gray-50 dark:bg-gray-900">
       <KeyboardAvoidingView
         className="flex-1"
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 20}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+        keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0}
       >
         {/* Header */}
         <View className="px-6 py-4 bg-white dark:bg-gray-900  border-gray-200 dark:border-gray-700">
@@ -145,6 +145,7 @@ export default function AIChatScreen() {
           ref={scrollViewRef}
           className="flex-1 px-4 py-4"
           showsVerticalScrollIndicator={false}
+          keyboardShouldPersistTaps="handled"
           contentContainerStyle={{
             flexGrow: 1,
             justifyContent: chatHistory.length === 0 ? 'center' : 'flex-start',

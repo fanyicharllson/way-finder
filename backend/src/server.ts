@@ -51,25 +51,7 @@ app.get("/health", (req: Request, res: Response) => {
     message: "WayFinder API is running 🚀",
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || "development",
-    uptime: process.uptime(),
-    apiGateway: {
-      status: "active",
-      features: [
-        "request-logging",
-        "auth-verification",
-        "rate-limiting",
-        "cors",
-      ],
-    },
-    eventSystem: {
-      status: "active",
-      listeners: ["user", "preference", "trip"],
-    },
-    endpoints: {
-      auth: "/api/auth",
-      preferences: "/api/preferences",
-      locations: "/api/locations",
-    },
+    uptime: process.uptime()
   });
 });
 

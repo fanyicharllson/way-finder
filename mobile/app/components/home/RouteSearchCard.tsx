@@ -77,7 +77,7 @@ export const RouteSearchCard: React.FC<RouteSearchCardProps> = ({
   };
 
   return (
-    <View className="mx-6 mb-6">
+    <View className="mx-4 mb-6">
       <View
         className="bg-white dark:bg-gray-800 rounded-3xl p-6 border border-gray-200 dark:border-gray-700"
         style={{
