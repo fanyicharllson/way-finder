@@ -49,7 +49,6 @@ export const AnalyticsCards: React.FC<AnalyticsCardsProps> = ({ data, isDark }) 
     <ScrollView
       horizontal
       showsHorizontalScrollIndicator={false}
-      contentContainerStyle={{ paddingHorizontal: 24 }}
       className="mb-4"
     >
       {/* Total Spent Card */}

@@ -1,5 +1,5 @@
-import React from "react";
-import { ScrollView, View, Text } from "react-native";
+import React, { useRef, useState } from "react";
+import { ScrollView, View, Text, TouchableOpacity } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useColorScheme } from "nativewind";
 import { router } from "expo-router";
@@ -38,6 +38,8 @@ export default function HomeScreen() {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === "dark";
   const { data: user } = useProfile();
+  const scrollViewRef = useRef<ScrollView>(null);
+  const [shouldFocusDestination, setShouldFocusDestination] = useState(false);
 
   const userName = user?.name.split(" ")[0] || "";
 
@@ -50,19 +52,53 @@ export default function HomeScreen() {
     );
   };
 
+  const scrollToSearch = () => {
+    // Scroll to the search section with a smooth animation then focus input
+    scrollViewRef.current?.scrollTo({
+      y: 550, // Adjust if layout changes
+      animated: true,
+    });
+    // Trigger focus once the section is in view
+    setShouldFocusDestination(true);
+  };
+
   function handleAIPress(): void {
     router.push("/screens/(extrascreens)/ai-chat");
   }
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50 dark:bg-gray-900">
-      <ScrollView showsVerticalScrollIndicator={false}>
+      <ScrollView ref={scrollViewRef} showsVerticalScrollIndicator={false}>
         <HomeHeader
           userName={userName}
           temperature={28}
           onNotificationPress={() => console.log("Notifications")}
           isDark={isDark}
         />
+
+        {/* Sticky Search Bar */}
+        <TouchableOpacity
+          onPress={scrollToSearch}
+          className={`mx-4 mb-3 flex-row items-center px-4 py-3 rounded-full border ${
+            isDark
+              ? "bg-gray-800 border-gray-700"
+              : "bg-white border-gray-200"
+          }`}
+          activeOpacity={0.3}
+        >
+          <Ionicons
+            name="search"
+            size={18}
+            color={isDark ? "#9CA3AF" : "#6B7280"}
+          />
+          <Text
+            className={`ml-3 text-base ${
+              isDark ? "text-gray-400" : "text-gray-500"
+            }`}
+          >
+            Where to?
+          </Text>
+        </TouchableOpacity>
 
         {/* AI Insights Section */}
         <View className="mt-2 mb-4">
@@ -93,6 +129,8 @@ export default function HomeScreen() {
               router.push("/screens/(extrascreens)/preferences")
             }
             isDark={isDark}
+            shouldFocusDestination={shouldFocusDestination}
+            onDestinationFocused={() => setShouldFocusDestination(false)}
           />
         </View>
 

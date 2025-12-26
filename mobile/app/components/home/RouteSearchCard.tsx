@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   View,
   Text,
@@ -16,10 +16,13 @@ export const RouteSearchCard: React.FC<RouteSearchCardProps> = ({
   onChooseFavorite,
   onEditPreferences,
   isDark,
+  shouldFocusDestination = false,
+  onDestinationFocused,
 }) => {
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [isUsingCurrentLocation, setIsUsingCurrentLocation] = useState(true);
+  const destinationInputRef = useRef<TextInput>(null);
 
   const { data: preferences, isLoading: prefsLoading } = useGetPreferences();
   const {
@@ -55,6 +58,22 @@ export const RouteSearchCard: React.FC<RouteSearchCardProps> = ({
       });
     }
   }, [currentLocationName, isLoadingLocation, locationError]);
+
+  useEffect(() => {
+    if (shouldFocusDestination) {
+      const input = destinationInputRef.current;
+      if (!input) return;
+
+      // Force a blur then focus on next frame to reliably show keyboard
+      input.blur();
+      const rafId = requestAnimationFrame(() => {
+        input.focus();
+        onDestinationFocused?.();
+      });
+
+      return () => cancelAnimationFrame(rafId);
+    }
+  }, [shouldFocusDestination, onDestinationFocused]);
 
   const handleSwap = () => {
     if (isUsingCurrentLocation) return; // Can't swap current location
@@ -174,6 +193,7 @@ export const RouteSearchCard: React.FC<RouteSearchCardProps> = ({
             color={isDark ? "#EF4444" : "#DC2626"}
           />
           <TextInput
+            ref={destinationInputRef}
             className="flex-1 ml-3 text-gray-900 dark:text-white text-base"
             placeholder="Enter destination"
             placeholderTextColor="#9CA3AF"

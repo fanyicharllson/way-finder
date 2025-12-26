@@ -125,6 +125,8 @@ interface RouteSearchCardProps {
   onSearch: (from: string, to: string) => void;
   onChooseFavorite: () => void;
   isDark: boolean;
+  shouldFocusDestination?: boolean;
+  onDestinationFocused?: () => void;
 }
 
 interface Recommendation {
@@ -157,6 +159,8 @@ interface RouteSearchCardProps {
   onChooseFavorite: () => void;
   onEditPreferences: () => void;
   isDark: boolean;
+  shouldFocusDestination?: boolean;
+  onDestinationFocused?: () => void;
 }
 
 //! **************************** Routes TYPES *******************************

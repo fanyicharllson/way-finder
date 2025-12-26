@@ -65,7 +65,7 @@
       "reactCompiler": true
     },
     "extra": {
-      "BACKEND_ENDPOINT": "https://f3d50b5a5b62.ngrok-free.app/api", // Replace with the computer ip address to allow API requests from the mobile app
+      "BACKEND_ENDPOINT": "https://6687c899f069.ngrok-free.app/api", // Replace with the computer ip address to allow API requests from the mobile app
       "router": {},
       "eas": {
         "projectId": "c417df1d-00bd-46b4-83e6-b59f9fc87c26"
