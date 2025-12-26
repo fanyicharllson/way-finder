@@ -14,7 +14,7 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useColorScheme } from "nativewind";
 import { Ionicons } from "@expo/vector-icons";
-import { useSavePreferences } from "@/hooks/usePreferences";
+import { useSavePreferences, useUpdatePreferences } from "@/hooks/usePreferences";
 import {
   PreferencesFormData,
   preferencesSchema,
@@ -295,8 +295,12 @@ const PreferencesScreenComponent: React.FC<PreferencesScreenProps> = ({
 }) => {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === "dark";
+  
+  // Determine if user is editing existing preferences
+  const isEditingMode = !!initialData;
 
   const savePreferencesMutation = useSavePreferences();
+  const updatePreferencesMutation = useUpdatePreferences();
   // separate mutation for "Save for Later" so each action has its own loading state
   const saveLaterMutation = useSavePreferences();
 
@@ -359,7 +363,12 @@ const PreferencesScreenComponent: React.FC<PreferencesScreenProps> = ({
       isComplete: true,
     };
 
-    savePreferencesMutation.mutate(preferenceDTO);
+    // Use update hook if editing, save hook if creating new
+    if (isEditingMode) {
+      updatePreferencesMutation.mutate(preferenceDTO);
+         } else {
+      savePreferencesMutation.mutate(preferenceDTO);
+    }
   };
 
   const handleSaveLater = () => {
@@ -376,7 +385,9 @@ const PreferencesScreenComponent: React.FC<PreferencesScreenProps> = ({
     saveLaterMutation.mutate(preferenceDTO);
   };
 
-  const isLoading = savePreferencesMutation.isPending;
+  const isLoading = isEditingMode 
+    ? updatePreferencesMutation.isPending 
+    : savePreferencesMutation.isPending;
   const isSavingLater = saveLaterMutation.isPending;
 
   return (
@@ -553,25 +564,27 @@ const PreferencesScreenComponent: React.FC<PreferencesScreenProps> = ({
                   className="text-lg font-bold"
                   style={{ color: isDark ? "#0A0F1A" : "#FFFFFF" }}
                 >
-                  Save & Continue
+                  {isEditingMode ? "Update Preferences" : "Save & Continue"}
                 </Text>
               )}
             </TouchableOpacity>
 
-            <TouchableOpacity
-              onPress={handleSaveLater}
-              disabled={isSavingLater}
-              activeOpacity={0.7}
-              className="w-full h-14 rounded-2xl items-center justify-center border-2 border-gray-300 dark:border-gray-700"
-            >
-              {isSavingLater ? (
-                <ActivityIndicator size="small" color={isDark ? "#FFFFFF" : "#0A0F1A"} />
-              ) : (
-                <Text className="text-base font-semibold text-gray-700 dark:text-gray-300">
-                  Save for Later
-                </Text>
-              )}
-            </TouchableOpacity>
+            {!isEditingMode && (
+              <TouchableOpacity
+                onPress={handleSaveLater}
+                disabled={isSavingLater}
+                activeOpacity={0.7}
+                className="w-full h-14 rounded-2xl items-center justify-center border-2 border-gray-300 dark:border-gray-700"
+              >
+                {isSavingLater ? (
+                  <ActivityIndicator size="small" color={isDark ? "#FFFFFF" : "#0A0F1A"} />
+                ) : (
+                  <Text className="text-base font-semibold text-gray-700 dark:text-gray-300">
+                    Save for Later
+                  </Text>
+                )}
+              </TouchableOpacity>
+            )}
           </View>
         </ScrollView>
       </SafeAreaView>

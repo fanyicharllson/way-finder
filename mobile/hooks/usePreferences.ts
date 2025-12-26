@@ -77,7 +77,10 @@ export const useUpdatePreferences = () => {
         text2: "Your changes have been saved",
       });
 
-      console.log("✅ Preferences updated:", data);
+      // navigate to back to the previous screen
+      router.back();
+
+     
     },
     onError: (error: AxiosError<ApiError>) => {
       const message =
