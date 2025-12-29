@@ -1,4 +1,4 @@
-import LoginScreenComponent from "@/app/components/screens.components/login.component";
+import LoginScreenComponent from "@/components/screens.components/login.component";
 import { router } from "expo-router";
 
 export default function LoginScreen() {

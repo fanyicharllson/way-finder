@@ -1,5 +1,5 @@
 import { router } from "expo-router";
-import OnboardingScreenComponent from "../components/screens.components/onboarding.component";
+import OnboardingScreenComponent from "@/components/screens.components/onboarding.component";
 import { markOnboardingComplete } from "@/utils/storage";
 
 export default function OnboardingScreen() {

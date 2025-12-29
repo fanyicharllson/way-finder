@@ -1,5 +1,5 @@
-import PreferencesScreenComponent from "@/app/components/screens.components/userpreference.component";
-import SuccessErrorScreen from "@/app/components/success.error.screen";
+import PreferencesScreenComponent from "@/components/screens.components/userpreference.component";
+import SuccessErrorScreen from "@/components/success.error.screen";
 import { useGetPreferences } from "@/hooks/usePreferences";
 import { router } from "expo-router";
 import { ActivityIndicator, View, Text } from "react-native";

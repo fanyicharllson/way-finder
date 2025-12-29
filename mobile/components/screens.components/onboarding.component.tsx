@@ -20,9 +20,9 @@ const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
 // Static mapping for Lottie assets — Metro requires static `require` calls
 const lottieAssets: Record<string, any> = {
-  "map-navigation.json": require("../../../assets/lottie/map-navigation.json"),
-  "money-time.json": require("../../../assets/lottie/money-time.json"),
-  "user-profile.json": require("../../../assets/lottie/user-profile.json"),
+  "map-navigation.json": require("@/assets/lottie/map-navigation.json"),
+  "money-time.json": require("@/assets/lottie/money-time.json"),
+  "user-profile.json": require("@/assets/lottie/user-profile.json"),
 };
 
 const LottieAnimation: React.FC<{ lottieFile: string }> = ({ lottieFile }) => {

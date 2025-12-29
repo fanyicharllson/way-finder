@@ -4,10 +4,10 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useColorScheme } from 'nativewind';
 import { router } from 'expo-router';
 import { useAIChat } from '@/hooks/useAI';
-import { ChatBubble } from '@/app/components/ai/ChatBubble';
-import { ChatInput } from '@/app/components/ai/ChatInput';
-import { EmptyState } from '@/app/components/ai/EmptyState';
-import { TypingIndicator } from '@/app/components/ai/TypingIndicator';
+import { ChatBubble } from '@/components/ai/ChatBubble';
+import { ChatInput } from '@/components/ai/ChatInput';
+import { EmptyState } from '@/components/ai/EmptyState';
+import { TypingIndicator } from '@/components/ai/TypingIndicator';
 import { Ionicons } from '@expo/vector-icons';
 
 export default function AIChatScreen() {

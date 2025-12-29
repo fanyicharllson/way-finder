@@ -1,4 +1,4 @@
-import RegisterScreenComponent from "@/app/components/screens.components/signup.component";
+import RegisterScreenComponent from "@/components/screens.components/signup.component";
 import { router } from "expo-router";
 
 export default function RegisterRoute() {

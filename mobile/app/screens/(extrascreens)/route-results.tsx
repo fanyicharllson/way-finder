@@ -7,7 +7,7 @@ import { useColorScheme } from 'nativewind';
 import { Ionicons } from '@expo/vector-icons';
 import { useGetPreferences } from '@/hooks/usePreferences';
 import { useRouteSearch } from '@/hooks/useRoutes';
-import { RouteCard } from '@/app/components/routes/RouteCard';
+import { RouteCard } from '@/components/routes/RouteCard';
 
 export default function RouteResultsScreen() {
   const { from, to } = useLocalSearchParams<{ from: string; to: string }>();

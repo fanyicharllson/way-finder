@@ -3,7 +3,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { StatusBar } from "expo-status-bar";
 import "./globals.css";
 import Toast from "react-native-toast-message";
-import { toastConfig } from "./components/ToastConfig";
+import { toastConfig } from "@/components/ToastConfig";
 
 const queryClient = new QueryClient();
 // const prefix = createURL("/");

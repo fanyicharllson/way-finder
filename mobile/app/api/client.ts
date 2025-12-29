@@ -77,16 +77,18 @@ apiClient.interceptors.response.use(
         if (!isRedirectingToLogin) {
           isRedirectingToLogin = true;
           try {
-            // Clear auth data then navigate once
             const { clearAuthData } = await import("@/utils/storage");
             await clearAuthData();
 
-            // Small delay to allow toast to show briefly
-            setTimeout(() => {
-              router.replace("/screens/(auth)/login");
-            }, 800);
+            // Navigate immediately on auth expiry so splash/loading shows without delay
+            router.replace("/screens/(auth)/login");
           } catch (e) {
             console.error("Error during 401 handling:", e);
+          } finally {
+            // Allow future redirects after navigation completes
+            setTimeout(() => {
+              isRedirectingToLogin = false;
+            }, 500);
           }
         } else {
           console.log("Redirect to login already in progress, skipping duplicate redirect.");

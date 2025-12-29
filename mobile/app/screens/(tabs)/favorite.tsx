@@ -15,16 +15,16 @@ import {
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useColorScheme } from "react-native";
-import { Skeleton } from "@/app/components/ui/Skeleton";
+import { Skeleton } from "@/components/ui/Skeleton";
 import { showToast } from "@/utils/toast";
 import {
   useFavorites,
   useRemoveFavorite,
   useUpdateFavorite,
 } from "@/hooks/useFavorite";
-import { FloatingActionButton } from "@/app/components/ui/FloatingActionButton";
-import { AIFloatingButton } from "@/app/components/ui/AIFloatingButton";
-import { AddFavoriteModal } from "@/app/components/favorite/AddFavoriteModal";
+import { FloatingActionButton } from "@/components/ui/FloatingActionButton";
+import { AIFloatingButton } from "@/components/ui/AIFloatingButton";
+import { AddFavoriteModal } from "@/components/favorite/AddFavoriteModal";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { router } from "expo-router";
 

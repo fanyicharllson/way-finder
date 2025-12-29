@@ -65,14 +65,14 @@ export class AIService {
 
       const fullPrompt = `${systemPrompt}\n\nUser: ${message}\n\nAssistant:`;
 
-      console.log("🤖 AI Request:", { message, context: additionalContext });
+      // console.log("🤖 AI Request:", { message, context: additionalContext });
 
       // Call Gemini API
       const result = await this.model.generateContent(fullPrompt);
       const response = await result.response;
       const aiReply = response.text();
 
-      console.log("🤖 AI Response:", aiReply);
+      // console.log("🤖 AI Response:", aiReply);
 
       // Parse AI response for actions
       const parsedResponse = parseAIResponse(aiReply, message);

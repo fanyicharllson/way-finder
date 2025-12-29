@@ -1,5 +1,5 @@
 import { router } from "expo-router";
-import SuccessErrorScreen from "../../components/success.error.screen";
+import SuccessErrorScreen from "@/components/success.error.screen";
 
 export default function PreferencesSuccessRoute() {
   return (

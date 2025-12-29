@@ -12,7 +12,7 @@ import { Ionicons } from "@expo/vector-icons";
 import MapboxGL from "@rnmapbox/maps";
 import { decodePolyline } from "@/utils/polyline";
 import { router } from "expo-router";
-import { RouteCard } from "@/app/components/routes/RouteCard";
+import { RouteCard } from "@/components/routes/RouteCard";
 import { useLocalSearchParams } from "expo-router";
 
 const { height } = Dimensions.get("window");

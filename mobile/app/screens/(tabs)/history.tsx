@@ -14,15 +14,15 @@ import {
   Skeleton,
   SkeletonCard,
   SkeletonAnalyticsCard,
-} from "../../components/ui/Skeleton";
+} from "@/components/ui/Skeleton";
 import { showToast } from "@/utils/toast";
-import { AnalyticsCards } from "@/app/components/history/AnalyticsCards";
-import { FilterModal } from "@/app/components/history/FilterModal";
-import { TripCard } from "@/app/components/history/TripCard";
+import { AnalyticsCards } from "@/components/history/AnalyticsCards";
+import { FilterModal } from "@/components/history/FilterModal";
+import { TripCard } from "@/components/history/TripCard";
 import { useTripHistory, useTripAnalytics } from "@/hooks/useTrip";
-import { FloatingActionButton } from "@/app/components/ui/FloatingActionButton";
-import { AIFloatingButton } from "@/app/components/ui/AIFloatingButton";
-import { AddTripModal } from "@/app/components/history/AddTripModal";
+import { FloatingActionButton } from "@/components/ui/FloatingActionButton";
+import { AIFloatingButton } from "@/components/ui/AIFloatingButton";
+import { AddTripModal } from "@/components/history/AddTripModal";
 import { router } from "expo-router";
 
 const HistoryScreen = () => {

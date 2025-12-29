@@ -4,14 +4,14 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { useColorScheme } from "nativewind";
 import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
-import { HomeHeader } from "@/app/components/home/HomeHeader";
-import { RecentSearches } from "@/app/components/home/RecentSearches";
-import { RecommendationCard } from "@/app/components/home/RecommendationCard";
-import { RouteSearchCard } from "@/app/components/home/RouteSearchCard";
+import { HomeHeader } from "@/components/home/HomeHeader";
+import { RecentSearches } from "@/components/home/RecentSearches";
+import { RecommendationCard } from "@/components/home/RecommendationCard";
+import { RouteSearchCard } from "@/components/home/RouteSearchCard";
 import { useProfile } from "@/hooks/useAuth";
-import { AIFloatingButton } from "@/app/components/ui/AIFloatingButton";
-import { SmartSuggestion } from "@/app/components/ai/SmartSuggestion";
-import { TravelTips } from "@/app/components/ai/TravelTips";
+import { AIFloatingButton } from "@/components/ui/AIFloatingButton";
+import { SmartSuggestion } from "@/components/ai/SmartSuggestion";
+import { TravelTips } from "@/components/ai/TravelTips";
 
 // Section Header Component
 const SectionHeader = ({ icon, title, subtitle, isDark }: { icon: any, title: string, subtitle?: string, isDark: boolean }) => (
