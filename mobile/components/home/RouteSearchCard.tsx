@@ -5,10 +5,13 @@ import {
   TextInput,
   TouchableOpacity,
   ActivityIndicator,
+  ScrollView,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useGetPreferences } from "@/hooks/usePreferences";
 import { useCurrentLocation } from "@/hooks/useLocation";
+import { useLocationAutocomplete } from "@/hooks/useLocationAutocomplete";
+import { LocationAutocomplete } from "@/components/LocationAutocomplete";
 import { showToast } from "@/utils/toast";
 
 export const RouteSearchCard: React.FC<RouteSearchCardProps> = ({
@@ -22,7 +25,10 @@ export const RouteSearchCard: React.FC<RouteSearchCardProps> = ({
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
   const [isUsingCurrentLocation, setIsUsingCurrentLocation] = useState(true);
+  const [showFromSuggestions, setShowFromSuggestions] = useState(false);
+  const [showToSuggestions, setShowToSuggestions] = useState(false);
   const destinationInputRef = useRef<TextInput>(null);
+  const fromInputRef = useRef<TextInput>(null);
 
   const { data: preferences, isLoading: prefsLoading } = useGetPreferences();
   const {
@@ -31,6 +37,18 @@ export const RouteSearchCard: React.FC<RouteSearchCardProps> = ({
     error: locationError,
     refetch: getCurrentLocation,
   } = useCurrentLocation();
+
+  const {
+    suggestions: fromSuggestions,
+    isLoading: isLoadingFromSuggestions,
+    fetchSuggestions: fetchFromSuggestions,
+  } = useLocationAutocomplete();
+
+  const {
+    suggestions: toSuggestions,
+    isLoading: isLoadingToSuggestions,
+    fetchSuggestions: fetchToSuggestions,
+  } = useLocationAutocomplete();
 
   // Show toast notifications for location status
   useEffect(() => {
@@ -64,7 +82,6 @@ export const RouteSearchCard: React.FC<RouteSearchCardProps> = ({
       const input = destinationInputRef.current;
       if (!input) return;
 
-      // Force a blur then focus on next frame to reliably show keyboard
       input.blur();
       const rafId = requestAnimationFrame(() => {
         input.focus();
@@ -75,14 +92,42 @@ export const RouteSearchCard: React.FC<RouteSearchCardProps> = ({
     }
   }, [shouldFocusDestination, onDestinationFocused]);
 
+  const handleFromChange = (text: string) => {
+    setFrom(text);
+    if (text.trim().length >= 2) {
+      setShowFromSuggestions(true);
+      fetchFromSuggestions(text);
+    } else {
+      setShowFromSuggestions(false);
+    }
+  };
+
+  const handleToChange = (text: string) => {
+    setTo(text);
+    if (text.trim().length >= 2) {
+      setShowToSuggestions(true);
+      fetchToSuggestions(text);
+    } else {
+      setShowToSuggestions(false);
+    }
+  };
+
+  const handleSelectFromLocation = (location: any) => {
+    setFrom(location.name);
+    setShowFromSuggestions(false);
+  };
+
+  const handleSelectToLocation = (location: any) => {
+    setTo(location.name);
+    setShowToSuggestions(false);
+  };
+
   const handleSwap = () => {
-    if (isUsingCurrentLocation) return; // Can't swap current location
+    if (isUsingCurrentLocation) return;
     const temp = from;
     setFrom(to);
     setTo(temp);
   };
-
- 
 
   const getPriorityIcon = () => {
     switch (preferences?.priorityType) {
@@ -96,7 +141,11 @@ export const RouteSearchCard: React.FC<RouteSearchCardProps> = ({
   };
 
   return (
-    <View className="mx-4 mb-6">
+    <ScrollView
+      keyboardShouldPersistTaps="handled"
+      scrollEnabled={showFromSuggestions || showToSuggestions}
+      className="mx-4 mb-6"
+    >
       <View
         className="bg-white dark:bg-gray-800 rounded-3xl p-6 border border-gray-200 dark:border-gray-700"
         style={{
@@ -133,33 +182,39 @@ export const RouteSearchCard: React.FC<RouteSearchCardProps> = ({
               </TouchableOpacity>
             </View>
           ) : (
-            <View className="flex-row items-center bg-gray-50 dark:bg-gray-900 rounded-2xl px-4 h-14 border border-gray-200 dark:border-gray-700">
-              <Ionicons
-                name="location"
-                size={22}
-                color={isDark ? "#9CA3AF" : "#6B7280"}
-              />
-              <TextInput
-                className="flex-1 ml-3 text-gray-900 dark:text-white text-base"
-                placeholder="Enter starting point"
-                placeholderTextColor="#9CA3AF"
-                value={from}
-                onChangeText={setFrom}
-              />
-              <TouchableOpacity
-                onPress={() => {
-                  getCurrentLocation();
-                  setIsUsingCurrentLocation(true);
-                  showToast({
-                    type: "info",
-                    text1: "Getting Location",
-                    text2: "Fetching your current location...",
-                    duration: 2000,
-                  });
-                }}
-              >
-                <Ionicons name="locate" size={20} color="#3B82F6" />
-              </TouchableOpacity>
+            <View>
+              <View className="flex-row items-center bg-gray-50 dark:bg-gray-900 rounded-2xl px-4 h-14 border border-gray-200 dark:border-gray-700">
+                <Ionicons
+                  name="location"
+                  size={22}
+                  color={isDark ? "#9CA3AF" : "#6B7280"}
+                />
+                <TextInput
+                  ref={fromInputRef}
+                  className="flex-1 ml-3 text-gray-900 dark:text-white text-base"
+                  placeholder="Enter starting point"
+                  placeholderTextColor="#9CA3AF"
+                  value={from}
+                  onChangeText={handleFromChange}
+                  onFocus={() => from.length >= 2 && setShowFromSuggestions(true)}
+                />
+                <TouchableOpacity
+                  onPress={() => {
+                    getCurrentLocation();
+                    setIsUsingCurrentLocation(true);
+                  }}
+                >
+                  <Ionicons name="locate" size={20} color="#3B82F6" />
+                </TouchableOpacity>
+              </View>
+              {showFromSuggestions && (
+                <LocationAutocomplete
+                  suggestions={fromSuggestions}
+                  isLoading={isLoadingFromSuggestions}
+                  isDark={isDark}
+                  onSelectLocation={handleSelectFromLocation}
+                />
+              )}
             </View>
           )}
           {isUsingCurrentLocation && (
@@ -198,9 +253,19 @@ export const RouteSearchCard: React.FC<RouteSearchCardProps> = ({
             placeholder="Enter destination"
             placeholderTextColor="#9CA3AF"
             value={to}
-            onChangeText={setTo}
+            onChangeText={handleToChange}
+            onFocus={() => to.length >= 2 && setShowToSuggestions(true)}
           />
         </View>
+
+        {showToSuggestions && (
+          <LocationAutocomplete
+            suggestions={toSuggestions}
+            isLoading={isLoadingToSuggestions}
+            isDark={isDark}
+            onSelectLocation={handleSelectToLocation}
+          />
+        )}
 
         {/* User Preferences Display */}
         {!prefsLoading && preferences?.isComplete && (
@@ -251,12 +316,17 @@ export const RouteSearchCard: React.FC<RouteSearchCardProps> = ({
           }
           disabled={!to.trim() || (isLoadingLocation && isUsingCurrentLocation)}
           activeOpacity={0.8}
-          className={`h-14 rounded-2xl items-center justify-center ${
+          className={`h-14 rounded-2xl items-center justify-center flex-row ${
             to.trim() && !isLoadingLocation
               ? "bg-blue-500"
               : "bg-gray-300 dark:bg-gray-700"
           }`}
         >
+          <Ionicons
+          name="search"
+          size={22}
+          color={`#ffffff`}
+          />
           <Text
             className={`text-lg font-bold ${
               to.trim() && !isLoadingLocation ? "text-white" : "text-gray-500"
@@ -277,6 +347,6 @@ export const RouteSearchCard: React.FC<RouteSearchCardProps> = ({
           </Text>
         </TouchableOpacity>
       </View>
-    </View>
+    </ScrollView>
   );
 };

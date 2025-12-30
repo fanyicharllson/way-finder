@@ -20,7 +20,7 @@ export default function TabsLayout() {
           borderTopWidth: 1,
           height: Platform.OS === "ios" ? 85 : 70 + insets.bottom,
           paddingBottom: insets.bottom,
-          paddingTop: 8,
+          paddingTop: 4,
           paddingHorizontal: 0,
           elevation: 8,
           shadowColor: "#000",

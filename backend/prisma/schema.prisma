@@ -20,6 +20,7 @@ model User {
     trips          Trip[]
     recentSearches RecentSearch[]
     favoriteRoutes FavoriteRoute[]
+    stats          UserStats?
 
     @@index([email])
 }
@@ -29,9 +30,10 @@ model UserPreference {
     userId String @unique
     user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-    maxBudget      Float    @default(1000)
-    preferredModes String[] // ["moto", "bus"]
-    avoidanceZones String[] // ["Carrefour", "Melen"]
+    maxBudget      Float    @default(5000)
+    preferredModes String[] @default(["moto", "bus"]) // ["moto", "bus", "taxi", "walk"]
+    avoidTolls     Boolean  @default(false)
+    avoidanceZones String[] @default([]) // ["Carrefour", "Melen"]
     priorityType   String   @default("balanced") // fastest, cheapest, balanced
     isComplete     Boolean  @default(false)
 
@@ -50,9 +52,15 @@ model Location {
     longitude  Float
     isFavorite Boolean @default(false)
 
+    // NEW: Track usage for analytics
+    usageCount  Int      @default(1)
+    lastUsedAt  DateTime @default(now())
+
     createdAt DateTime @default(now())
 
+    @@unique([userId, address])
     @@index([userId])
+    @@index([usageCount])
 }
 
 model Trip {
@@ -117,4 +125,44 @@ model FavoriteRoute {
     updatedAt DateTime @updatedAt
 
     @@index([userId])
+}
+
+// User Statistics (updated by TRIP_COMPLETED event)
+model UserStats {
+    id     String @id @default(uuid())
+    userId String @unique
+    user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+    totalTrips    Int   @default(0)
+    totalSpent    Float @default(0)
+    totalDistance Float @default(0) // in meters
+    totalTime     Int   @default(0) // in minutes
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@index([totalTrips])
+}
+
+// Route Popularity (updated by TRIP_COMPLETED event)
+model RoutePopularity {
+    id String @id @default(uuid())
+
+    origin        String
+    destination   String
+    transportMode String
+
+    count         Int      @default(1)
+    totalCost     Float    @default(0)
+    totalTime     Int      @default(0) // minutes
+    totalDistance Float    @default(0) // meters
+    avgCost       Float?   @default(0)
+    avgTime       Int?     @default(0)
+    lastUsed      DateTime @default(now())
+
+    createdAt DateTime @default(now())
+
+    @@unique([origin, destination, transportMode])
+    @@index([count])
+    @@index([lastUsed])
 }

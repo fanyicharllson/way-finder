@@ -2,10 +2,9 @@ import { eventBus } from "../eventBus";
 import {
   Events,
   FavoriteAddedPayload,
-  FavoriteRemovedPayload,
 } from "../eventTypes";
 import { prisma } from "../../config/database";
-import { sendFavoriteAddedEmail } from "../../config/email";
+import { sendFavoriteAddedEmail } from "../../services/email.service";
 
 eventBus.onEvent<FavoriteAddedPayload>(Events.FAVORITE_ADDED, async (data) => {
   try {
@@ -41,13 +40,11 @@ eventBus.onEvent<FavoriteAddedPayload>(Events.FAVORITE_ADDED, async (data) => {
 });
 
 /**
- * Favorite Removed Event Listener
+ * Note: FAVORITE_REMOVED listener removed
+ * - Was only logging with no real action
+ * - Can be re-enabled when we add:
+ *   - Analytics tracking
+ *   - "We miss this route" email campaigns
  */
-eventBus.onEvent<FavoriteRemovedPayload>(
-  Events.FAVORITE_REMOVED,
-  async (data) => {
-    console.log(`⭐ Favorite removed: ${data.favoriteId}`);
-    // Could send "We miss you" email or track analytics
-  }
-);
-console.log("📡 Favorite event listeners registered");
+
+console.log("📡 Favorite event listeners registered (cleaned up)");

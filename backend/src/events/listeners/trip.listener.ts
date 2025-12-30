@@ -1,15 +1,16 @@
 import { eventBus } from "../eventBus";
+import { Events, TripCompletedPayload, TripRatedPayload } from "../eventTypes";
 import {
-  Events,
-  TripCompletedPayload,
-  TripRatedPayload,
-} from "../eventTypes";
-import { sendTripSummaryEmail } from "../../config/email";
-import {prisma} from "../../config/database";
+  sendTripSummaryEmail,
+  sendMilestoneAchievementEmail,
+  sendLowRatingFollowUpEmail,
+  sendHighRatingCelebrationEmail,
+} from "../../services/email.service";
+import { prisma } from "../../config/database";
 
 /**
  * Trip Event Listeners
- * 
+ *
  * These listeners handle trip-related events and perform analytics,
  * notifications, and data processing without coupling services.
  */
@@ -22,75 +23,128 @@ import {prisma} from "../../config/database";
  * 3. Calculate savings compared to other transport modes
  * 4. Update location popularity
  */
-eventBus.onEvent<TripCompletedPayload>(
-  Events.TRIP_COMPLETED,
-  async (data) => {
-    try {
-      console.log(
-        `🚗 Processing TRIP_COMPLETED event for trip: ${data.tripId}`
-      );
+eventBus.onEvent<TripCompletedPayload>(Events.TRIP_COMPLETED, async (data) => {
+  try {
+    console.log(`🚗 Processing TRIP_COMPLETED event for trip: ${data.tripId}`);
 
-      // 1. Get user details for email
-      const user = await prisma.user.findUnique({
-        where: { id: data.userId },
+    // 1. Get user details for email
+    const user = await prisma.user.findUnique({
+      where: { id: data.userId },
+    });
+
+    if (user) {
+      // Send trip summary email
+      await sendTripSummaryEmail(user.email, user.name, {
+        origin: data.origin,
+        destination: data.destination,
+        transportMode: data.transportMode,
+        actualCost: data.actualCost,
+        actualTime: data.actualTime,
+        distance: data.distance,
       });
+    }
 
-      if (user) {
-        // Send trip summary email
-        await sendTripSummaryEmail(user.email, user.name, {
+    // 2. REAL WORK: Update user statistics in database
+    let stats: any = null;
+    try {
+      stats = await prisma.userStats.upsert({
+        where: { userId: data.userId },
+        update: {
+          totalTrips: { increment: 1 },
+          totalSpent: { increment: data.actualCost },
+          totalDistance: { increment: data.distance },
+          totalTime: { increment: data.actualTime },
+          updatedAt: new Date(),
+        },
+        create: {
+          userId: data.userId,
+          totalTrips: 1,
+          totalSpent: data.actualCost,
+          totalDistance: data.distance,
+          totalTime: data.actualTime,
+        },
+      });
+      console.log(
+        `✅ User stats updated: ${stats.totalTrips} trips, ${stats.totalSpent} XAF spent`
+      );
+    } catch (error) {
+      console.warn(
+        `⚠️ UserStats table not found. Run 'npx prisma db push' to create it.`
+      );
+    }
+
+    // 3. Calculate potential savings
+    // If they took moto, calculate how much they would have spent on taxi
+    const savingsInfo = calculatePotentialSavings(
+      data.transportMode,
+      data.actualCost
+    );
+    console.log(`💰 Potential savings for this trip: ${savingsInfo.saved} XAF`);
+
+    // 4. REAL WORK: Track route popularity for recommendations
+    try {
+      await prisma.routePopularity.upsert({
+        where: {
+          origin_destination_transportMode: {
+            origin: data.origin,
+            destination: data.destination,
+            transportMode: data.transportMode,
+          },
+        },
+        update: {
+          count: { increment: 1 },
+          totalCost: { increment: data.actualCost },
+          totalTime: { increment: data.actualTime },
+          totalDistance: { increment: data.distance },
+          lastUsed: new Date(),
+        },
+        create: {
           origin: data.origin,
           destination: data.destination,
           transportMode: data.transportMode,
-          actualCost: data.actualCost,
-          actualTime: data.actualTime,
-          distance: data.distance,
-        });
-      }
-
-      // 2. Update user statistics (you'd add these fields to User model)
-      // const stats = await prisma.userStats.upsert({
-      //   where: { userId: data.userId },
-      //   update: {
-      //     totalTrips: { increment: 1 },
-      //     totalSpent: { increment: data.actualCost },
-      //     totalDistance: { increment: data.distance },
-      //     totalTime: { increment: data.actualTime },
-      //   },
-      //   create: {
-      //     userId: data.userId,
-      //     totalTrips: 1,
-      //     totalSpent: data.actualCost,
-      //     totalDistance: data.distance,
-      //     totalTime: data.actualTime,
-      //   },
-      // });
-
-      // 3. Calculate potential savings
-      // If they took moto, calculate how much they would have spent on taxi
-      const savingsInfo = calculatePotentialSavings(
-        data.transportMode,
-        data.actualCost
-      );
+          count: 1,
+          totalCost: data.actualCost,
+          totalTime: data.actualTime,
+          totalDistance: data.distance,
+          lastUsed: new Date(),
+        },
+      });
       console.log(
-        `💰 Potential savings for this trip: ${savingsInfo.saved} XAF`
+        `✅ Route popularity tracked: ${data.origin} → ${data.destination} via ${data.transportMode}`
       );
-
-      // 4. Track popular routes (for future route recommendations)
-      console.log(
-        `📊 Analytics: Trip completed - ${data.origin} → ${data.destination} via ${data.transportMode}`
-      );
-
-      // 5. Future: Could trigger
-      // - Push notification: "Trip completed! You saved X XAF today"
-      // - Update route recommendations
-      // - Badge achievements (e.g., "10 trips milestone!")
-
-      console.log(`✅ TRIP_COMPLETED event processed successfully`);
     } catch (error) {
-      console.error(`❌ Error processing TRIP_COMPLETED event:`, error);
+      console.warn(
+        `⚠️ RoutePopularity table not found. Run 'npx prisma db push' to create it.`
+      );
     }
+
+    // 5. Check for milestones and achievements
+    if (
+      stats &&
+      (stats.totalTrips === 10 ||
+        stats.totalTrips === 50 ||
+        stats.totalTrips === 100)
+    ) {
+      console.log(`🎉 MILESTONE: User completed ${stats.totalTrips} trips!`);
+
+      // Send achievement email
+      if (user) {
+        await sendMilestoneAchievementEmail(
+          user.email,
+          user.name,
+          stats.totalTrips
+        );
+        console.log(
+          `✅ Milestone achievement email sent for ${stats.totalTrips} trips`
+        );
+      }
+    }
+
+    console.log(`✅ TRIP_COMPLETED event processed successfully`);
+  } catch (error) {
+    console.error(`❌ Error processing TRIP_COMPLETED event:`, error);
   }
-);
+});
 
 /**
  * Handle TRIP_RATED event
@@ -114,18 +168,38 @@ eventBus.onEvent<TripRatedPayload>(Events.TRIP_RATED, async (data) => {
         `📊 Analytics: ${trip.transportMode} rated ${data.rating}/5 stars`
       );
 
-      // 3. If low rating, could trigger:
+      // Get user for email
+      const user = await prisma.user.findUnique({
+        where: { id: data.userId },
+      });
+
+      // 3. If low rating, send follow-up email
       if (data.rating <= 2) {
-        console.log(`⚠️ Low rating detected. Consider follow-up survey.`);
-        // - Send feedback request email
-        // - Offer alternative routes
+        console.log(`⚠️ Low rating detected. Sending follow-up email...`);
+        if (user) {
+          await sendLowRatingFollowUpEmail(
+            user.email,
+            user.name,
+            data.rating,
+            trip.origin,
+            trip.destination
+          );
+          console.log(`✅ Low rating follow-up email sent to`);
+        }
       }
 
-      // 4. If high rating, could trigger:
+      // 4. If high rating, send celebration email
       if (data.rating >= 4) {
         console.log(`🎉 High rating! User satisfied with route.`);
-        // - Ask for app store review
-        // - Recommend similar routes
+        if (user) {
+          await sendHighRatingCelebrationEmail(
+            user.email,
+            user.name,
+            data.rating,
+            trip.transportMode
+          );
+          console.log(`✅ Celebration email sent`);
+        }
       }
     }
 

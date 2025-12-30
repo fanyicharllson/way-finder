@@ -114,3 +114,42 @@ export const sendTripSummaryEmail = async (
   );
   return sendEmail(email, template.subject, template.html);
 };
+
+export const sendMilestoneAchievementEmail = async (
+  email: string,
+  name: string,
+  tripCount: number
+): Promise<boolean> => {
+  const template = emailTemplates.milestoneAchievement(name, tripCount);
+  return sendEmail(email, template.subject, template.html);
+};
+
+export const sendLowRatingFollowUpEmail = async (
+  email: string,
+  name: string,
+  rating: number,
+  origin: string,
+  destination: string
+): Promise<boolean> => {
+  const template = emailTemplates.lowRatingFollowUp(
+    name,
+    rating,
+    origin,
+    destination
+  );
+  return sendEmail(email, template.subject, template.html);
+};
+
+export const sendHighRatingCelebrationEmail = async (
+  email: string,
+  name: string,
+  rating: number,
+  transportMode: string
+): Promise<boolean> => {
+  const template = emailTemplates.highRatingCelebration(
+    name,
+    rating,
+    transportMode
+  );
+  return sendEmail(email, template.subject, template.html);
+};

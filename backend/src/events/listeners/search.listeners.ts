@@ -1,7 +1,7 @@
 import { eventBus } from "../eventBus";
 import { Events, SearchSavedPayload } from "../eventTypes";
 import { prisma } from "../../config/database";
-import { sendFrequentRouteEmail } from "../../config/email";
+import { sendFrequentRouteEmail } from "../../services/email.service";
 
 /**
  * Search Saved Event Listener

@@ -1,10 +1,7 @@
 import { eventBus } from "../eventBus";
-import {
-  Events,
-  UserRegisteredPayload,
-  UserLoggedInPayload,
-} from "../eventTypes";
-import { sendWelcomeEmail } from "../../config/email";
+import { Events, UserRegisteredPayload } from "../eventTypes";
+import { sendWelcomeEmail } from "../../services/email.service";
+import { prisma } from "../../config/database";
 
 /**
  * User Event Listeners
@@ -32,60 +29,36 @@ eventBus.onEvent<UserRegisteredPayload>(
     try {
       console.log(`👤 Processing USER_REGISTERED event for: ${data.email}`);
 
-      // 1. Send welcome email
+      // 1. Send welcome email to new user
       await sendWelcomeEmail(data.email, data.name);
+      console.log(`✅ Welcome email sent to ${data.email}`);
 
-      
-      // 3. Log analytics (placeholder - could send to external service)
-      console.log(`📊 Analytics: New user registered - ${data.email}`);
-
-      // 4. Future: Could trigger other actions
-      // - Send push notification to mobile app
-      // - Update user onboarding progress
-      // - Trigger welcome SMS
-      // - Add to mailing list
+      // 2. Initialize user statistics record (if table exists)
+      try {
+        await prisma.userStats.upsert({
+          where: { userId: data.userId },
+          update: {},
+          create: {
+            userId: data.userId,
+            totalTrips: 0,
+            totalSpent: 0,
+            totalDistance: 0,
+            totalTime: 0,
+          },
+        });
+        console.log(`✅ User statistics initialized for ${data.userId}`);
+      } catch (error) {
+        console.warn(
+          `⚠️ UserStats table not found. Run 'npx prisma db push' to create it.`
+        );
+      }
 
       console.log(`✅ USER_REGISTERED event processed successfully`);
     } catch (error) {
       console.error(`❌ Error processing USER_REGISTERED event:`, error);
-      // In production, you'd want to:
-      // - Send to error tracking service (Sentry)
-      // - Retry failed operations
-      // - Alert admin if critical
     }
   }
 );
 
-/**
- * Handle USER_LOGGED_IN event
- * Actions:
- * 1. Log user activity
- * 2. Update last login timestamp
- * 3. Track login analytics
- */
-eventBus.onEvent<UserLoggedInPayload>(Events.USER_LOGGED_IN, async (data) => {
-  try {
-    console.log(`🔐 Processing USER_LOGGED_IN event for: ${data.email}`);
-
-    // 1. Update last login (you'd add this field to User model)
-    // await prisma.user.update({
-    //   where: { id: data.userId },
-    //   data: { lastLoginAt: data.timestamp },
-    // });
-
-    // 2. Track analytics
-    console.log(
-      `📊 Analytics: User logged in - ${data.email} at ${data.timestamp}`
-    );
-
-    // 3. Future: Could send login notification if from new device
-    // - Check device fingerprint
-    // - Send security alert email
-
-    console.log(`✅ USER_LOGGED_IN event processed successfully`);
-  } catch (error) {
-    console.error(`❌ Error processing USER_LOGGED_IN event:`, error);
-  }
-});
 
 console.log("✅ User event listeners registered from user.register file");

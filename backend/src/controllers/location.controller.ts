@@ -1,9 +1,40 @@
 import { LocationService } from "../services/location.service";
+import { mapApiService } from "../services/map-api.service";
 import { Request, Response } from "express";
 
 const locationService = new LocationService();
 
 export class LocationController {
+  // ===== AUTOCOMPLETE =====
+
+  async autocompleteLocation(req: Request, res: Response) {
+    try {
+      const { query } = req.query;
+
+      if (!query || typeof query !== "string" || query.trim().length < 2) {
+        return res.status(400).json({
+          success: false,
+          message: "Query must be at least 2 characters",
+          suggestions: [],
+        });
+      }
+
+      // Use Mapbox to get location suggestions
+      const suggestions = await mapApiService.getSuggestions(query.trim());
+
+      return res.status(200).json({
+        success: true,
+        data: suggestions,
+      });
+    } catch (error: any) {
+      return res.status(500).json({
+        success: false,
+        message: error.message || "Failed to fetch location suggestions",
+        suggestions: [],
+      });
+    }
+  }
+
   // ===== LOCATIONS =====
 
   async getLocations(req: Request, res: Response) {

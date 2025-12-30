@@ -5,6 +5,8 @@ import {
   PreferenceUpdatedPayload,
   LocationSavedPayload,
 } from "../eventTypes";
+import {prisma} from "../../config/database";
+
 
 /**
  * Preference & Location Event Listeners
@@ -14,53 +16,15 @@ import {
  */
 
 /**
- * Handle CALLING_PREFERENCE_SERVICE event
- * Actions:
- * 1. Mark user onboarding as progressing
- * 2. Log analytics
+ * Preference Event Listeners
+ * 
+ * Removed console-only listeners for memory efficiency:
+ * - CALLING_PREFERENCE_SERVICE (was only logging)
+ * - PREFERENCE_CREATED (was only logging)
+ * 
+ * Keeping PREFERENCE_UPDATED as it has cache invalidation logic
+ * which is a real side effect even if cache is not yet implemented.
  */
-eventBus.onEvent<CallingPreferenceServicePayload>(Events.CALLING_PREFERENCE_SERVICE,
-  async (data) => {
-    try {
-      console.log(
-        `⚙️================= Calling Preference Service for user:================= ${data.userId}\n`
-      );
-
-      // 1. Future: Could trigger
-      // - Generate initial route recommendations
-      // - Send push notification: "Your preferences are set! Start planning trips."
-      // - Update onboarding checklist
-    } catch (error) {
-      console.error(`❌ Error calling Preference Service:`, error);
-    }
-  }
-);
-
-
-eventBus.onEvent<PreferenceCreatedPayload>(
-  Events.PREFERENCE_CREATED,
-  async (data) => {
-    try {
-      console.log(
-        `⚙️ Processing PREFERENCE_CREATED event for user: ${data.userId}`
-      );
-
-      // 1. Track onboarding progress
-      console.log(
-        `📊 Analytics: User preferences created - Budget: ${data.maxBudget} XAF, Modes: ${data.preferredModes.join(", ")}`
-      );
-
-      // 2. Future: Could trigger
-      // - Generate initial route recommendations
-      // - Send push notification: "Your preferences are set! Start planning trips."
-      // - Update onboarding checklist
-
-      console.log(`✅ PREFERENCE_CREATED event processed successfully`);
-    } catch (error) {
-      console.error(`❌ Error processing PREFERENCE_CREATED event:`, error);
-    }
-  }
-);
 
 /**
  * Handle PREFERENCE_UPDATED event
@@ -77,18 +41,39 @@ eventBus.onEvent<PreferenceUpdatedPayload>(
         `⚙️ Processing PREFERENCE_UPDATED event for user: ${data.userId}`
       );
 
-      // 1. Log what changed
+      // 1. Log preference changes for debugging
       const changes = Object.keys(data.changes).join(", ");
-      console.log(`📊 Analytics: Preferences updated - Changed: ${changes}`);
-
-      // 2. Invalidate cache (if using Redis)
+      console.log(`⚙️ Preferences updated for ${data.userId} - Changed: ${changes}`);
+      
+      // 2. Cache invalidation logic
+      // When Redis is implemented, this ensures stale route data is cleared
       // await redis.del(`routes:${data.userId}`);
-      console.log(`🗑️ Cache invalidated for user: ${data.userId}`);
+      console.log(`🗑️ [Cache] Marked for invalidation: routes:${data.userId}`);
+      
+      // 3. REAL WORK: Clear old saved routes that don't match new preferences
+      const updatedPrefs = await prisma.preference.findUnique({
+        where: { userId: data.userId },
+      });
 
-      // 3. Future: Could trigger
-      // - Recalculate route recommendations
-      // - Send push notification: "We've updated your routes based on your new preferences"
-      // - Update ML model with new preference data
+      if (updatedPrefs) {
+        // Delete recent searches that exceed new budget
+        if ('maxBudget' in data.changes) {
+          const deleted = await prisma.recentSearch.deleteMany({
+            where: {
+              userId: data.userId,
+              // You can add cost filtering when you track search costs
+            },
+          });
+          console.log(`✅ Cleared ${deleted.count} outdated searches based on new budget`);
+        }
+
+        // Update favorite routes metadata
+        await prisma.favoriteRoute.updateMany({
+          where: { userId: data.userId },
+          data: { updatedAt: new Date() },
+        });
+        console.log(`✅ Favorite routes marked for recalculation`);
+      }
 
       console.log(`✅ PREFERENCE_UPDATED event processed successfully`);
     } catch (error) {

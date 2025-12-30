@@ -409,10 +409,10 @@ const PreferencesScreenComponent: React.FC<PreferencesScreenProps> = ({
           {/* Header */}
           <View className="mb-8">
             <Text className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-              Personalize Your Journey
+              {isEditingMode ? "Edit Your Preferences" : "Set Your Preferences"}
             </Text>
             <Text className="text-base text-gray-600 dark:text-gray-400">
-              Customize preferences for routes anywhere in the world
+              {isEditingMode ? "Update your travel preferences to tailor your experience" : "Customize preferences for routes anywhere in the world"}
             </Text>
           </View>
 

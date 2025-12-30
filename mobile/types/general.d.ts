@@ -341,6 +341,20 @@ interface AIFloatingButtonProps {
   testID?: string;
 }
 
+interface LocationSuggestion {
+  id: string;
+  name: string;
+  displayName: string;
+  coordinates: [number, number]; //[lng, lat]
+}
+
+interface LocationAutocompleteProps {
+  suggestions: LocationSuggestion[];
+  isLoading: boolean;
+  isDark: boolean;
+  onSelectLocation: (location: LocationSuggestion) => void;
+}
+
 
 
 

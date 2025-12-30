@@ -10,30 +10,35 @@ import { validate } from "../middleware/validation.middleware";
 const router = Router();
 const locationCOntroller = new LocationController();
 
-// Protect aall routes
+// Public autocomplete route 
+router.get("/search/suggestions", (req, res) =>
+  locationCOntroller.autocompleteLocation(req, res)
+);
+
+// Protect all location routes
 router.use(authMiddleware);
 // Locations routes
-router.get("/locations", (req, res) =>
+router.get("/", (req, res) =>
   locationCOntroller.getLocations(req, res)
 );
 
-router.get("/locations/favorites", (req, res) =>
+router.get("/favorites", (req, res) =>
   locationCOntroller.getFavorites(req, res)
 );
 
-router.get("/locations/:id", (req, res) =>
+router.get("/:id", (req, res) =>
   locationCOntroller.getLocationById(req, res)
 );
 
-router.post("/locations", validate(createLocationSchema), (req, res) =>
+router.post("/", validate(createLocationSchema), (req, res) =>
   locationCOntroller.createLocation(req, res)
 );
 
-router.put("/locations/:id", validate(updateLocationSchema), (req, res) =>
+router.put("/:id", validate(updateLocationSchema), (req, res) =>
   locationCOntroller.updateLocation(req, res)
 );
 
-router.delete("/locations/:id", (req, res) =>
+router.delete("/:id", (req, res) =>
   locationCOntroller.deleteLocation(req, res)
 );
 
