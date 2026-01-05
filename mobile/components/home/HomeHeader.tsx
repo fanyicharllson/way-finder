@@ -16,16 +16,19 @@ export const HomeHeader: React.FC<HomeHeaderProps> = ({
   };
 
   return (
-    <View className="px-6 pt-4 pb-6 bg-white dark:bg-gray-900">
+    <View className="px-6 pt-2 pb-3 bg-white dark:bg-gray-900">
       <View className="flex-row items-center justify-between">
         <View className="flex-1">
           <Text className="text-2xl font-bold text-gray-900 dark:text-white">
-            {getGreeting()}, {userName}
+            {/* {getGreeting()}, {userName} */}
+            WayFinder
           </Text>
           <View className="flex-row items-center mt-1">
-            <Ionicons name="sunny" size={18} color="#F59E0B" />
-            <Text className="text-gray-600 dark:text-gray-400 ml-2 font-medium">
-              {temperature}°C
+            {/* <Ionicons name="location-outline" size={18} color="#3B82F6" /> */}
+            <Text className="text-gray-600 dark:text-gray-400 font-medium">
+              {/* {temperature}°C */}
+            {getGreeting()}, {userName}
+
             </Text>
           </View>
         </View>

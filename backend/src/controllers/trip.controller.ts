@@ -125,10 +125,7 @@ export class TripController {
 
       const result = await tripService.rateTrip(id, userId, rating);
 
-      res.status(200).json({
-        success: true,
-        ...result,
-      });
+      res.status(200).json(result);
     } catch (error: any) {
       console.error("❌ Rate trip error:", error);
       res.status(500).json({

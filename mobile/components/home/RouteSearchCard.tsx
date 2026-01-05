@@ -27,6 +27,7 @@ export const RouteSearchCard: React.FC<RouteSearchCardProps> = ({
   const [isUsingCurrentLocation, setIsUsingCurrentLocation] = useState(true);
   const [showFromSuggestions, setShowFromSuggestions] = useState(false);
   const [showToSuggestions, setShowToSuggestions] = useState(false);
+  const [isToSelected, setIsToSelected] = useState(false);
   const destinationInputRef = useRef<TextInput>(null);
   const fromInputRef = useRef<TextInput>(null);
 
@@ -104,6 +105,7 @@ export const RouteSearchCard: React.FC<RouteSearchCardProps> = ({
 
   const handleToChange = (text: string) => {
     setTo(text);
+    setIsToSelected(false);
     if (text.trim().length >= 2) {
       setShowToSuggestions(true);
       fetchToSuggestions(text);
@@ -119,7 +121,26 @@ export const RouteSearchCard: React.FC<RouteSearchCardProps> = ({
 
   const handleSelectToLocation = (location: any) => {
     setTo(location.name);
+    setIsToSelected(true);
     setShowToSuggestions(false);
+  };
+
+  const hasNoToResults =
+    !isLoadingToSuggestions &&
+    to.trim().length >= 2 &&
+    toSuggestions.length === 0 &&
+    !isToSelected;
+
+  const isDestinationReady = to.trim().length > 0 && !hasNoToResults;
+
+  const handleSearchPress = () => {
+    // If user didn’t tap a suggestion but suggestions exist, use the top result
+    const resolvedTo =
+      isToSelected || toSuggestions.length === 0
+        ? to
+        : toSuggestions[0].name;
+
+    onSearch(isUsingCurrentLocation ? currentLocationName : from, resolvedTo);
   };
 
   const handleSwap = () => {
@@ -241,7 +262,7 @@ export const RouteSearchCard: React.FC<RouteSearchCardProps> = ({
         </View>
 
         {/* To Input */}
-        <View className="flex-row items-center mt-3 mb-4 bg-gray-50 dark:bg-gray-900 rounded-2xl px-4 h-14 border border-gray-200 dark:border-gray-700">
+        <View className="flex-row items-center mt-3 mb-2 bg-gray-50 dark:bg-gray-900 rounded-2xl px-4 h-14 border border-gray-200 dark:border-gray-700">
           <Ionicons
             name="location"
             size={22}
@@ -257,6 +278,12 @@ export const RouteSearchCard: React.FC<RouteSearchCardProps> = ({
             onFocus={() => to.length >= 2 && setShowToSuggestions(true)}
           />
         </View>
+
+        {hasNoToResults && (
+          <Text className="text-xs text-red-500 mb-2 ml-1">
+            Destination not found. Please pick a suggestion or try a nearby landmark.
+          </Text>
+        )}
 
         {showToSuggestions && (
           <LocationAutocomplete
@@ -311,25 +338,30 @@ export const RouteSearchCard: React.FC<RouteSearchCardProps> = ({
 
         {/* Search Button */}
         <TouchableOpacity
-          onPress={() =>
-            onSearch(isUsingCurrentLocation ? currentLocationName : from, to)
+          onPress={handleSearchPress}
+          disabled={
+            !isDestinationReady ||
+            (isLoadingLocation && isUsingCurrentLocation)
           }
-          disabled={!to.trim() || (isLoadingLocation && isUsingCurrentLocation)}
           activeOpacity={0.8}
-          className={`h-14 rounded-2xl items-center justify-center flex-row ${
-            to.trim() && !isLoadingLocation
+          className={`h-14 rounded-2xl items-center justify-center flex-row gap-1 ${
+            isDestinationReady && !isLoadingLocation
               ? "bg-blue-500"
               : "bg-gray-300 dark:bg-gray-700"
           }`}
         >
           <Ionicons
-          name="search"
-          size={22}
-          color={`#ffffff`}
+            name="search"
+            size={18}
+            color={
+              !isLoadingLocation && isDestinationReady ? "white" : "gray"
+            }
           />
           <Text
             className={`text-lg font-bold ${
-              to.trim() && !isLoadingLocation ? "text-white" : "text-gray-500"
+              isDestinationReady && !isLoadingLocation
+                ? "text-white"
+                : "text-gray-500"
             }`}
           >
             Search Routes

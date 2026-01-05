@@ -7,7 +7,8 @@ export default defineConfig({
     path: 'prisma/migrations',
   },
   datasource: {
-    url: env('DATABASE_URL'),
+    // Use dummy URL during build if DATABASE_URL is not set (Prisma Accelerate)
+    url: process.env.DATABASE_URL || 'prisma+postgres://accelerate.prisma-data.net/?api_key=build-time-placeholder',
   },
 })
         

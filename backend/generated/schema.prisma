@@ -1,0 +1,169 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  phone     String?  @unique
+  password  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  preferences    UserPreference?
+  locations      Location[]
+  trips          Trip[]
+  recentSearches RecentSearch[]
+  favoriteRoutes FavoriteRoute[]
+  stats          UserStats?
+
+  @@index([email])
+}
+
+model UserPreference {
+  id     String @id @default(uuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  maxBudget      Float    @default(5000)
+  preferredModes String[] @default(["moto", "bus"]) // ["moto", "bus", "taxi", "walk"]
+  avoidTolls     Boolean  @default(false)
+  avoidanceZones String[] @default([]) // ["Carrefour", "Melen"]
+  priorityType   String   @default("balanced") // fastest, cheapest, balanced
+  isComplete     Boolean  @default(false)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Location {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  name       String // "Home", "Work"
+  address    String
+  latitude   Float
+  longitude  Float
+  isFavorite Boolean @default(false)
+
+  // NEW: Track usage for analytics
+  usageCount Int      @default(1)
+  lastUsedAt DateTime @default(now())
+
+  createdAt DateTime @default(now())
+
+  @@unique([userId, address])
+  @@index([userId])
+  @@index([usageCount])
+}
+
+model Trip {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  origin        String
+  destination   String
+  transportMode String // bus, moto, taxi, walk
+  actualCost    Float
+  actualTime    Int // minutes
+  distance      Float // km
+
+  startTime DateTime
+  endTime   DateTime?
+  rating    Int? // 1-5
+
+  createdAt DateTime @default(now())
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model RecentSearch {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  fromAddress String
+  toAddress   String
+  fromLat     Float?
+  fromLng     Float?
+  toLat       Float?
+  toLng       Float?
+
+  searchCount  Int      @default(1) // Increment if same search repeated
+  lastSearched DateTime @default(now())
+  createdAt    DateTime @default(now())
+
+  @@unique([userId, fromAddress, toAddress])
+  @@index([userId, lastSearched])
+}
+
+model FavoriteRoute {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  name        String // User-defined name like "Home to Work"
+  fromAddress String
+  toAddress   String
+  fromLat     Float
+  fromLng     Float
+  toLat       Float
+  toLng       Float
+
+  preferredMode String? // Optional: user's preferred mode for this route
+  notes         String? // Optional notes
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
+// User Statistics (updated by TRIP_COMPLETED event)
+model UserStats {
+  id     String @id @default(uuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  totalTrips    Int   @default(0)
+  totalSpent    Float @default(0)
+  totalDistance Float @default(0) // in meters
+  totalTime     Int   @default(0) // in minutes
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([totalTrips])
+}
+
+// Route Popularity (updated by TRIP_COMPLETED event)
+model RoutePopularity {
+  id String @id @default(uuid())
+
+  origin        String
+  destination   String
+  transportMode String
+
+  count         Int      @default(1)
+  totalCost     Float    @default(0)
+  totalTime     Int      @default(0) // minutes
+  totalDistance Float    @default(0) // meters
+  avgCost       Float?   @default(0)
+  avgTime       Int?     @default(0)
+  lastUsed      DateTime @default(now())
+
+  createdAt DateTime @default(now())
+
+  @@unique([origin, destination, transportMode])
+  @@index([count])
+  @@index([lastUsed])
+}

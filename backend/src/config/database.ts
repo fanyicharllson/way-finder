@@ -2,7 +2,7 @@ import dotenv from "dotenv";
 dotenv.config();
 
 import { PrismaClient } from "@prisma/client";
-import { withAccelerate } from "@prisma/extension-accelerate";
+import { withAccelerate } from "@prisma/extension-accelerate"; 
 
 const prismaClientSingleton = () => {
   return new PrismaClient({

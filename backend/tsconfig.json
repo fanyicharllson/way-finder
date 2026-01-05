@@ -10,8 +10,9 @@
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "moduleResolution": "node"
+    "moduleResolution": "node",
+    "types": ["node"]
   },
-  "include": ["src/**/*", "generated/**/*", "../prisma/**/*"],
+  "include": ["src/**/*", "generated/**/*", "../prisma/**/*", "*.ts"],
   "exclude": ["node_modules"]
 }
