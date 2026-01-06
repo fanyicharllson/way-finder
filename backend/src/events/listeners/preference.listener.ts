@@ -51,7 +51,7 @@ eventBus.onEvent<PreferenceUpdatedPayload>(
       console.log(`🗑️ [Cache] Marked for invalidation: routes:${data.userId}`);
       
       // 3. REAL WORK: Clear old saved routes that don't match new preferences
-      const updatedPrefs = await prisma.preference.findUnique({
+      const updatedPrefs = await prisma.userPreference.findUnique({
         where: { userId: data.userId },
       });
 
