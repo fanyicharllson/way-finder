@@ -6,6 +6,7 @@ interface RouteCardProps {
   route: RouteOption;
   onSelect: () => void;
   onViewOnMap: () => void;
+  onAIAnalysis: () => void;
   isDark: boolean;
 }
 
@@ -13,6 +14,7 @@ export const RouteCard: React.FC<RouteCardProps> = ({
   route,
   onSelect,
   onViewOnMap,
+  onAIAnalysis,
   isDark,
 }) => {
   const getModeConfig = () => {
@@ -111,6 +113,22 @@ export const RouteCard: React.FC<RouteCardProps> = ({
           <Text className="text-gray-500 dark:text-gray-400 text-xs">mins</Text>
         </View>
       </View>
+
+      {/* AI Analysis Button */}
+      <TouchableOpacity
+        onPress={onAIAnalysis}
+        className="mb-3 h-11 rounded-xl bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 items-center justify-center flex-row"
+        activeOpacity={0.7}
+      >
+        <Ionicons
+          name="sparkles"
+          size={16}
+          color="#8B5CF6"
+        />
+        <Text className="ml-2 text-purple-700 dark:text-purple-300 font-semibold text-sm">
+          Get AI Cost Analysis
+        </Text>
+      </TouchableOpacity>
 
       {/* Actions */}
       <View className="flex-row gap-3">

@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { View, ScrollView, KeyboardAvoidingView, Platform, TouchableOpacity, Text } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useColorScheme } from 'nativewind';
-import { router } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 import { useAIChat } from '@/hooks/useAI';
 import { ChatBubble } from '@/components/ai/ChatBubble';
 import { ChatInput } from '@/components/ai/ChatInput';
@@ -14,9 +14,11 @@ export default function AIChatScreen() {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
   const scrollViewRef = useRef<ScrollView>(null);
+  const { autoPrompt } = useLocalSearchParams<{ autoPrompt?: string }>();
   
   const [chatHistory, setChatHistory] = useState<Message[]>([]);
   const [isTyping, setIsTyping] = useState(false);
+  const [hasAutoSent, setHasAutoSent] = useState(false);
   
   const aiChat = useAIChat();
 
@@ -24,6 +26,14 @@ export default function AIChatScreen() {
     // Auto-scroll to bottom when new messages arrive
     scrollViewRef.current?.scrollToEnd({ animated: true });
   }, [chatHistory, isTyping]);
+
+  // Auto-send prompt if provided (from route card)
+  useEffect(() => {
+    if (autoPrompt && !hasAutoSent && chatHistory.length === 0) {
+      setHasAutoSent(true);
+      handleSend(autoPrompt);
+    }
+  }, [autoPrompt, hasAutoSent, chatHistory]);
 
   const getTimestamp = () => {
     const now = new Date();

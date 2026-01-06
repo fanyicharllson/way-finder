@@ -226,16 +226,16 @@ export default function RouteResultsScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50 dark:bg-gray-900">
-      <View className="px-6 py-4 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700">
+      <View className="px-6 py-4 bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-700">
         <View className="flex-row items-center mb-3">
           <TouchableOpacity onPress={() => router.back()}>
             <Ionicons
-              name="chevron-back"
+              name="arrow-back"
               size={24}
               color={isDark ? '#FFFFFF' : '#000000'}
             />
           </TouchableOpacity>
-          <Text className="text-xl font-bold text-gray-900 dark:text-white ml-2">
+          <Text className="text-2xl font-bold text-gray-900 dark:text-white ml-2">
             Route Options
           </Text>
         </View>
@@ -258,6 +258,21 @@ export default function RouteResultsScreen() {
       </View>
 
       <ScrollView className="flex-1 px-6 py-4" showsVerticalScrollIndicator={false}>
+        {/* Disclaimer */}
+        <View className="bg-amber-50 dark:bg-amber-900/20 rounded-2xl p-4 mb-4 border border-amber-200 dark:border-amber-800">
+          <View className="flex-row items-start">
+            <Ionicons name="information-circle" size={20} color="#F59E0B" />
+            <View className="flex-1 ml-3">
+              <Text className="text-amber-900 dark:text-amber-200 font-semibold text-sm mb-1">
+                Price & Time Estimates
+              </Text>
+              <Text className="text-amber-700 dark:text-amber-300 text-xs leading-5">
+                Costs and durations shown are estimates based on typical conditions. Actual prices may vary depending on traffic, time of day, and availability.
+              </Text>
+            </View>
+          </View>
+        </View>
+
         <Text className="text-gray-600 dark:text-gray-400 text-sm mb-4">
           Found {results.routes.length} route{results.routes.length > 1 ? 's' : ''}
         </Text>
@@ -268,6 +283,14 @@ export default function RouteResultsScreen() {
             route={route}
             onSelect={() => handleSelectRoute(route)}
             onViewOnMap={() => handleViewOnMap(route)}
+            onAIAnalysis={() => {
+              router.push({
+                pathname: '/screens/(extrascreens)/ai-chat',
+                params: {
+                  autoPrompt: `Analyze this route for me:\n\nTransport: ${route.mode}\nDistance: ${route.distance.toFixed(1)} km\nEstimated Cost: ${route.cost} FCFA\nEstimated Duration: ${route.duration} minutes\n\nIs this cost reasonable? Should I consider other options? What factors might affect the actual price?`
+                }
+              });
+            }}
             isDark={isDark}
           />
         ))}

@@ -25,7 +25,7 @@ export class AIService {
     this.genAI = new GoogleGenerativeAI(apiKey);
     // Use gemini-pro for better reasoning and search capability
     this.model = this.genAI.getGenerativeModel({
-      model: "gemini-2.5-flash",
+      model: "gemini-2.5-flash-lite",
       generationConfig: {
         temperature: 0.7, // Balanced creativity and accuracy
         topK: 40,
