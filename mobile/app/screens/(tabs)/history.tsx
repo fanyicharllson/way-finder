@@ -255,12 +255,12 @@ const HistoryScreen = () => {
         />
 
         {/* Floating Action Buttons */}
-        <View style={{ position: 'absolute', bottom: 0, right: 0, width: 100, height: 200 }}>
+        <View style={{ position: 'absolute', bottom: 0, right: 0, left: 0, top: 0, pointerEvents: 'box-none', zIndex: 99999, elevation: 20 }}>
           <FloatingActionButton
             onPress={handleAddTrip}
             icon="add"
             visible={true}
-            bottom={24}
+            bottom={130}
             right={24}
             testID="add-trip-fab"
           />
@@ -268,7 +268,7 @@ const HistoryScreen = () => {
           <AIFloatingButton
             onPress={handleAIPress}
             visible={true}
-            bottom={92}
+            bottom={190}
             right={24}
             testID="ai-fab"
           />
@@ -332,7 +332,7 @@ const HistoryScreen = () => {
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
-        contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 100 }}
+        contentContainerStyle={{ paddingHorizontal: 24, paddingBottom: 140 }}
         stickySectionHeadersEnabled={true}
       />
 
@@ -350,12 +350,12 @@ const HistoryScreen = () => {
       />
 
       {/* Floating Action Buttons */}
-      <View style={{ position: 'absolute', bottom: 0, right: 0, width: 100, height: 200 }}>
+      <View style={{ position: 'absolute', bottom: 0, right: 0, left: 0, top: 0, pointerEvents: 'box-none', zIndex: 99999, elevation: 20 }}>
         <FloatingActionButton
           onPress={handleAddTrip}
           icon="add"
           visible={true}
-          bottom={24}
+          bottom={130}
           right={24}
           testID="add-trip-fab"
         />
@@ -363,7 +363,7 @@ const HistoryScreen = () => {
         <AIFloatingButton
           onPress={handleAIPress}
           visible={true}
-          bottom={92}
+          bottom={190}
           right={24}
           testID="ai-fab"
         />

@@ -7,6 +7,7 @@ import {
   MapsApiSuccessPayload,
   MapsApiFailedPayload,
 } from "../events/eventTypes";
+import { Logger } from "../utils/logger.util";
 
 /**
  * Mapbox API Service (Singleton Pattern)
@@ -23,7 +24,7 @@ class MapApiService {
     this.accessToken = process.env.MAPBOX_ACCESS_TOKEN || "";
 
     if (!this.accessToken) {
-      console.warn("⚠️ MAPBOX_ACCESS_TOKEN not set in environment variables");
+      Logger.warn("⚠️ MAPBOX_ACCESS_TOKEN not set in environment variables");
     }
   }
 
@@ -200,7 +201,7 @@ class MapApiService {
 
       // Strategy 2: Try with just major location types (cities, towns)
       if (!response.data.features || response.data.features.length === 0) {
-        console.log(`⚠️ No results for "${cleanAddress}", trying major locations only...`);
+        Logger.dev(`⚠️ No results for "${cleanAddress}", trying major locations only...`);
         
         response = await axios.get(
           `${this.baseURL}/geocoding/v5/mapbox.places/${encodeURIComponent(cleanAddress)}.json`,
@@ -220,7 +221,7 @@ class MapApiService {
       if (!response.data.features || response.data.features.length === 0) {
         const mainTerm = cleanAddress.split(/[,\s]+/)[0];
         if (mainTerm && mainTerm !== cleanAddress) {
-          console.log(`⚠️ Still no results, trying fuzzy search with "${mainTerm}"...`);
+          Logger.dev(`⚠️ Still no results, trying fuzzy search with "${mainTerm}"...`);
           
           response = await axios.get(
             `${this.baseURL}/geocoding/v5/mapbox.places/${encodeURIComponent(mainTerm)}.json`,
@@ -244,9 +245,9 @@ class MapApiService {
       }
 
       // Log all results for debugging
-      // console.log(`📍 Found ${response.data.features.length} results for "${cleanAddress}":`);
+      // Logger.log(`📍 Found ${response.data.features.length} results for "${cleanAddress}":`);
       // response.data.features.forEach((feature: any, idx: number) => {
-      //   console.log(`  ${idx + 1}. ${feature.place_name} (relevance: ${feature.relevance})`);
+      //   Logger.log(`  ${idx + 1}. ${feature.place_name} (relevance: ${feature.relevance})`);
       // });
 
       // Filter out results not in Cameroon (safety check)
@@ -264,7 +265,7 @@ class MapApiService {
       const bestMatch = cameroonResults[0];
       const coordinates = bestMatch.center;
       
-      console.log(`✅ Using: ${bestMatch.place_name}`);
+      Logger.success(`Using: ${bestMatch.place_name}`);
 
       return {
         lng: coordinates[0], // Mapbox returns [lng, lat]
@@ -366,11 +367,11 @@ class MapApiService {
           coordinates: feature.center as [number, number], // [lng, lat]
         }));
 
-      console.log(`🔍 Found ${suggestions.length} suggestions for "${cleanQuery}"`);
+      Logger.dev(`🔍 Found ${suggestions.length} suggestions for "${cleanQuery}"`);
 
       return suggestions;
     } catch (error: any) {
-      console.error(`❌ Autocomplete error for "${query}":`, error.message);
+      Logger.error(`❌ Autocomplete error for "${query}":`, error.message);
       return [];
     }
   }

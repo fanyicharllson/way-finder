@@ -53,8 +53,8 @@ model Location {
     isFavorite Boolean @default(false)
 
     // NEW: Track usage for analytics
-    usageCount  Int      @default(1)
-    lastUsedAt  DateTime @default(now())
+    usageCount Int      @default(1)
+    lastUsedAt DateTime @default(now())
 
     createdAt DateTime @default(now())
 
@@ -165,4 +165,71 @@ model RoutePopularity {
     @@unique([origin, destination, transportMode])
     @@index([count])
     @@index([lastUsed])
+}
+
+model TransportPricing {
+    id               String  @id @default(cuid())
+    mode             String // "bus", "moto", "taxi", "walking"
+    baseFare         Float
+    costPerKm        Float
+    averageSpeed     Float
+    comfortLevel     Int
+    weatherSensitive Boolean
+    trafficSensitive Boolean
+    minDistance      Float
+    maxDistance      Float?
+
+    // Dynamic pricing fields
+    peakHourMultiplier Float @default(1.0)
+    offPeakMultiplier  Float @default(1.0)
+    weatherMultiplier  Float @default(1.0)
+    trafficMultiplier  Float @default(1.0)
+
+    isActive  Boolean  @default(true)
+    createdAt DateTime @default(now())
+    updatedAt DateTime @updatedAt
+
+    @@unique([mode])
+}
+
+// Surge pricing rules
+model SurgePricingRule {
+    id          String   @id @default(cuid())
+    mode        String
+    dayOfWeek   Int // 0-6 (Sunday-Saturday)
+    startHour   Int // 0-23
+    endHour     Int // 0-23
+    multiplier  Float // 1.5 = 150% of base price
+    description String // "Morning rush hour"
+    isActive    Boolean  @default(true)
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
+
+    @@index([mode, isActive])
+}
+
+// Weather-based pricing
+model WeatherPricingRule {
+    id               String   @id @default(cuid())
+    mode             String
+    weatherCondition String // "rain", "heavy_rain", "storm"
+    multiplier       Float
+    isActive         Boolean  @default(true)
+    createdAt        DateTime @default(now())
+    updatedAt        DateTime @updatedAt
+
+    @@index([mode, weatherCondition, isActive])
+}
+
+// Traffic-based pricing
+model TrafficPricingRule {
+    id           String   @id @default(cuid())
+    mode         String
+    trafficLevel String // "low", "medium", "high"
+    multiplier   Float
+    isActive     Boolean  @default(true)
+    createdAt    DateTime @default(now())
+    updatedAt    DateTime @updatedAt
+
+    @@index([mode, trafficLevel, isActive])
 }

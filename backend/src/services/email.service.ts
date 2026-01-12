@@ -1,6 +1,7 @@
 import { Resend } from "resend";
 import dotenv from "dotenv";
-import { emailTemplates } from "../../templates/emailTemplates";
+import { emailTemplates } from "../templates/emailTemplates";
+import { Logger } from "../utils/logger.util";
 
 dotenv.config();
 
@@ -29,7 +30,7 @@ export const sendEmail = async (
 ): Promise<boolean> => {
   try {
     if (!process.env.RESEND_API_KEY) {
-      console.warn("⚠️ RESEND_API_KEY not set. Email not sent.");
+      Logger.warn("⚠️ RESEND_API_KEY not set. Email not sent.");
       return false;
     }
 
@@ -41,14 +42,14 @@ export const sendEmail = async (
     });
 
     if (error) {
-      console.error("❌ Email send error:", error);
+      Logger.error("❌ Email send error:", error);
       return false;
     }
 
-    console.log("✅ Email sent successfully:", data);
+    Logger.dev("✅ Email sent successfully:", data);
     return true;
   } catch (error) {
-    console.error("❌ Email send exception:", error);
+    Logger.error("❌ Email send exception:", error);
     return false;
   }
 };

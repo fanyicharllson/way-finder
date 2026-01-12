@@ -12,7 +12,7 @@ export const showToast = ({
   type,
   text1,
   text2,
-  duration = 3000,
+  duration = 4000,
   position = "top",
 }: ToastConfig) => {
   Toast.show({
@@ -21,7 +21,8 @@ export const showToast = ({
     text2,
     position,
     visibilityTime: duration,
-    topOffset: 60,
-    bottomOffset: 40,
+    topOffset: 50,
+    bottomOffset: 120,
+    autoHide: true,
   });
 };

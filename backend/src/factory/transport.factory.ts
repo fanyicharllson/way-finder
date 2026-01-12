@@ -1,48 +1,66 @@
 import {
   TransportMode,
-  TransportConfig,
-  TRANSPORT_CONFIGS,
   GoogleMapsDirectionsResult,
   RouteOption,
   RouteStep,
 } from "../types/route.type";
 import { v4 as uuidv4 } from "uuid";
+import { pricingService, PricingContext } from "../services/pricing.service";
 
 /**
  * Abstract Transport Calculator
  * Base class for all transport mode calculators
  */
 abstract class TransportCalculator {
-  protected config: TransportConfig;
+  protected mode: TransportMode;
+  protected minDistance: number;
+  protected maxDistance?: number;
 
-  constructor(config: TransportConfig) {
-    this.config = config;
+  constructor(mode: TransportMode, minDistance: number, maxDistance?: number) {
+    this.mode = mode;
+    this.minDistance = minDistance;
+    this.maxDistance = maxDistance;
   }
 
   /**
-   * Calculate route option for this transport mode
+   * Calculate route option for this transport mode using dynamic pricing
    */
-  calculate(mapsResult: GoogleMapsDirectionsResult): RouteOption {
+  async calculate(
+    mapsResult: GoogleMapsDirectionsResult,
+    pricingContext?: Partial<PricingContext>
+  ): Promise<RouteOption> {
     const distanceKm = mapsResult.distance / 1000; // Convert meters to km
 
     // Check if this mode is viable for the distance
     if (!this.isViable(distanceKm)) {
       throw new Error(
-        `${this.config.mode} is not viable for ${distanceKm.toFixed(2)}km`
+        `${this.mode} is not viable for ${distanceKm.toFixed(2)}km`
       );
     }
 
-    const cost = this.calculateCost(distanceKm);
-    const duration = this.calculateDuration(distanceKm);
+    // Get pricing configuration from database
+    const pricingConfig = await pricingService.calculatePrice({
+      mode: this.mode,
+      distanceKm,
+      departureTime: pricingContext?.departureTime || new Date(),
+      weatherCondition: pricingContext?.weatherCondition || "clear",
+      trafficLevel: pricingContext?.trafficLevel || "low",
+    });
+
+    // Calculate duration
+    const duration = await this.calculateDuration(distanceKm);
 
     return {
       id: uuidv4(),
-      mode: this.config.mode,
-      cost: Math.round(cost), // Round to nearest XAF
+      mode: this.mode,
+      cost: pricingConfig.finalCost,
       duration: Math.round(duration), // Round to nearest minute
       distance: parseFloat(distanceKm.toFixed(2)),
       polyline: mapsResult.polyline,
       steps: this.convertSteps(mapsResult.steps),
+      pricingBreakdown: pricingConfig.breakdown,
+      appliedMultipliers: pricingConfig.multipliers,
+      trafficLevel: pricingContext?.trafficLevel,
     };
   }
 
@@ -50,33 +68,29 @@ abstract class TransportCalculator {
    * Check if this transport mode is viable for the distance
    */
   protected isViable(distanceKm: number): boolean {
-    const { minDistance, maxDistance } = this.config.availability;
-    
-    if (distanceKm < minDistance) {
+    if (distanceKm < this.minDistance) {
       return false;
     }
-    
-    if (maxDistance && distanceKm > maxDistance) {
+
+    if (this.maxDistance && distanceKm > this.maxDistance) {
       return false;
     }
-    
+
     return true;
   }
 
   /**
-   * Calculate cost based on distance
-   * Formula: baseFare + (distance * costPerKm)
+   * Calculate duration based on average speed from database
+   * Can be overridden by subclasses for mode-specific adjustments
    */
-  protected calculateCost(distanceKm: number): number {
-    return this.config.baseFare + distanceKm * this.config.costPerKm;
-  }
-
-  /**
-   * Calculate duration based on average speed
-   * Formula: (distance / averageSpeed) * 60 (convert hours to minutes)
-   */
-  protected calculateDuration(distanceKm: number): number {
-    return (distanceKm / this.config.averageSpeed) * 60;
+  protected async calculateDuration(distanceKm: number): Promise<number> {
+    // Get speed from database
+    const config = await pricingService["getTransportPricing"](this.mode);
+    if (!config) {
+      throw new Error(`Pricing config not found for mode: ${this.mode}`);
+    }
+    // Formula: (distance / averageSpeed) * 60 (convert hours to minutes)
+    return (distanceKm / config.averageSpeed) * 60;
   }
 
   /**
@@ -98,20 +112,6 @@ abstract class TransportCalculator {
   protected stripHtmlTags(html: string): string {
     return html.replace(/<[^>]*>/g, "");
   }
-
-  /**
-   * Get comfort level (used by balanced strategy)
-   */
-  getComfortLevel(): number {
-    return this.config.comfortLevel;
-  }
-
-  /**
-   * Check if weather-sensitive (used for Phase 2)
-   */
-  isWeatherSensitive(): boolean {
-    return this.config.weatherSensitive;
-  }
 }
 
 /**
@@ -120,13 +120,13 @@ abstract class TransportCalculator {
 
 class BusCalculator extends TransportCalculator {
   constructor() {
-    super(TRANSPORT_CONFIGS[TransportMode.BUS]);
+    super(TransportMode.BUS, 10); // minDistance: 10km
   }
 
   // Bus-specific adjustments can go here
   // e.g., add extra time for waiting at bus stops
-  protected calculateDuration(distanceKm: number): number {
-    const baseDuration = super.calculateDuration(distanceKm);
+  protected async calculateDuration(distanceKm: number): Promise<number> {
+    const baseDuration = await super.calculateDuration(distanceKm);
     const waitTime = 10; // Average 10 minutes wait time
     return baseDuration + waitTime;
   }
@@ -134,7 +134,7 @@ class BusCalculator extends TransportCalculator {
 
 class MotoCalculator extends TransportCalculator {
   constructor() {
-    super(TRANSPORT_CONFIGS[TransportMode.MOTO]);
+    super(TransportMode.MOTO, 5, 100); // minDistance: 5km, maxDistance: 100km
   }
 
   // Moto-specific adjustments
@@ -143,7 +143,7 @@ class MotoCalculator extends TransportCalculator {
 
 class TaxiCalculator extends TransportCalculator {
   constructor() {
-    super(TRANSPORT_CONFIGS[TransportMode.TAXI]);
+    super(TransportMode.TAXI, 5); // minDistance: 5km
   }
 
   // Taxi-specific adjustments
@@ -152,7 +152,7 @@ class TaxiCalculator extends TransportCalculator {
 
 class WalkingCalculator extends TransportCalculator {
   constructor() {
-    super(TRANSPORT_CONFIGS[TransportMode.WALKING]);
+    super(TransportMode.WALKING, 0, 10); // minDistance: 0km, maxDistance: 10km
   }
 
   // Walking-specific adjustments
@@ -184,18 +184,19 @@ export class TransportFactory {
   }
 
   /**
-   * Calculate route options for multiple transport modes
+   * Calculate route options for multiple transport modes with dynamic pricing
    */
-  static calculateRoutes(
+  static async calculateRoutes(
     mapsResult: GoogleMapsDirectionsResult,
-    modes: TransportMode[]
-  ): RouteOption[] {
+    modes: TransportMode[],
+    pricingContext?: Partial<PricingContext>
+  ): Promise<RouteOption[]> {
     const routes: RouteOption[] = [];
 
     for (const mode of modes) {
       try {
         const calculator = this.getCalculator(mode);
-        const route = calculator.calculate(mapsResult);
+        const route = await calculator.calculate(mapsResult, pricingContext);
         routes.push(route);
       } catch (error) {
         // Mode not viable for this distance, skip it

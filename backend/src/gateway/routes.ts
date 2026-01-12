@@ -7,6 +7,8 @@ import recentSearchRoute from "../routes/recent.search.routes";
 import favoriteRoutes from "../routes/favorite.routes";
 import tripRoutes from "../routes/trip.routes";
 import aiRoutes from '../routes/ai.routes';
+import weatherRoutes from '../routes/weather.routes';
+import { Logger } from "../utils/logger.util";
 
 /**
  * API Gateway - Route Configuration
@@ -16,51 +18,55 @@ import aiRoutes from '../routes/ai.routes';
  */
 
 export function setupGatewayRoutes(app: Express) {
-  console.log("🛣️ Setting up API Gateway routes...\n");
+  Logger.info("🛣️ Setting up API Gateway routes...\n");
   // AUTH ROUTES (Public)
   app.use("/api/auth", authRoutes);
-  console.log("Auth routes mounted:");
+  Logger.info("Auth routes mounted:");
   //! PROTECTED ROUTES ********************************************************
   // PREFERENCE ROUTES
   app.use("/api/preferences", preferenceRoutes);
-  console.log("Preference routes mounted:");
+  Logger.info("Preference routes mounted:");
 
   // Routes ROUTES
   app.use("/api/routes", routeRoutes);
-  console.log("Route routes mounted");
+  Logger.info("Route routes mounted");
 
   // recent search ROUTES
   app.use("/api/searches", recentSearchRoute);
-  console.log("Recent search  routes mounted");
+  Logger.info("Recent search  routes mounted");
 
   // Favorite ROUTES
   app.use("/api/favorites", favoriteRoutes);
-  console.log("Favorite routes mounted");
+  Logger.info("Favorite routes mounted");
 
   // Trip ROUTES
   app.use("/api/trips", tripRoutes);
-  console.log("Trip routes mounted");
+  Logger.info("Trip routes mounted");
 
   // LOCATION ROUTES
   app.use("/api/locations", locationRoutes);
-  console.log("Location routes mounted");
+  Logger.info("Location routes mounted");
 
   // AI ROUTES
   app.use("/api/ai", aiRoutes);
-  console.log("AI routes mounted");
+  Logger.info("AI routes mounted");
+
+  // WEATHER ROUTES (Public)
+  app.use("/api/weather", weatherRoutes);
+  Logger.info("Weather routes mounted");
 
   // GATEWAY INFO
-  console.log("═════════════════════════════════════════════════════════");
-  console.log("📊 API GATEWAY SUMMARY");
-  console.log("═════════════════════════════════════════════════════════");
-  console.log("🔓 Public Routes  : /api/auth/register, /api/auth/login");
-  console.log("🔐 Protected Routes: All others (require JWT token)");
-  console.log("⏱️  Rate Limiting  :");
-  console.log("   - Auth endpoints: 5 requests/15 minutes");
-  console.log("   - API endpoints : 100 requests/minute");
-  console.log("   - Other         : 30 requests/minute");
-  console.log("📝 Logging        : All requests logged with Request ID");
-  console.log("═════════════════════════════════════════════════════════\n");
+  Logger.info("═════════════════════════════════════════════════════════");
+  Logger.info("📊 API GATEWAY SUMMARY");
+  Logger.info("═════════════════════════════════════════════════════════");
+  Logger.info("🔓 Public Routes  : /api/auth/register, /api/auth/login");
+  Logger.info("🔐 Protected Routes: All others (require JWT token)");
+  Logger.info("⏱️  Rate Limiting  :");
+  Logger.info("   - Auth endpoints: 5 requests/15 minutes");
+  Logger.info("   - API endpoints : 100 requests/minute");
+  Logger.info("   - Other         : 30 requests/minute");
+  Logger.info("📝 Logging        : All requests logged with Request ID");
+  Logger.info("═════════════════════════════════════════════════════════\n");
 }
 
 /**

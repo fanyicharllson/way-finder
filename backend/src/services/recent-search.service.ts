@@ -1,6 +1,7 @@
 import { prisma } from "../config/database";
 import { eventBus } from "../events";
 import { Events } from "../events/eventTypes";
+import { Logger } from "../utils/logger.util";
 
 /**
  * Search Service
@@ -72,7 +73,7 @@ export class RecentSearchService {
 
       return search;
     } catch (error) {
-      console.error("❌ Error saving search:", error);
+      Logger.error("❌ Error saving search:", error);
       throw error;
     }
   }

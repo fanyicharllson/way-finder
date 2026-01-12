@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { JWTUtil } from "../../utils/jwt.util";
+import { Logger } from "../../utils/logger.util";
 
 /**
  * API Gateway - Authentication Middleware
@@ -24,17 +25,17 @@ export const authGateway = (
   const isPublicRoute = PUBLIC_ROUTES.some((route) => req.path === route);
 
   if (isPublicRoute) {
-    console.log(`🔓 Public route accessed: ${req.method} ${req.path}`);
+    Logger.dev(`🔓 Public route accessed: ${req.method} ${req.path}`);
     return next();
   }
 
   // Protected route - require authentication
-  console.log(`🔐 Protected route - verifying token: ${req.method} ${req.path}`);
+  Logger.dev(`🔐 Protected route - verifying token: ${req.method} ${req.path}`);
 
   const authHeader = req.headers.authorization;
 
   if (!authHeader) {
-    console.log(`❌ No authorization header provided`);
+    Logger.dev(`❌ No authorization header provided`);
     return res.status(401).json({
       success: false,
       message: "Authorization header missing",
@@ -45,7 +46,7 @@ export const authGateway = (
   const token = authHeader.replace("Bearer ", "");
 
   if (!token) {
-    console.log(`❌ Invalid authorization header format`);
+    Logger.dev(`❌ Invalid authorization header format`);
     return res.status(401).json({
       success: false,
       message: "Invalid authorization header format",
@@ -60,10 +61,10 @@ export const authGateway = (
     (req as any).user = decoded;
     (req as any).userId = decoded.userId;
 
-    console.log(`✅ Token verified for user: ${decoded.email}`);
+    Logger.auth('Token verified for user', decoded.email);
     next();
   } catch (error) {
-    console.log(`❌ Invalid or expired token`);
+    Logger.dev(`❌ Invalid or expired token`);
     return res.status(401).json({
       success: false,
       message: "Invalid or expired token",

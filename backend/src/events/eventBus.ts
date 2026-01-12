@@ -1,4 +1,5 @@
 import { EventEmitter } from "events";
+import { Logger } from "../utils/logger.util";
 
 /**
  * Central Event Bus for the application
@@ -16,7 +17,7 @@ class EventBus extends EventEmitter {
    * Emit an event with type safety
    */
   emitEvent<T>(event: string, data: T): boolean {
-    console.log(`📡 Event emitted: ${event}`, data);
+    Logger.event(event, data);
     return this.emit(event, data);
   }
 

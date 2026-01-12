@@ -81,7 +81,7 @@ export class AuthController {
     } catch (error: any) {
       return res.status(404).json({
         success: false,
-        message: error.message || "User not found",
+        message: error.message || "User not found! Please login",
       });
     }
   }

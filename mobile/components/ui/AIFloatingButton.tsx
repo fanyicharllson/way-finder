@@ -110,8 +110,8 @@ export const AIFloatingButton: React.FC<AIFloatingButtonProps> = ({
 const styles = StyleSheet.create({
   container: {
     position: "absolute",
-    zIndex: 9998,
-    elevation: 10,
+    zIndex: 99999,
+    elevation: 20,
   },
   glowContainer: {
     position: "absolute",

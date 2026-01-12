@@ -6,8 +6,10 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   ScrollView,
+  Platform,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
+import DateTimePicker, { DateTimePickerEvent } from '@react-native-community/datetimepicker';
 import { useGetPreferences } from "@/hooks/usePreferences";
 import { useCurrentLocation } from "@/hooks/useLocation";
 import { useLocationAutocomplete } from "@/hooks/useLocationAutocomplete";
@@ -28,6 +30,12 @@ export const RouteSearchCard: React.FC<RouteSearchCardProps> = ({
   const [showFromSuggestions, setShowFromSuggestions] = useState(false);
   const [showToSuggestions, setShowToSuggestions] = useState(false);
   const [isToSelected, setIsToSelected] = useState(false);
+  const [departureTime, setDepartureTime] = useState(new Date());
+  const [showTimePicker, setShowTimePicker] = useState(false);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [pickerMode, setPickerMode] = useState<'date' | 'time'>('date');
+  const [useCustomTime, setUseCustomTime] = useState(false);
+  const [tempDate, setTempDate] = useState(new Date());
   const destinationInputRef = useRef<TextInput>(null);
   const fromInputRef = useRef<TextInput>(null);
 
@@ -140,7 +148,19 @@ export const RouteSearchCard: React.FC<RouteSearchCardProps> = ({
         ? to
         : toSuggestions[0].name;
 
-    onSearch(isUsingCurrentLocation ? currentLocationName : from, resolvedTo);
+    // Use custom time if set, otherwise use current time
+    const timeToUse = useCustomTime ? departureTime : new Date();
+    console.log("Searching routes with:", {
+      from: isUsingCurrentLocation ? currentLocationName : from,
+      to: resolvedTo,
+      departureTime: timeToUse,
+    });
+
+    onSearch(
+      isUsingCurrentLocation ? currentLocationName : from,
+      resolvedTo,
+      timeToUse.toISOString()
+    );
   };
 
   const handleSwap = () => {
@@ -293,6 +313,172 @@ export const RouteSearchCard: React.FC<RouteSearchCardProps> = ({
             onSelectLocation={handleSelectToLocation}
           />
         )}
+
+        {/* Departure Time Section */}
+        <View className="mb-4 mt-2">
+          <Text className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-2 ml-1">
+            Departure Time
+          </Text>
+          
+          {/* Time Options */}
+          <View className="flex-row gap-2 mb-2">
+            <TouchableOpacity
+              onPress={() => {
+                setUseCustomTime(false);
+                setDepartureTime(new Date());
+              }}
+              className={`flex-1 h-12 rounded-2xl flex-row items-center justify-center ${
+                !useCustomTime
+                  ? 'bg-blue-500 border-2 border-blue-500'
+                  : isDark
+                  ? 'bg-gray-800 border border-gray-700'
+                  : 'bg-gray-100 border border-gray-200'
+              }`}
+              activeOpacity={0.7}
+            >
+              <Ionicons
+                name="time"
+                size={18}
+                color={!useCustomTime ? 'white' : isDark ? '#9CA3AF' : '#6B7280'}
+              />
+              <Text
+                className={`ml-2 font-semibold ${
+                  !useCustomTime
+                    ? 'text-white'
+                    : isDark
+                    ? 'text-gray-300'
+                    : 'text-gray-700'
+                }`}
+              >
+                Now
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => {
+                setUseCustomTime(true);
+                if (Platform.OS === 'android') {
+                  setPickerMode('date');
+                  setShowDatePicker(true);
+                } else {
+                  setShowTimePicker(true);
+                }
+              }}
+              className={`flex-1 h-12 rounded-2xl flex-row items-center justify-center ${
+                useCustomTime
+                  ? 'bg-blue-500 border-2 border-blue-500'
+                  : isDark
+                  ? 'bg-gray-800 border border-gray-700'
+                  : 'bg-gray-100 border border-gray-200'
+              }`}
+              activeOpacity={0.7}
+            >
+              <Ionicons
+                name="calendar"
+                size={18}
+                color={useCustomTime ? 'white' : isDark ? '#9CA3AF' : '#6B7280'}
+              />
+              <Text
+                className={`ml-2 font-semibold ${
+                  useCustomTime
+                    ? 'text-white'
+                    : isDark
+                    ? 'text-gray-300'
+                    : 'text-gray-700'
+                }`}
+              >
+                Custom
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Display Selected Time */}
+          {useCustomTime && (
+            <TouchableOpacity
+              onPress={() => {
+                if (Platform.OS === 'android') {
+                  setPickerMode('date');
+                  setShowDatePicker(true);
+                } else {
+                  setShowTimePicker(true);
+                }
+              }}
+              className={`flex-row items-center justify-between p-3 rounded-xl ${
+                isDark ? 'bg-gray-800' : 'bg-gray-100'
+              }`}
+              activeOpacity={0.7}
+            >
+              <View className="flex-row items-center">
+                <Ionicons name="time-outline" size={20} color="#3B82F6" />
+                <Text className="text-gray-900 dark:text-white font-medium ml-2">
+                  {departureTime.toLocaleString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    hour: 'numeric',
+                    minute: '2-digit',
+                    hour12: true,
+                  })}
+                </Text>
+              </View>
+              <Ionicons name="chevron-forward" size={20} color={isDark ? '#9CA3AF' : '#6B7280'} />
+            </TouchableOpacity>
+          )}
+
+          {/* DateTimePicker - Android (shows as modal dialog) */}
+          {showDatePicker && Platform.OS === 'android' && (
+            <DateTimePicker
+              value={pickerMode === 'date' ? departureTime : tempDate}
+              mode={pickerMode}
+              display="default"
+              minimumDate={new Date()}
+              onChange={(event: DateTimePickerEvent, selectedDate?: Date) => {
+                if (event.type === 'dismissed') {
+                  setShowDatePicker(false);
+                  return;
+                }
+                
+                if (event.type === 'set' && selectedDate) {
+                  if (pickerMode === 'date') {
+                    // Date selected, now show time picker
+                    setTempDate(selectedDate);
+                    setPickerMode('time');
+                    // Keep picker open for time selection
+                  } else {
+                    // Time selected, combine and close
+                    setDepartureTime(selectedDate);
+                    setUseCustomTime(true);
+                    setShowDatePicker(false);
+                    setPickerMode('date'); // Reset for next time
+                  }
+                }
+              }}
+            />
+          )}
+
+          {/* DateTimePicker - iOS (inline spinner) */}
+          {showTimePicker && Platform.OS === 'ios' && (
+            <DateTimePicker
+              value={departureTime}
+              mode="datetime"
+              display="spinner"
+              onChange={(event: DateTimePickerEvent, selectedDate?: Date) => {
+                if (event.type === 'set' && selectedDate) {
+                  setDepartureTime(selectedDate);
+                  setUseCustomTime(true);
+                }
+                setShowTimePicker(false);
+              }}
+              minimumDate={new Date()}
+            />
+          )}
+
+          {/* Info Text */}
+          <Text className="text-xs text-gray-500 dark:text-gray-400 mt-2 ml-1">
+            {useCustomTime
+              ? 'Routes will be optimized for your selected time'
+              : 'Routes will be optimized for current traffic conditions'}
+          </Text>
+        </View>
 
         {/* User Preferences Display */}
         {!prefsLoading && preferences?.isComplete && (

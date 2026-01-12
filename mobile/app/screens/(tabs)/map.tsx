@@ -48,15 +48,21 @@ export default function MapScreen() {
 
   const passedSelectedRoute = (() => {
     try {
-      if (params?.selectedRoute)
-        return JSON.parse(String(params.selectedRoute));
+      if (params?.selectedRoute) return JSON.parse(String(params.selectedRoute));
     } catch (e) {
       console.warn("Failed to parse selectedRoute param", e);
     }
     return null;
   })();
 
-  
+  const passedContext = (() => {
+    try {
+      if (params?.context) return JSON.parse(String(params.context));
+    } catch (e) {
+      console.warn("Failed to parse context param", e);
+    }
+    return null;
+  })();
 
   useEffect(() => {
     if (passedRoutes && passedRoutes.length > 0) {
@@ -315,17 +321,129 @@ export default function MapScreen() {
                 All Routes ({routes.length})
               </Text>
 
+              {/* Context Info - Weather & Traffic */}
+              {passedContext && (
+                <View className="mb-4 gap-2">
+                  {/* Weather & Traffic Row */}
+                  <View className="flex-row gap-2">
+                    {/* Weather Button */}
+                    {passedContext.weather && (
+                      <TouchableOpacity
+                        className="flex-1 bg-blue-50 dark:bg-blue-900/20 rounded-xl p-3 border border-blue-200 dark:border-blue-800"
+                        activeOpacity={0.7}
+                      >
+                        <View className="flex-row items-center justify-between">
+                          <View className="flex-row items-center flex-1">
+                            <Ionicons
+                              name={
+                                passedContext.weather.condition === 'rain' || passedContext.weather.condition === 'heavy_rain'
+                                  ? 'rainy'
+                                  : passedContext.weather.condition === 'storm'
+                                  ? 'thunderstorm'
+                                  : 'sunny'
+                              }
+                              size={20}
+                              color="#3B82F6"
+                            />
+                            <View className="ml-2">
+                              <Text className="text-blue-900 dark:text-blue-200 font-bold text-base">
+                                {passedContext.weather.temperature}°C
+                              </Text>
+                              <Text className="text-blue-700 dark:text-blue-300 text-xs capitalize">
+                                {passedContext.weather.description}
+                              </Text>
+                            </View>
+                          </View>
+                          <Ionicons name="chevron-forward" size={16} color="#3B82F6" />
+                        </View>
+                      </TouchableOpacity>
+                    )}
+
+                    {/* Traffic Indicator */}
+                    {passedContext.pricing && (
+                      <View
+                        className={`flex-1 rounded-xl p-3 border ${
+                          passedContext.pricing.trafficLevel === 'high'
+                            ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'
+                            : passedContext.pricing.trafficLevel === 'moderate'
+                            ? 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800'
+                            : 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
+                        }`}
+                      >
+                        <View className="flex-row items-center">
+                          <View
+                            className={`w-3 h-3 rounded-full ${
+                              passedContext.pricing.trafficLevel === 'high'
+                                ? 'bg-red-500'
+                                : passedContext.pricing.trafficLevel === 'moderate'
+                                ? 'bg-yellow-500'
+                                : 'bg-green-500'
+                            }`}
+                          />
+                          <View className="ml-2 flex-1">
+                            <Text
+                              className={`font-semibold text-xs ${
+                                passedContext.pricing.trafficLevel === 'high'
+                                  ? 'text-red-900 dark:text-red-200'
+                                  : passedContext.pricing.trafficLevel === 'moderate'
+                                  ? 'text-yellow-900 dark:text-yellow-200'
+                                  : 'text-green-900 dark:text-green-200'
+                              }`}
+                            >
+                              Traffic
+                            </Text>
+                            <Text
+                              className={`text-xs capitalize ${
+                                passedContext.pricing.trafficLevel === 'high'
+                                  ? 'text-red-700 dark:text-red-300'
+                                  : passedContext.pricing.trafficLevel === 'moderate'
+                                  ? 'text-yellow-700 dark:text-yellow-300'
+                                  : 'text-green-700 dark:text-green-300'
+                              }`}
+                            >
+                              {passedContext.pricing.trafficLevel}
+                            </Text>
+                          </View>
+                        </View>
+                      </View>
+                    )}
+                  </View>
+
+                  {/* Surge Alert */}
+                  {passedContext.pricing?.isSurgeActive && (
+                    <View className="bg-orange-50 dark:bg-orange-900/20 rounded-xl p-3 border border-orange-200 dark:border-orange-800">
+                      <View className="flex-row items-center">
+                        <Ionicons name="trending-up" size={16} color="#F97316" />
+                        <Text className="text-orange-900 dark:text-orange-200 font-semibold text-xs ml-2 flex-1">
+                          {passedContext.pricing.surgeReason}
+                        </Text>
+                      </View>
+                    </View>
+                  )}
+                </View>
+              )}
+
               {routes.map((route) => (
                 <RouteCard
                   key={route.id}
                   route={route}
                   onSelect={() => handleSelectRoute(route)}
                   onViewOnMap={() => handleSelectRoute(route)}
+                  onAIAnalysis={() => {
+                    router.push({
+                      pathname: '/screens/(extrascreens)/ai-chat',
+                      params: {
+                        autoPrompt: `Analyze this route for me:\n\nTransport: ${route.mode}\nDistance: ${route.distance.toFixed(1)} km\nEstimated Cost: ${route.cost} FCFA\nEstimated Duration: ${route.duration} minutes\n\nIs this cost reasonable? Should I consider other options? What factors might affect the actual price?`
+                      }
+                    });
+                  }}
                   isDark={isDark}
                 />
               ))}
 
               <View className="h-6" />
+              {/* Bottom padding for floating tab bar */}
+              <View className="h-28" />
             </ScrollView>
           )}
         </View>
@@ -333,3 +451,4 @@ export default function MapScreen() {
     </View>
   );
 }
+  

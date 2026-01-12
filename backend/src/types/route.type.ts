@@ -56,8 +56,21 @@ export interface RouteOption {
   polyline: string; // encoded polyline for map rendering
   steps: RouteStep[];
   recommendation?: RecommendationBadge; // "best-value", "fastest", "cheapest"
-  trafficLevel?: "low" | "moderate" | "high"; // Phase 2
-  weatherImpact?: "low" | "moderate" | "high"; // Phase 2
+  trafficLevel?: "low" | "moderate" | "high";
+  weatherImpact?: "low" | "moderate" | "high";
+  // Dynamic pricing details
+  pricingBreakdown?: {
+    baseFare: number;
+    distanceCost: number;
+    surgeAmount: number;
+    weatherAmount: number;
+    trafficAmount: number;
+  };
+  appliedMultipliers?: {
+    surge?: number;
+    weather?: number;
+    traffic?: number;
+  };
 }
 
 export interface RouteStep {
@@ -90,82 +103,46 @@ export interface RouteSearchResponse {
     maxBudget: number;
     preferredModes: TransportMode[];
   };
+  // NEW: Context information for UI enhancements
+  context?: {
+    weather?: {
+      temperature: number; // Celsius
+      condition: "clear" | "rain" | "heavy_rain" | "storm";
+      description: string; // "partly cloudy", "light rain"
+      humidity?: number;
+      windSpeed?: number;
+      feelsLike?: number;
+      location: string; // Location name for the weather
+    };
+    pricing?: {
+      trafficLevel: "low" | "moderate" | "high";
+      trafficDescription: string; // "Light traffic" or "Rush hour"
+      isSurgeActive: boolean;
+      surgeReason?: string; // "Morning rush hour" or "Evening rush"
+      timeOfDay: "morning" | "afternoon" | "evening" | "night";
+      timestamp: Date;
+    };
+    savings?: {
+      hasSavings: boolean;
+      message?: string; // "You're saving 25% by traveling off-peak"
+      peakPrice?: number; // What it would cost at peak time
+      currentPrice?: number;
+      savingsAmount?: number;
+    };
+    budget?: {
+      isExceeded: boolean;
+      userMaxBudget: number;
+      cheapestRoutePrice: number;
+      message?: string;
+    };
+  };
   message?: string;
 }
 
-/**
- * Transport Mode Configuration
- * Used by Factory Pattern to create transport calculators
- */
-export interface TransportConfig {
-  mode: TransportMode;
-  baseFare: number; // XAF
-  costPerKm: number; // XAF per kilometer
-  averageSpeed: number; // km/h
-  availability: {
-    minDistance: number; // km (e.g., walking not viable for >5km)
-    maxDistance?: number; // km (optional)
-  };
-  comfortLevel: number; // 1-5 (used in balanced strategy)
-  weatherSensitive: boolean; // true for moto, false for bus/taxi
-}
-
-/**
- * Default transport configurations for Yaoundé/Cameroon
- * These can be moved to database later for dynamic pricing
- */
-/**
- * Realistic transport configurations for Cameroon (Yaoundé/Douala routes)
- * Based on typical inter-city travel costs
- */
-export const TRANSPORT_CONFIGS: Record<TransportMode, TransportConfig> = {
-  [TransportMode.BUS]: {
-    mode: TransportMode.BUS,
-    baseFare: 1000, // XAF - Base ticket price
-    costPerKm: 8, // XAF - ~8 XAF per km (2000 XAF for 250km = realistic)
-    averageSpeed: 50, // km/h (highway speed, accounting for stops)
-    availability: {
-      minDistance: 10, // Not worth for <10km
-    },
-    comfortLevel: 3,
-    weatherSensitive: false,
-  },
-  [TransportMode.MOTO]: {
-    mode: TransportMode.MOTO,
-    baseFare: 500, // XAF
-    costPerKm: 20, // XAF - More expensive per km than bus
-    averageSpeed: 60, // km/h (faster on highway)
-    availability: {
-      minDistance: 5,
-      maxDistance: 100, // Not practical for very long distances (>100km)
-    },
-    comfortLevel: 2,
-    weatherSensitive: true, // Affected by rain
-  },
-  [TransportMode.TAXI]: {
-    mode: TransportMode.TAXI,
-    baseFare: 2000, // XAF - Higher base fare
-    costPerKm: 25, // XAF - Most expensive option
-    averageSpeed: 55, // km/h
-    availability: {
-      minDistance: 5,
-    },
-    comfortLevel: 5,
-    weatherSensitive: false,
-  },
-  [TransportMode.WALKING]: {
-    mode: TransportMode.WALKING,
-    baseFare: 0, // Free
-    costPerKm: 0,
-    averageSpeed: 5, // km/h
-    availability: {
-      minDistance: 0,
-      maxDistance: 10, // Not practical for >10km
-    },
-    comfortLevel: 3,
-    weatherSensitive: true, // Affected by rain/heat
-  },
-};
+// NOTE: TransportConfig and TRANSPORT_CONFIGS removed
+// Pricing is now dynamically fetched from database via PricingService
+// See: backend/src/services/pricing.service.ts
+// Database tables: TransportPricing, SurgePricingRule, WeatherPricingRule
 
 /**
  * User Preferences Interface (from database)

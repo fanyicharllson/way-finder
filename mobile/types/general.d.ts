@@ -122,7 +122,7 @@ interface HomeHeaderProps {
   isDark: boolean;
 }
 interface RouteSearchCardProps {
-  onSearch: (from: string, to: string) => void;
+  onSearch: (from: string, to: string, departureTime?: string) => void;
   onChooseFavorite: () => void;
   isDark: boolean;
   shouldFocusDestination?: boolean;
@@ -155,7 +155,7 @@ interface RecentSearchesProps {
 }
 
 interface RouteSearchCardProps {
-  onSearch: (from: string, to: string) => void;
+  onSearch: (from: string, to: string, departureTime?: string) => void;
   onChooseFavorite: () => void;
   onEditPreferences: () => void;
   isDark: boolean;
@@ -229,6 +229,38 @@ interface RouteSearchRequest {
     priorityType: "fastest" | "cheapest" | "balanced";
     maxBudget: number;
     preferredModes: string[];
+  };
+  context?: {
+    weather?: {
+      temperature: number;
+      condition: "clear" | "rain" | "heavy_rain" | "storm";
+      description: string;
+      humidity?: number;
+      windSpeed?: number;
+      feelsLike?: number;
+      location: string;
+    };
+    pricing?: {
+      trafficLevel: "low" | "moderate" | "high";
+      trafficDescription: string;
+      isSurgeActive: boolean;
+      surgeReason?: string;
+      timeOfDay: "morning" | "afternoon" | "evening" | "night";
+      timestamp: string;
+    };
+    savings?: {
+      hasSavings: boolean;
+      message?: string;
+      peakPrice?: number;
+      currentPrice?: number;
+      savingsAmount?: number;
+    };
+     budget?: {
+      isExceeded: boolean;
+      userMaxBudget: number;
+      cheapestRoutePrice: number;
+      message?: string;
+    };
   };
   message?: string;
 }

@@ -10,7 +10,11 @@ import { useRouteSearch } from '@/hooks/useRoutes';
 import { RouteCard } from '@/components/routes/RouteCard';
 
 export default function RouteResultsScreen() {
-  const { from, to } = useLocalSearchParams<{ from: string; to: string }>();
+  const { from, to, departureTime } = useLocalSearchParams<{ 
+    from: string; 
+    to: string;
+    departureTime?: string;
+  }>();
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === 'dark';
 
@@ -22,10 +26,10 @@ export default function RouteResultsScreen() {
       searchRoutes({
         from: { address: from },
         to: { address: to },
-        departureTime: undefined,
+        departureTime: departureTime || undefined,
       });
     }
-  }, [from, to]);
+  }, [from, to, departureTime]);
 
   const handleSelectRoute = (route: any) => {
     if (!results) return;
@@ -34,6 +38,7 @@ export default function RouteResultsScreen() {
       params: {
         selectedRoute: JSON.stringify(route),
         allRoutes: JSON.stringify(results.routes),
+        context: JSON.stringify(results.context),
       },
     });
   };
@@ -45,6 +50,7 @@ export default function RouteResultsScreen() {
       params: {
         selectedRoute: JSON.stringify(route),
         allRoutes: JSON.stringify(results.routes),
+        context: JSON.stringify(results.context),
       },
     });
   };
@@ -258,20 +264,150 @@ export default function RouteResultsScreen() {
       </View>
 
       <ScrollView className="flex-1 px-6 py-4" showsVerticalScrollIndicator={false}>
-        {/* Disclaimer */}
-        <View className="bg-amber-50 dark:bg-amber-900/20 rounded-2xl p-4 mb-4 border border-amber-200 dark:border-amber-800">
-          <View className="flex-row items-start">
-            <Ionicons name="information-circle" size={20} color="#F59E0B" />
-            <View className="flex-1 ml-3">
-              <Text className="text-amber-900 dark:text-amber-200 font-semibold text-sm mb-1">
-                Price & Time Estimates
-              </Text>
-              <Text className="text-amber-700 dark:text-amber-300 text-xs leading-5">
-                Costs and durations shown are estimates based on typical conditions. Actual prices may vary depending on traffic, time of day, and availability.
-              </Text>
+        {/* Context-Aware Pricing Info */}
+        {results.context && (
+          <View className="mb-4 gap-2">
+            {/* Budget Exceeded Warning */}
+            {results.context.budget?.isExceeded && (
+              <View className="bg-red-50 dark:bg-red-900/20 rounded-xl p-4 border border-red-200 dark:border-red-800">
+                <View className="flex-row items-start">
+                  <Ionicons name="wallet-outline" size={20} color="#EF4444" />
+                  <View className="flex-1 ml-3">
+                    <Text className="text-red-900 dark:text-red-200 font-bold text-sm mb-1">
+                      Budget Limit Exceeded
+                    </Text>
+                    <Text className="text-red-700 dark:text-red-300 text-xs leading-5 mb-3">
+                      Your budget preference is {results.context.budget.userMaxBudget.toLocaleString()} FCFA, but the cheapest route costs {results.context.budget.cheapestRoutePrice.toLocaleString()} FCFA.
+                    </Text>
+                    <TouchableOpacity
+                      onPress={() => router.push('/screens/(extrascreens)/preferences')}
+                      className="bg-red-600 dark:bg-red-500 rounded-lg py-2 px-4 self-start"
+                      activeOpacity={0.8}
+                    >
+                      <Text className="text-white font-semibold text-xs">
+                        Edit Preferences
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+            )}
+
+            {/* Surge Pricing Alert */}
+            {results.context.pricing?.isSurgeActive && (
+              <View className="bg-orange-50 dark:bg-orange-900/20 rounded-xl p-3 border border-orange-200 dark:border-orange-800">
+                <View className="flex-row items-center">
+                  <Ionicons name="trending-up" size={18} color="#F97316" />
+                  <View className="flex-1 ml-2">
+                    <Text className="text-orange-900 dark:text-orange-200 font-semibold text-xs">
+                      Surge Pricing Active
+                    </Text>
+                    <Text className="text-orange-700 dark:text-orange-300 text-xs mt-0.5">
+                      {results.context.pricing.surgeReason}
+                    </Text>
+                  </View>
+                </View>
+              </View>
+            )}
+
+            {/* Savings Badge */}
+            {results.context.savings?.hasSavings && (
+              <View className="bg-green-50 dark:bg-green-900/20 rounded-xl p-3 border border-green-200 dark:border-green-800">
+                <View className="flex-row items-center">
+                  <Ionicons name="checkmark-circle" size={18} color="#10B981" />
+                  <Text className="text-green-900 dark:text-green-200 font-semibold text-xs ml-2 flex-1">
+                    {results.context.savings.message}
+                  </Text>
+                </View>
+              </View>
+            )}
+
+            {/* Weather & Traffic Context Row */}
+            <View className="flex-row gap-2">
+              {/* Weather Button */}
+              {results.context.weather && (
+                <TouchableOpacity
+                  className="flex-1 bg-blue-50 dark:bg-blue-900/20 rounded-xl p-3 border border-blue-200 dark:border-blue-800"
+                  activeOpacity={0.7}
+                >
+                  <View className="flex-row items-center justify-between">
+                    <View className="flex-row items-center flex-1">
+                      <Ionicons
+                        name={
+                          results.context.weather.condition === 'rain' || results.context.weather.condition === 'heavy_rain'
+                            ? 'rainy'
+                            : results.context.weather.condition === 'storm'
+                            ? 'thunderstorm'
+                            : 'sunny'
+                        }
+                        size={20}
+                        color="#3B82F6"
+                      />
+                      <View className="ml-2">
+                        <Text className="text-blue-900 dark:text-blue-200 font-bold text-base">
+                          {results.context.weather.temperature}°C
+                        </Text>
+                        <Text className="text-blue-700 dark:text-blue-300 text-xs capitalize">
+                          {results.context.weather.description}
+                        </Text>
+                      </View>
+                    </View>
+                    <Ionicons name="chevron-forward" size={16} color="#3B82F6" />
+                  </View>
+                </TouchableOpacity>
+              )}
+
+              {/* Traffic Indicator */}
+              {results.context.pricing && (
+                <View
+                  className={`flex-1 rounded-xl p-3 border ${
+                    results.context.pricing.trafficLevel === 'high'
+                      ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800'
+                      : results.context.pricing.trafficLevel === 'moderate'
+                      ? 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800'
+                      : 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800'
+                  }`}
+                >
+                  <View className="flex-row items-center">
+                    <View
+                      className={`w-3 h-3 rounded-full ${
+                        results.context.pricing.trafficLevel === 'high'
+                          ? 'bg-red-500'
+                          : results.context.pricing.trafficLevel === 'moderate'
+                          ? 'bg-yellow-500'
+                          : 'bg-green-500'
+                      }`}
+                    />
+                    <View className="ml-2 flex-1">
+                      <Text
+                        className={`font-semibold text-xs ${
+                          results.context.pricing.trafficLevel === 'high'
+                            ? 'text-red-900 dark:text-red-200'
+                            : results.context.pricing.trafficLevel === 'moderate'
+                            ? 'text-yellow-900 dark:text-yellow-200'
+                            : 'text-green-900 dark:text-green-200'
+                        }`}
+                      >
+                        Traffic
+                      </Text>
+                      <Text
+                        className={`text-xs capitalize ${
+                          results.context.pricing.trafficLevel === 'high'
+                            ? 'text-red-700 dark:text-red-300'
+                            : results.context.pricing.trafficLevel === 'moderate'
+                            ? 'text-yellow-700 dark:text-yellow-300'
+                            : 'text-green-700 dark:text-green-300'
+                        }`}
+                      >
+                        {results.context.pricing.trafficLevel}
+                      </Text>
+                    </View>
+                  </View>
+                </View>
+              )}
             </View>
           </View>
-        </View>
+        )}
 
         <Text className="text-gray-600 dark:text-gray-400 text-sm mb-4">
           Found {results.routes.length} route{results.routes.length > 1 ? 's' : ''}
@@ -294,6 +430,26 @@ export default function RouteResultsScreen() {
             isDark={isDark}
           />
         ))}
+        
+        {/* Price Disclaimer */}
+        <View className="mt-4 mb-6 p-4 bg-gray-100 dark:bg-gray-800 rounded-2xl border border-gray-200 dark:border-gray-700">
+          <View className="flex-row items-start">
+            <Ionicons
+              name="information-circle"
+              size={18}
+              color={isDark ? "#9CA3AF" : "#6B7280"}
+              style={{ marginTop: 1, marginRight: 8 }}
+            />
+            <View className="flex-1">
+              <Text className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">
+                About Pricing
+              </Text>
+              <Text className="text-xs text-gray-600 dark:text-gray-400 leading-5">
+                Prices shown are estimates and may vary based on traffic conditions, time of day, weather, and current demand. Actual fares may differ when you book.
+              </Text>
+            </View>
+          </View>
+        </View>
         
         <View className="h-8" />
       </ScrollView>

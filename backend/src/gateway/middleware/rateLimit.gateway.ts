@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import { Logger } from "../../utils/logger.util";
 
 /**
  * API Gateway - Rate Limiting Middleware
@@ -82,8 +83,8 @@ export const rateLimitGateway = (
     };
     requestCounts.set(key, record);
 
-    console.log(`⏱️ Rate limit window started for ${key}`);
-    console.log(
+    Logger.dev(`⏱️ Rate limit window started for ${key}`);
+    Logger.dev(
       `   (${record.count}/${config.maxRequests} requests in ${config.windowMs / 1000}s)`
     );
 
@@ -99,8 +100,8 @@ export const rateLimitGateway = (
       (record.resetTime - Date.now()) / 1000
     );
 
-    console.log(`🚫 Rate limit exceeded for ${key}`);
-    console.log(
+    Logger.warn(`🚫 Rate limit exceeded for ${key}`);
+    Logger.warn(
       `   (${record.count}/${config.maxRequests} requests) - Reset in ${remainingTime}s`
     );
 
@@ -111,7 +112,7 @@ export const rateLimitGateway = (
     });
   }
 
-  console.log(
+  Logger.dev(
     `📊 Rate limit check: ${record.count}/${config.maxRequests} for ${key}`
   );
 
@@ -135,7 +136,7 @@ export const cleanupRateLimitRecords = () => {
     }
 
     if (cleaned > 0) {
-      console.log(`🧹 Cleaned up ${cleaned} expired rate limit records`);
+      Logger.dev(`🧹 Cleaned up ${cleaned} expired rate limit records`);
     }
   }, 30 * 60 * 1000); // Every 30 minutes
 };

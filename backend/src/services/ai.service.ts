@@ -5,6 +5,7 @@ import {
   parseAIResponse,
 } from "../config/ai.context";
 import { AIRequest, AIResponse } from "../types/ai.type";
+import { Logger } from "../utils/logger.util";
 
 /**
  * AI Service using Google Gemini (Singleton Pattern)
@@ -65,14 +66,14 @@ export class AIService {
 
       const fullPrompt = `${systemPrompt}\n\nUser: ${message}\n\nAssistant:`;
 
-      // console.log("🤖 AI Request:", { message, context: additionalContext });
+      // Logger.log("🤖 AI Request:", { message, context: additionalContext });
 
       // Call Gemini API
       const result = await this.model.generateContent(fullPrompt);
       const response = await result.response;
       const aiReply = response.text();
 
-      // console.log("🤖 AI Response:", aiReply);
+      // Logger.log("🤖 AI Response:", aiReply);
 
       // Parse AI response for actions
       const parsedResponse = parseAIResponse(aiReply, message);
@@ -83,7 +84,7 @@ export class AIService {
         actionData: parsedResponse.actionData,
       };
     } catch (error: any) {
-      console.error("❌ AI Service Error:", error);
+      Logger.error("❌ AI Service Error:", error);
 
       // Enhanced error handling
       if (error.message?.includes("API key")) {
@@ -182,7 +183,7 @@ Respond in a friendly, concise manner (3-4 sentences).
 
       return parseAIResponse(aiReply, query);
     } catch (error: any) {
-      console.error("❌ Smart Recommendation Error:", error);
+      Logger.error("❌ Smart Recommendation Error:", error);
       return {
         reply:
           "I couldn't generate a personalized recommendation right now. Try using the route search feature to explore options based on your preferences!",
@@ -226,7 +227,7 @@ Format as:
       const tips = await result.response.text();
       return tips;
     } catch (error) {
-      console.error("❌ Travel Tips Error:", error);
+      Logger.error("❌ Travel Tips Error:", error);
       return "• Plan your route ahead to avoid delays\n• Keep change ready for transport fares\n• Consider traffic patterns during rush hours";
     }
   }

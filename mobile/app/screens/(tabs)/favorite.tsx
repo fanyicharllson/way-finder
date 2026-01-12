@@ -252,22 +252,24 @@ const FavoriteScreen: React.FC<FavoriteScreenProps> = ({
         />
 
         {/* Floating Action Buttons */}
-        <FloatingActionButton
-          onPress={handleAddFavorite}
-          icon="add"
-          visible={true}
-          bottom={24}
-          right={24}
-          testID="add-favorite-fab"
-        />
+        <View style={{ position: 'absolute', bottom: 0, right: 0, left: 0, top: 0, pointerEvents: 'box-none', zIndex: 99999, elevation: 20 }}>
+          <FloatingActionButton
+            onPress={handleAddFavorite}
+            icon="add"
+            visible={true}
+            bottom={130}
+            right={24}
+            testID="add-favorite-fab"
+          />
 
-        <AIFloatingButton
-          onPress={handleAIPress}
-          visible={true}
-          bottom={92}
-          right={24}
-          testID="ai-fab"
-        />
+          <AIFloatingButton
+            onPress={handleAIPress}
+            visible={true}
+            bottom={190}
+            right={24}
+            testID="ai-fab"
+          />
+        </View>
       </SafeAreaView>
     );
   }
@@ -313,7 +315,7 @@ const FavoriteScreen: React.FC<FavoriteScreenProps> = ({
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
           }
-          contentContainerStyle={{ padding: 24, paddingBottom: 100 }}
+          contentContainerStyle={{ padding: 24, paddingBottom: 140 }}
         >
           {data.favorites.map((favorite) => (
             <TouchableOpacity
@@ -517,22 +519,24 @@ const FavoriteScreen: React.FC<FavoriteScreenProps> = ({
       />
 
       {/* Floating Action Buttons */}
-      <FloatingActionButton
-        onPress={handleAddFavorite}
-        icon="add"
-        visible={true}
-        bottom={24}
-        right={24}
-        testID="add-favorite-fab"
-      />
+      <View style={{ position: 'absolute', bottom: 0, right: 0, left: 0, top: 0, pointerEvents: 'box-none', zIndex: 99999, elevation: 20 }}>
+        <FloatingActionButton
+          onPress={handleAddFavorite}
+          icon="add"
+          visible={true}
+          bottom={130}
+          right={24}
+          testID="add-favorite-fab"
+        />
 
-      <AIFloatingButton
-        onPress={handleAIPress}
-        visible={true}
-        bottom={92}
-        right={24}
-        testID="ai-fab"
-      />
+        <AIFloatingButton
+          onPress={handleAIPress}
+          visible={true}
+          bottom={190}
+          right={24}
+          testID="ai-fab"
+        />
+      </View>
     </SafeAreaView>
   );
 };

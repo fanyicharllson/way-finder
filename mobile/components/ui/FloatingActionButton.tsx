@@ -100,8 +100,8 @@ export const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({
 const styles = StyleSheet.create({
   container: {
     position: "absolute",
-    zIndex: 9999,
-    elevation: 10,
+    zIndex: 99999,
+    elevation: 20,
   },
   touchable: {
     borderRadius: 28,

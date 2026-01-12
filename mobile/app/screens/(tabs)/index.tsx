@@ -55,13 +55,19 @@ export default function HomeScreen() {
 
   const userName = user?.name.split(" ")[0] || "";
 
-  const handleSearch = (from: string, to: string) => {
-    console.log("Searching route:", { from, to });
-    router.push(
-      `/screens/(extrascreens)/route-results?from=${encodeURIComponent(
-        from
-      )}&to=${encodeURIComponent(to)}`
-    );
+  const handleSearch = (from: string, to: string, departureTime?: string) => {
+    console.log("Searching route:", { from, to, departureTime });
+    
+    const params = new URLSearchParams({
+      from: from,
+      to: to,
+    });
+    
+    if (departureTime) {
+      params.append('departureTime', departureTime);
+    }
+    
+    router.push(`/screens/(extrascreens)/route-results?${params.toString()}`);
   };
 
   const scrollToSearch = () => {
@@ -212,11 +218,13 @@ export default function HomeScreen() {
         </View>
 
         <View className="h-8" />
+        {/* Bottom padding for floating tab bar */}
+        <View className="h-24" />
       </ScrollView>
       <AIFloatingButton
         onPress={handleAIPress}
         visible={true}
-        bottom={60}
+        bottom={135}
         right={24}
         testID="ai-fab"
       />

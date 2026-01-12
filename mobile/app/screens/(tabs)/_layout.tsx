@@ -15,26 +15,35 @@ export default function TabsLayout() {
         tabBarActiveTintColor: "#3B82F6", // Blue
         tabBarInactiveTintColor: isDark ? "#6B7280" : "#9CA3AF",
         tabBarStyle: {
-          backgroundColor: isDark ? "#111827" : "#FFFFFF",
-          borderTopColor: isDark ? "#1F2937" : "#E5E7EB",
-          borderTopWidth: 1,
-          height: Platform.OS === "ios" ? 85 : 70 + insets.bottom,
-          paddingBottom: insets.bottom,
-          paddingTop: 4,
+          backgroundColor: isDark ? "#1F2937" : "#FFFFFF",
+          borderTopWidth: 0, // Remove default border for floating effect
+          height: Platform.OS === "ios" ? 70 : 65,
+          paddingBottom: Platform.OS === "ios" ? 8 : 10,
+          paddingTop: 8,
           paddingHorizontal: 0,
-          elevation: 8,
+          position: "absolute", // Make it floating
+          bottom: insets.bottom + 16, // Float above bottom
+          marginHorizontal: 10,
+          left: 16,
+          right: 16,
+          borderRadius: 50, // Rounded edges
+          elevation: 12,
+          zIndex: 1000, // Controlled z-index below floating buttons
           shadowColor: "#000",
-          shadowOffset: { width: 0, height: -4 },
-          shadowOpacity: isDark ? 0.3 : 0.1,
-          shadowRadius: 8,
+          shadowOffset: { width: 0, height: 8 },
+          shadowOpacity: isDark ? 0.5 : 0.15,
+          shadowRadius: 16,
+          // Add subtle border for definition
+          borderWidth: isDark ? 1 : 0.5,
+          borderColor: isDark ? "#374151" : "#E5E7EB",
         },
         tabBarLabelStyle: {
-          fontSize: 12,
+          fontSize: 11,
           fontWeight: "600",
-          marginBottom: Platform.OS === "ios" ? 0 : 5,
+          marginBottom: 0,
         },
         tabBarIconStyle: {
-          marginTop: 5,
+          marginTop: 2,
         },
         headerShown: false,
         tabBarHideOnKeyboard: true,

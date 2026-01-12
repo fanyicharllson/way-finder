@@ -3,9 +3,8 @@
 import { View, Text, TouchableOpacity } from "react-native";
 import React, { useEffect, useState } from "react";
 import { router } from "expo-router";
-import { getToken } from "@/utils/storage";
+import { getToken, clearAuthData } from "@/utils/storage";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useProfile } from "@/hooks/useAuth";
 import LottieView from "lottie-react-native";
 
 const ONBOARDING_KEY = "@wayfinder_onboarding_completed";
@@ -16,8 +15,6 @@ const Index = () => {
     message: string;
     retryFn: () => void;
   } | null>(null);
-  const { data: user } = useProfile();
-  const userName = user?.name.split(" ")[0] || "";
 
   useEffect(() => {
     checkAppState();
@@ -45,11 +42,27 @@ const Index = () => {
         return;
       }
 
-      // Step 3: User is authenticated - check preferences
-      console.log("✅ User authenticated - checking preferences");
+      // Step 3: Verify user authentication with backend
+      console.log("✅ Token found - verifying with backend");
 
       try {
-        // Check if user has preferences in backend
+        // Import apiClient dynamically
+        const { apiClient } = await import("@/app/api/client");
+        
+        // Verify token is still valid by fetching user profile
+        const userResponse = await apiClient.get("/auth/me");
+        
+        if (!userResponse.data?.data) {
+          // Token exists but user not found - invalid token
+          console.log("🔐 Invalid token - redirecting to login");
+          await clearAuthData();
+          router.replace("/screens/(auth)/login");
+          return;
+        }
+
+        console.log("✅ User authenticated - checking preferences");
+
+        // Step 4: Check user preferences
         const preferences = await checkUserPreferences();
 
         if (!preferences) {
@@ -70,15 +83,20 @@ const Index = () => {
         console.log("🎉 Complete preferences found - showing home");
         router.replace("/screens/(tabs)");
       } catch (error: any) {
-        console.error("❌ Error checking preferences:", error);
-        // If auth error, let api client handle redirect (it will guard duplicates)
-        if (error?.response?.status === 401) {
+        console.error("❌ Error verifying authentication:", error);
+        
+        // If 401/404 on /auth/me - token invalid, redirect to login
+        if (error?.response?.status === 401 || error?.response?.status === 404) {
+          console.log("🔐 Authentication failed - redirecting to login");
+          await clearAuthData();
+          router.replace("/screens/(auth)/login");
           return;
         }
-        // On other errors, redirect to error screen with retry option
+        
+        // On other errors (network, etc), show error screen with retry
         setError({
           message:
-            "Unable to verify your preferences. Please check your internet connection and try again.",
+            "Unable to verify your authentication. Please check your internet connection and try again.",
           retryFn: checkAppState,
         });
       }
@@ -167,7 +185,7 @@ const Index = () => {
           <Text className="text-white text-2xl font-bold">WayFinder</Text>
 
           <Text className="text-white/60 text-sm mt-2">
-            Just a moment {userName || ""}...
+            Just a moment...
           </Text>
         </View>
       )}

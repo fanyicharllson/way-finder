@@ -9,6 +9,15 @@ export class PreferenceService {
   // ===== PREFERENCES =====
 
   async createUserPreferences(userId: string, data: UpdatePreferenceDTO) {
+    // Check if user exists first
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      throw new Error("User not found. Cannot create preferences for non-existent user.");
+    }
+
     //Check if user has existing preference
     const existing = await prisma.userPreference.findUnique({
       where: { userId },

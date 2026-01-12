@@ -96,12 +96,14 @@ export const RouteCard: React.FC<RouteCardProps> = ({
             Cost
           </Text>
           <Text className="text-2xl font-bold text-gray-900 dark:text-white">
-            {route.cost}
+            {route.cost.toLocaleString()}
           </Text>
-          <Text className="text-gray-500 dark:text-gray-400 text-xs">FCFA</Text>
+          <Text className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+            FCFA
+          </Text>
         </View>
 
-        <View className="w-4" />
+        <View className="w-3" />
 
         <View className="flex-1 items-center py-3 bg-gray-50 dark:bg-gray-900 rounded-xl">
           <Text className="text-gray-500 dark:text-gray-400 text-xs mb-1">
@@ -110,7 +112,9 @@ export const RouteCard: React.FC<RouteCardProps> = ({
           <Text className="text-2xl font-bold text-gray-900 dark:text-white">
             {route.duration}
           </Text>
-          <Text className="text-gray-500 dark:text-gray-400 text-xs">mins</Text>
+          <Text className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+            minutes
+          </Text>
         </View>
       </View>
 
