@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { recentSearchService } from "../services/recent-search.service"
+import { Logger } from "../utils/logger.util";
 
 /**
  * Search & Favorites Controller
@@ -22,7 +23,7 @@ export class SearchController {
         count: searches.length,
       });
     } catch (error: any) {
-      console.error("❌ Get recent searches error:", error);
+      Logger.error("❌ Get recent searches error:", error);
       res.status(500).json({
         success: false,
         message: "Failed to get recent searches",
@@ -43,7 +44,7 @@ export class SearchController {
 
       res.status(200).json(result);
     } catch (error: any) {
-      console.error("❌ Clear searches error:", error);
+      Logger.error("❌ Clear searches error:", error);
       res.status(500).json({
         success: false,
         message: "Failed to clear searches",
@@ -65,7 +66,7 @@ export class SearchController {
 
       res.status(200).json(result);
     } catch (error: any) {
-      console.error("❌ Delete search error:", error);
+      Logger.error("❌ Delete search error:", error);
       res.status(404).json({
         success: false,
         message: error.message || "Failed to delete search",

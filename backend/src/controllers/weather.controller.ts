@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { weatherService } from "../services/weather.service";
+import { Logger } from "../utils/logger.util";
 
 export class WeatherController {
   /**
@@ -37,7 +38,7 @@ export class WeatherController {
         data: weatherData,
       });
     } catch (error: any) {
-      console.error("Weather controller error:", error);
+      Logger.error("Weather controller error:", error);
       return res.status(500).json({
         success: false,
         message: error.message || "Failed to fetch weather data",

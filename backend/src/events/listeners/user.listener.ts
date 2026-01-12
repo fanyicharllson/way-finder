@@ -2,6 +2,7 @@ import { eventBus } from "../eventBus";
 import { Events, UserRegisteredPayload } from "../eventTypes";
 import { sendWelcomeEmail } from "../../services/email.service";
 import { prisma } from "../../config/database";
+import { Logger } from "../../utils/logger.util";
 
 /**
  * User Event Listeners
@@ -27,11 +28,11 @@ eventBus.onEvent<UserRegisteredPayload>(
   Events.USER_REGISTERED,
   async (data) => {
     try {
-      console.log(`👤 Processing USER_REGISTERED event for: ${data.email}`);
+      Logger.info(`👤 Processing USER_REGISTERED event for: ${data.email}`);
 
       // 1. Send welcome email to new user
       await sendWelcomeEmail(data.email, data.name);
-      console.log(`✅ Welcome email sent to ${data.email}`);
+      Logger.info(`✅ Welcome email sent to ${data.email}`);
 
       // 2. Initialize user statistics record (if table exists)
       try {
@@ -46,19 +47,19 @@ eventBus.onEvent<UserRegisteredPayload>(
             totalTime: 0,
           },
         });
-        console.log(`✅ User statistics initialized for ${data.userId}`);
+        Logger.info(`✅ User statistics initialized for ${data.userId}`);
       } catch (error) {
-        console.warn(
+        Logger.info(
           `⚠️ UserStats table not found. Run 'npx prisma db push' to create it.`
         );
       }
 
-      console.log(`✅ USER_REGISTERED event processed successfully`);
+      Logger.info(`✅ USER_REGISTERED event processed successfully`);
     } catch (error) {
-      console.error(`❌ Error processing USER_REGISTERED event:`, error);
+      Logger.error(`❌ Error processing USER_REGISTERED event:`, error);
     }
   }
 );
 
 
-console.log("✅ User event listeners registered from user.register file");
+Logger.info("✅ User event listeners registered from user.register file");

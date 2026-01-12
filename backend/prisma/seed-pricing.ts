@@ -1,15 +1,16 @@
 import { prisma } from "../src/config/database";
+import { Logger } from '../src/utils/logger.util';
 
 /**
  * Seed pricing data for transport modes
  * Based on realistic Cameroon pricing for inter-city travel
  */
 async function seedPricingData() {
-  console.log("🌱 Seeding pricing data...");
+  Logger.info("🌱 Seeding pricing data...");
 
   try {
     // 1. Seed base transport pricing configurations
-    console.log("📊 Creating base transport pricing...");
+    Logger.info("📊 Creating base transport pricing...");
     
     await prisma.transportPricing.createMany({
       data: [
@@ -72,10 +73,10 @@ async function seedPricingData() {
       skipDuplicates: true,
     });
 
-    console.log("✅ Base transport pricing created");
+    Logger.info("✅ Base transport pricing created");
 
     // 2. Seed surge pricing rules (rush hours)
-    console.log("⏰ Creating surge pricing rules...");
+    Logger.info("⏰ Creating surge pricing rules...");
 
     const surgeRules = [];
 
@@ -174,10 +175,10 @@ async function seedPricingData() {
       skipDuplicates: true,
     });
 
-    console.log(`✅ ${surgeRules.length} surge pricing rules created`);
+    Logger.info(`✅ ${surgeRules.length} surge pricing rules created`);
 
     // 3. Seed weather pricing rules
-    console.log("🌧️ Creating weather pricing rules...");
+    Logger.info("🌧️ Creating weather pricing rules...");
 
     await prisma.weatherPricingRule.createMany({
       data: [
@@ -217,10 +218,10 @@ async function seedPricingData() {
       skipDuplicates: true,
     });
 
-    console.log("✅ Weather pricing rules created");
+    Logger.info("✅ Weather pricing rules created");
 
     // 4. Seed traffic pricing rules
-    console.log("🚗 Creating traffic pricing rules...");
+    Logger.info("🚗 Creating traffic pricing rules...");
 
     await prisma.trafficPricingRule.createMany({
       data: [
@@ -285,17 +286,17 @@ async function seedPricingData() {
       skipDuplicates: true,
     });
 
-    console.log("✅ Traffic pricing rules created");
+    Logger.info("✅ Traffic pricing rules created");
 
-    console.log("\n✨ Pricing data seeded successfully!");
-    console.log("\n📋 Summary:");
-    console.log("   - 4 transport modes configured");
-    console.log(`   - ${surgeRules.length} surge pricing rules`);
-    console.log("   - 5 weather pricing rules");
-    console.log("   - 12 traffic pricing rules");
-    console.log("\n🚀 Your app is now using dynamic pricing!");
+    Logger.info("\n✨ Pricing data seeded successfully!");
+    Logger.info("\n📋 Summary:");
+    Logger.info("   - 4 transport modes configured");
+    Logger.info(`   - ${surgeRules.length} surge pricing rules`);
+    Logger.info("   - 5 weather pricing rules");
+    Logger.info("   - 12 traffic pricing rules");
+    Logger.info("\n🚀 Your app is now using dynamic pricing!");
   } catch (error) {
-    console.error("❌ Error seeding pricing data:", error);
+    Logger.error("❌ Error seeding pricing data:", error);
     throw error;
   }
 }
@@ -306,7 +307,7 @@ async function main() {
 
 main()
   .catch((e) => {
-    console.error(e);
+    Logger.error(e);
     process.exit(1);
   })
   .finally(async () => {

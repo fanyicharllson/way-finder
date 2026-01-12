@@ -34,8 +34,6 @@ export const useRegister = () => {
         text2: `Hi ${data.user.name}, your account is ready!`,
         duration: 4000,
       });
-
-      console.log("✅ Registration successful:", data.user);
     },
     onError: (error: AxiosError<ApiError>) => {
       const message = error.response?.data?.message || "Registration failed";
@@ -72,8 +70,6 @@ export const useLogin = () => {
         text2: `Hi ${data.user.name}, ready to find your route?`,
         duration: 3000,
       });
-
-      console.log("✅ Login successful:", data.user);
     },
     onError: (error: AxiosError<ApiError>) => {
       const message = error.response?.data?.message || "Invalid credentials";

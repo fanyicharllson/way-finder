@@ -55,9 +55,7 @@ export default function HomeScreen() {
 
   const userName = user?.name.split(" ")[0] || "";
 
-  const handleSearch = (from: string, to: string, departureTime?: string) => {
-    console.log("Searching route:", { from, to, departureTime });
-    
+  const handleSearch = (from: string, to: string, departureTime?: string) => {    
     const params = new URLSearchParams({
       from: from,
       to: to,

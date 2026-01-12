@@ -2,6 +2,7 @@ import { eventBus } from "../eventBus";
 import { Events, SearchSavedPayload } from "../eventTypes";
 import { prisma } from "../../config/database";
 import { sendFrequentRouteEmail } from "../../services/email.service";
+import { Logger } from "../../utils/logger.util";
 
 /**
  * Search Saved Event Listener
@@ -9,7 +10,7 @@ import { sendFrequentRouteEmail } from "../../services/email.service";
  */
 eventBus.onEvent<SearchSavedPayload>(Events.SEARCH_SAVED, async (data) => {
   try {
-    console.log(`🔍 Search saved: ${data.fromAddress} → ${data.toAddress}`);
+    Logger.info(`🔍 Search saved: ${data.fromAddress} → ${data.toAddress}`);
 
     // Get the search to check count
     const search = await prisma.recentSearch.findUnique({
@@ -40,7 +41,7 @@ eventBus.onEvent<SearchSavedPayload>(Events.SEARCH_SAVED, async (data) => {
         });
 
         if (user) {
-          console.log(`📧 Sending frequent route suggestion to ${user.email}`);
+          Logger.info(`📧 Sending frequent route suggestion to ${user.email}`);
           await sendFrequentRouteEmail(
             user.email,
             user.name,
@@ -52,7 +53,7 @@ eventBus.onEvent<SearchSavedPayload>(Events.SEARCH_SAVED, async (data) => {
       }
     }
   } catch (error) {
-    console.error("❌ Error processing SEARCH_SAVED event:", error);
+    Logger.error("❌ Error processing SEARCH_SAVED event:", error);
   }
 });
-console.log("📡 Search event listeners registered");
+Logger.info("📡 Search event listeners registered");

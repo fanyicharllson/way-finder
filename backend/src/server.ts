@@ -18,6 +18,7 @@ import {
   corsGateway,
   cleanupRateLimitRecords,
 } from "./gateway";
+import { Logger } from "./utils/logger.util";
 
 dotenv.config();
 
@@ -71,7 +72,7 @@ app.use((req: Request, res: Response) => {
 
 //* Global error handler
 app.use((err: any, req: Request, res: Response, next: any) => {
-  console.error("Error:", err);
+  Logger.error("Error:", err);
   res.status(err.status || 500).json({
     success: false,
     message: err.message || "Internal server error! Please try again later",
@@ -87,27 +88,14 @@ cleanupRateLimitRecords();
 
 // Start server
 app.listen(PORT, () => {
-  console.log(`
+  Logger.info(`
 ╔═══════════════════════════════════════════════════════════╗
 ║                 🚀 WayFinder Backend                      ║
 ╚═══════════════════════════════════════════════════════════╝
 
 🌐 Server Details:
    Port       : ${PORT}
-   Environment: ${process.env.NODE_ENV || "development"}
-   
-📊 Features Enabled:
-   ✅ API Gateway (request routing & middleware)
-   ✅ Request Logging (with Request IDs)
-   ✅ Authentication (JWT verification)
-   ✅ Rate Limiting (per-user/IP)
-   ✅ Event System (async side effects)
-   ✅ Resend Email Integration
-   
-🔗 Quick Links:
-   Health Check : http://localhost:${PORT}/health
-   API Docs     : http://localhost:${PORT}/api/*
-   
+   Environment: ${process.env.NODE_ENV || "development"}   
 🚀 Ready to accept requests!
 
   `);

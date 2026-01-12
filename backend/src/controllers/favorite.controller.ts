@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { favoriteService } from "../services/favorite.service";
+import { Logger } from "../utils/logger.util";
 
 export class FavoriteController {
   /**
@@ -18,7 +19,7 @@ export class FavoriteController {
         count: favorites.length,
       });
     } catch (error: any) {
-      console.error("❌ Get favorites error:", error);
+      Logger.error("❌ Get favorites error:", error);
       res.status(500).json({
         success: false,
         message: "Failed to get favorites",
@@ -64,7 +65,7 @@ export class FavoriteController {
         favorite,
       });
     } catch (error: any) {
-      console.error("❌ Add favorite error:", error);
+      Logger.error("❌ Add favorite error:", error);
       res.status(500).json({
         success: false,
         message: "Failed to add favorite",
@@ -108,7 +109,7 @@ export class FavoriteController {
         ...result,
       });
     } catch (error: any) {
-      console.error("❌ Toggle favorite error:", error);
+      Logger.error("❌ Toggle favorite error:", error);
       res.status(500).json({
         success: false,
         message: "Failed to toggle favorite",
@@ -130,7 +131,7 @@ export class FavoriteController {
 
       res.status(200).json(result);
     } catch (error: any) {
-      console.error("❌ Remove favorite error:", error);
+      Logger.error("❌ Remove favorite error:", error);
       res.status(404).json({
         success: false,
         message: error.message || "Failed to remove favorite",
@@ -156,7 +157,7 @@ export class FavoriteController {
 
       res.status(200).json(result);
     } catch (error: any) {
-      console.error("❌ Update favorite error:", error);
+      Logger.error("❌ Update favorite error:", error);
       res.status(404).json({
         success: false,
         message: error.message || "Failed to update favorite",

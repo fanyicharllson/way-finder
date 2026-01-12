@@ -1,3 +1,4 @@
+import { Logger } from "../utils/logger.util";
 import { prisma } from "./database";
 
 export interface LocationCoordinates {
@@ -304,7 +305,7 @@ export async function getDynamicUserContext(userId?: string): Promise<any> {
       recentTrips: tripCount,
     };
   } catch (error) {
-    console.error("Error getting user context:", error);
+    Logger.error("Error getting user context:", error);
     return {
       userId,
       userCity: null,

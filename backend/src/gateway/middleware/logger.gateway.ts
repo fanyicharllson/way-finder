@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import { Logger } from "../../utils/logger.util";
 
 /**
  * API Gateway - Request Logging Middleware
@@ -19,7 +20,7 @@ export const requestLogger = (
   res.setHeader("X-Request-ID", requestId);
 
   // Log incoming request
-  console.log(`
+  Logger.info(`
 ┌────────────────────────────────────────────────┐
 │ 📥 INCOMING REQUEST                            │
 ├────────────────────────────────────────────────┤
@@ -48,7 +49,7 @@ export const requestLogger = (
             : "✅";
 
     // Log response
-    console.log(`
+    Logger.info(`
 ┌────────────────────────────────────────────────┐
 │ 📤 OUTGOING RESPONSE                           │
 ├────────────────────────────────────────────────┤

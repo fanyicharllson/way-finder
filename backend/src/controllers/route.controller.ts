@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import { routeService } from "../services/route.service";
 import { RouteSearchRequest } from "../types/route.type";
+import { Logger } from "../utils/logger.util";
 
 /**
  * Route Controller
@@ -20,7 +21,7 @@ export class RouteController {
 
       res.status(200).json(result);
     } catch (error: any) {
-      console.error("❌ Route search error:", error);
+      Logger.error("❌ Route search error:", error);
       res.status(500).json({
         success: false,
         message: "Failed to search routes",
@@ -52,7 +53,7 @@ export class RouteController {
         route,
       });
     } catch (error: any) {
-      console.error("❌ Get route error:", error);
+      Logger.error("❌ Get route error:", error);
       res.status(500).json({
         success: false,
         message: "Failed to get route",
@@ -84,7 +85,7 @@ export class RouteController {
         routes,
       });
     } catch (error: any) {
-      console.error("❌ Compare routes error:", error);
+      Logger.error("❌ Compare routes error:", error);
       res.status(500).json({
         success: false,
         message: "Failed to compare routes",

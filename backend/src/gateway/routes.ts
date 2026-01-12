@@ -56,17 +56,17 @@ export function setupGatewayRoutes(app: Express) {
   Logger.info("Weather routes mounted");
 
   // GATEWAY INFO
-  Logger.info("═════════════════════════════════════════════════════════");
-  Logger.info("📊 API GATEWAY SUMMARY");
-  Logger.info("═════════════════════════════════════════════════════════");
-  Logger.info("🔓 Public Routes  : /api/auth/register, /api/auth/login");
-  Logger.info("🔐 Protected Routes: All others (require JWT token)");
-  Logger.info("⏱️  Rate Limiting  :");
-  Logger.info("   - Auth endpoints: 5 requests/15 minutes");
-  Logger.info("   - API endpoints : 100 requests/minute");
-  Logger.info("   - Other         : 30 requests/minute");
-  Logger.info("📝 Logging        : All requests logged with Request ID");
-  Logger.info("═════════════════════════════════════════════════════════\n");
+  Logger.dev("═════════════════════════════════════════════════════════");
+  Logger.dev("📊 API GATEWAY SUMMARY");
+  Logger.dev("═════════════════════════════════════════════════════════");
+  Logger.dev("🔓 Public Routes  : /api/auth/register, /api/auth/login");
+  Logger.dev("🔐 Protected Routes: All others (require JWT token)");
+  Logger.dev("⏱️  Rate Limiting  :");
+  Logger.dev("   - Auth endpoints: 5 requests/15 minutes");
+  Logger.dev("   - API endpoints : 100 requests/minute");
+  Logger.dev("   - Other         : 30 requests/minute");
+  Logger.dev("📝 Logging        : All requests logged with Request ID");
+  Logger.dev("═════════════════════════════════════════════════════════\n");
 }
 
 /**

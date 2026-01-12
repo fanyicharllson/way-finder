@@ -7,6 +7,7 @@ import {
   sendHighRatingCelebrationEmail,
 } from "../../services/email.service";
 import { prisma } from "../../config/database";
+import { Logger } from "../../utils/logger.util";
 
 /**
  * Trip Event Listeners
@@ -25,7 +26,7 @@ import { prisma } from "../../config/database";
  */
 eventBus.onEvent<TripCompletedPayload>(Events.TRIP_COMPLETED, async (data) => {
   try {
-    console.log(`🚗 Processing TRIP_COMPLETED event for trip: ${data.tripId}`);
+    Logger.info(`🚗 Processing TRIP_COMPLETED event for trip: ${data.tripId}`);
 
     // 1. Get user details for email
     const user = await prisma.user.findUnique({
@@ -64,11 +65,11 @@ eventBus.onEvent<TripCompletedPayload>(Events.TRIP_COMPLETED, async (data) => {
           totalTime: data.actualTime,
         },
       });
-      console.log(
+      Logger.info(
         `✅ User stats updated: ${stats.totalTrips} trips, ${stats.totalSpent} XAF spent`
       );
     } catch (error) {
-      console.warn(
+      Logger.warn(
         `⚠️ UserStats table not found. Run 'npx prisma db push' to create it.`
       );
     }
@@ -79,7 +80,7 @@ eventBus.onEvent<TripCompletedPayload>(Events.TRIP_COMPLETED, async (data) => {
       data.transportMode,
       data.actualCost
     );
-    console.log(`💰 Potential savings for this trip: ${savingsInfo.saved} XAF`);
+    Logger.info(`💰 Potential savings for this trip: ${savingsInfo.saved} XAF`);
 
     // 4. REAL WORK: Track route popularity for recommendations
     try {
@@ -109,11 +110,11 @@ eventBus.onEvent<TripCompletedPayload>(Events.TRIP_COMPLETED, async (data) => {
           lastUsed: new Date(),
         },
       });
-      console.log(
+      Logger.info(
         `✅ Route popularity tracked: ${data.origin} → ${data.destination} via ${data.transportMode}`
       );
     } catch (error) {
-      console.warn(
+      Logger.warn(
         `⚠️ RoutePopularity table not found. Run 'npx prisma db push' to create it.`
       );
     }
@@ -125,7 +126,7 @@ eventBus.onEvent<TripCompletedPayload>(Events.TRIP_COMPLETED, async (data) => {
         stats.totalTrips === 50 ||
         stats.totalTrips === 100)
     ) {
-      console.log(`🎉 MILESTONE: User completed ${stats.totalTrips} trips!`);
+      Logger.info(`🎉 MILESTONE: User completed ${stats.totalTrips} trips!`);
 
       // Send achievement email
       if (user) {
@@ -134,15 +135,15 @@ eventBus.onEvent<TripCompletedPayload>(Events.TRIP_COMPLETED, async (data) => {
           user.name,
           stats.totalTrips
         );
-        console.log(
+        Logger.info(
           `✅ Milestone achievement email sent for ${stats.totalTrips} trips`
         );
       }
     }
 
-    console.log(`✅ TRIP_COMPLETED event processed successfully`);
+    Logger.info(`✅ TRIP_COMPLETED event processed successfully`);
   } catch (error) {
-    console.error(`❌ Error processing TRIP_COMPLETED event:`, error);
+    Logger.error(`❌ Error processing TRIP_COMPLETED event:`, error);
   }
 });
 
@@ -155,7 +156,7 @@ eventBus.onEvent<TripCompletedPayload>(Events.TRIP_COMPLETED, async (data) => {
  */
 eventBus.onEvent<TripRatedPayload>(Events.TRIP_RATED, async (data) => {
   try {
-    console.log(`⭐ Processing TRIP_RATED event for trip: ${data.tripId}`);
+    Logger.info(`⭐ Processing TRIP_RATED event for trip: ${data.tripId}`);
 
     // 1. Get trip details
     const trip = await prisma.trip.findUnique({
@@ -164,7 +165,7 @@ eventBus.onEvent<TripRatedPayload>(Events.TRIP_RATED, async (data) => {
 
     if (trip) {
       // 2. Track ratings by transport mode
-      console.log(
+      Logger.info(
         `📊 Analytics: ${trip.transportMode} rated ${data.rating}/5 stars`
       );
 
@@ -175,7 +176,7 @@ eventBus.onEvent<TripRatedPayload>(Events.TRIP_RATED, async (data) => {
 
       // 3. If low rating, send follow-up email
       if (data.rating <= 2) {
-        console.log(`⚠️ Low rating detected. Sending follow-up email...`);
+        Logger.info(`⚠️ Low rating detected. Sending follow-up email...`);
         if (user) {
           await sendLowRatingFollowUpEmail(
             user.email,
@@ -184,13 +185,13 @@ eventBus.onEvent<TripRatedPayload>(Events.TRIP_RATED, async (data) => {
             trip.origin,
             trip.destination
           );
-          console.log(`✅ Low rating follow-up email sent to`);
+          Logger.info(`✅ Low rating follow-up email sent to`);
         }
       }
 
       // 4. If high rating, send celebration email
       if (data.rating >= 4) {
-        console.log(`🎉 High rating! User satisfied with route.`);
+        Logger.info(`🎉 High rating! User satisfied with route.`);
         if (user) {
           await sendHighRatingCelebrationEmail(
             user.email,
@@ -198,14 +199,14 @@ eventBus.onEvent<TripRatedPayload>(Events.TRIP_RATED, async (data) => {
             data.rating,
             trip.transportMode
           );
-          console.log(`✅ Celebration email sent`);
+          Logger.info(`✅ Celebration email sent`);
         }
       }
     }
 
-    console.log(`✅ TRIP_RATED event processed successfully`);
+    Logger.info(`✅ TRIP_RATED event processed successfully`);
   } catch (error) {
-    console.error(`❌ Error processing TRIP_RATED event:`, error);
+    Logger.error(`❌ Error processing TRIP_RATED event:`, error);
   }
 });
 
@@ -235,4 +236,4 @@ function calculatePotentialSavings(
   };
 }
 
-console.log("✅ Trip event listeners registered");
+Logger.info("✅ Trip event listeners registered");

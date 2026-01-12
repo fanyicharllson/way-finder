@@ -1,8 +1,8 @@
 import {
   RouteOption,
   OptimizationType,
-  RecommendationBadge,
 } from "../../types/route.type";
+import { Logger } from "../../utils/logger.util";
 
 /**
  * Optimization Strategy Interface (Strategy Pattern)
@@ -132,7 +132,7 @@ export class StrategyFactory {
     const strategy = this.strategies.get(type);
     if (!strategy) {
       // Fallback to balanced if unknown type
-      console.warn(`Unknown optimization type: ${type}, using BALANCED`);
+      Logger.warn(`Unknown optimization type: ${type}, using BALANCED`);
       return this.strategies.get(OptimizationType.BALANCED)!;
     }
     return strategy;

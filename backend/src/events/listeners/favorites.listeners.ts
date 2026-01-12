@@ -5,10 +5,11 @@ import {
 } from "../eventTypes";
 import { prisma } from "../../config/database";
 import { sendFavoriteAddedEmail } from "../../services/email.service";
+import { Logger } from "../../utils/logger.util";
 
 eventBus.onEvent<FavoriteAddedPayload>(Events.FAVORITE_ADDED, async (data) => {
   try {
-    console.log(`⭐ Favorite added: ${data.name}`);
+    Logger.dev(`⭐ Favorite added: ${data.name}`);
 
     // Get favorite details
     const favorite = await prisma.favoriteRoute.findUnique({
@@ -25,7 +26,7 @@ eventBus.onEvent<FavoriteAddedPayload>(Events.FAVORITE_ADDED, async (data) => {
     if (!user) return;
 
     // Send email
-    console.log(`📧 Sending favorite confirmation to ${user.email}`);
+    Logger.dev(`📧 Sending favorite confirmation to ${user.email}`);
     
     await sendFavoriteAddedEmail(
       user.email,
@@ -35,7 +36,7 @@ eventBus.onEvent<FavoriteAddedPayload>(Events.FAVORITE_ADDED, async (data) => {
       favorite.toAddress
     );
   } catch (error) {
-    console.error("❌ Error processing FAVORITE_ADDED event:", error);
+    Logger.error("❌ Error processing FAVORITE_ADDED event:", error);
   }
 });
 
@@ -47,4 +48,4 @@ eventBus.onEvent<FavoriteAddedPayload>(Events.FAVORITE_ADDED, async (data) => {
  *   - "We miss this route" email campaigns
  */
 
-console.log("📡 Favorite event listeners registered (cleaned up)");
+Logger.dev("📡 Favorite event listeners registered (cleaned up)");

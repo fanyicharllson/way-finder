@@ -1,4 +1,5 @@
 import { Request, Response, NextFunction } from "express";
+import { Logger } from "../../utils/logger.util";
 
 /**
  * API Gateway - CORS Configuration Middleware
@@ -25,9 +26,9 @@ export const corsGateway = (
 
   if (allowedOrigins.includes(origin as string)) {
     res.header("Access-Control-Allow-Origin", origin);
-    console.log(`✅ CORS allowed for origin: ${origin}`);
+    Logger.info(`✅ CORS allowed for origin: ${origin}`);
   } else if (origin) {
-    console.log(`🚫 CORS rejected for origin: ${origin}`);
+    Logger.info(`🚫 CORS rejected for origin: ${origin}`);
   }
 
   // CORS headers

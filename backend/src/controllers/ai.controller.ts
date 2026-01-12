@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { AIService } from "../services/ai.service";
+import { Logger } from "../utils/logger.util";
 // import { eventBus } from '../events/eventBus';
 
 const aiService = AIService.getInstance();
@@ -28,7 +29,7 @@ export class AIController {
         data: aiResponse,
       });
     } catch (error: any) {
-      console.error("AI Controller Error:", error);
+      Logger.error("AI Controller Error:", error);
       return res.status(500).json({
         success: false,
         message: "AI service temporarily unavailable",

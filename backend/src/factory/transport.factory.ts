@@ -6,6 +6,7 @@ import {
 } from "../types/route.type";
 import { v4 as uuidv4 } from "uuid";
 import { pricingService, PricingContext } from "../services/pricing.service";
+import { Logger } from "../utils/logger.util";
 
 /**
  * Abstract Transport Calculator
@@ -200,7 +201,7 @@ export class TransportFactory {
         routes.push(route);
       } catch (error) {
         // Mode not viable for this distance, skip it
-        console.log(`⚠️ Skipping ${mode}: ${error}`);
+        Logger.info(`⚠️ Skipping ${mode}: ${error}`);
       }
     }
 

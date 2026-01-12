@@ -43,7 +43,7 @@ export const useSavePreferences = () => {
         router.push("/screens/(extrascreens)/success.screen");
       }
 
-      console.log("✅ Preferences saved:", data);
+      console.log("✅ Preferences saved:");
     },
     onError: (error: AxiosError<ApiError>) => {
       const message =

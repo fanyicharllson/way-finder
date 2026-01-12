@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { tripService } from "../services/trip.service";
+import { Logger } from "../utils/logger.util";
 
 /**
  * Trip Controller
@@ -40,7 +41,7 @@ export class TripController {
         trip,
       });
     } catch (error: any) {
-      console.error("❌ Save trip error:", error);
+      Logger.error("❌ Save trip error:", error);
       res.status(500).json({
         success: false,
         message: "Failed to save trip",
@@ -71,7 +72,7 @@ export class TripController {
         count: trips.length,
       });
     } catch (error: any) {
-      console.error("❌ Get trip history error:", error);
+      Logger.error("❌ Get trip history error:", error);
       res.status(500).json({
         success: false,
         message: "Failed to get trip history",
@@ -104,7 +105,7 @@ export class TripController {
         trip,
       });
     } catch (error: any) {
-      console.error("❌ Get trip error:", error);
+      Logger.error("❌ Get trip error:", error);
       res.status(500).json({
         success: false,
         message: "Failed to get trip",
@@ -127,7 +128,7 @@ export class TripController {
 
       res.status(200).json(result);
     } catch (error: any) {
-      console.error("❌ Rate trip error:", error);
+      Logger.error("❌ Rate trip error:", error);
       res.status(500).json({
         success: false,
         message: error.message || "Failed to rate trip",
@@ -154,7 +155,7 @@ export class TripController {
         analytics,
       });
     } catch (error: any) {
-      console.error("❌ Get analytics error:", error);
+      Logger.error("❌ Get analytics error:", error);
       res.status(500).json({
         success: false,
         message: "Failed to get analytics",
