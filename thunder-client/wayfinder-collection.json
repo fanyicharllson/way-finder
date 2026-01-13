@@ -1,0 +1,431 @@
+{
+  "clientName": "Thunder Client",
+  "collectionName": "WayFinder API",
+  "collectionId": "wayfinder-api",
+  "dateExported": "2026-01-12",
+  "version": "1.0",
+  "folders": [
+    {
+      "name": "Authentication",
+      "requests": [
+        {
+          "name": "Register User",
+          "method": "POST",
+          "url": "http://localhost:5000/api/auth/register",
+          "headers": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "type": "json",
+            "raw": "{\n  \"email\": \"testuser@example.com\",\n  \"password\": \"SecurePass123!\",\n  \"fullName\": \"Test User\"\n}"
+          }
+        },
+        {
+          "name": "Login User",
+          "method": "POST",
+          "url": "http://localhost:5000/api/auth/login",
+          "headers": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "type": "json",
+            "raw": "{\n  \"email\": \"testuser@example.com\",\n  \"password\": \"SecurePass123!\"\n}"
+          }
+        },
+        {
+          "name": "Get Current User",
+          "method": "GET",
+          "url": "http://localhost:5000/api/auth/me",
+          "headers": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{token}}"
+            }
+          ]
+        },
+        {
+          "name": "Update Profile",
+          "method": "PUT",
+          "url": "http://localhost:5000/api/auth/profile",
+          "headers": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{token}}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "type": "json",
+            "raw": "{\n  \"fullName\": \"Updated Name\"\n}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Routes",
+      "requests": [
+        {
+          "name": "Search Routes",
+          "method": "POST",
+          "url": "http://localhost:5000/api/routes/search",
+          "headers": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{token}}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "type": "json",
+            "raw": "{\n  \"from\": {\n    \"address\": \"Douala\"\n  },\n  \"to\": {\n    \"address\": \"Yaoundé\"\n  },\n  \"transportMode\": \"taxi\"\n}"
+          }
+        },
+        {
+          "name": "Search Routes with Coordinates",
+          "method": "POST",
+          "url": "http://localhost:5000/api/routes/search",
+          "headers": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{token}}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "type": "json",
+            "raw": "{\n  \"from\": {\n    \"coordinates\": {\n      \"lat\": 4.0511,\n      \"lng\": 9.7679\n    }\n  },\n  \"to\": {\n    \"coordinates\": {\n      \"lat\": 3.8480,\n      \"lng\": 11.5021\n    }\n  }\n}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Preferences",
+      "requests": [
+        {
+          "name": "Get User Preferences",
+          "method": "GET",
+          "url": "http://localhost:5000/api/preferences",
+          "headers": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{token}}"
+            }
+          ]
+        },
+        {
+          "name": "Update Preferences",
+          "method": "PUT",
+          "url": "http://localhost:5000/api/preferences",
+          "headers": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{token}}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "type": "json",
+            "raw": "{\n  \"maxBudget\": 5000,\n  \"preferredModes\": [\"taxi\", \"bus\"],\n  \"avoidanceZones\": [],\n  \"priorityType\": \"fastest\"\n}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Favorites",
+      "requests": [
+        {
+          "name": "Get All Favorites",
+          "method": "GET",
+          "url": "http://localhost:5000/api/favorites",
+          "headers": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{token}}"
+            }
+          ]
+        },
+        {
+          "name": "Add Favorite",
+          "method": "POST",
+          "url": "http://localhost:5000/api/favorites",
+          "headers": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{token}}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "type": "json",
+            "raw": "{\n  \"name\": \"Home to Work\",\n  \"from\": {\n    \"address\": \"Douala\",\n    \"coordinates\": {\n      \"lat\": 4.0511,\n      \"lng\": 9.7679\n    }\n  },\n  \"to\": {\n    \"address\": \"Yaoundé\",\n    \"coordinates\": {\n      \"lat\": 3.8480,\n      \"lng\": 11.5021\n    }\n  }\n}"
+          }
+        },
+        {
+          "name": "Delete Favorite",
+          "method": "DELETE",
+          "url": "http://localhost:5000/api/favorites/:id",
+          "headers": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{token}}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Recent Searches",
+      "requests": [
+        {
+          "name": "Get Recent Searches",
+          "method": "GET",
+          "url": "http://localhost:5000/api/searches/recent",
+          "headers": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{token}}"
+            }
+          ]
+        },
+        {
+          "name": "Clear Recent Searches",
+          "method": "DELETE",
+          "url": "http://localhost:5000/api/searches/recent",
+          "headers": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{token}}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Trips",
+      "requests": [
+        {
+          "name": "Get All Trips",
+          "method": "GET",
+          "url": "http://localhost:5000/api/trips",
+          "headers": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{token}}"
+            }
+          ]
+        },
+        {
+          "name": "Get Trip by ID",
+          "method": "GET",
+          "url": "http://localhost:5000/api/trips/:id",
+          "headers": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{token}}"
+            }
+          ]
+        },
+        {
+          "name": "Start Trip",
+          "method": "POST",
+          "url": "http://localhost:5000/api/trips",
+          "headers": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{token}}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "type": "json",
+            "raw": "{\n  \"routeId\": \"route-id-here\",\n  \"transportMode\": \"taxi\",\n  \"estimatedCost\": 8837,\n  \"estimatedDuration\": 263\n}"
+          }
+        },
+        {
+          "name": "Complete Trip",
+          "method": "PUT",
+          "url": "http://localhost:5000/api/trips/:id/complete",
+          "headers": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{token}}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "type": "json",
+            "raw": "{\n  \"actualCost\": 9000,\n  \"actualDuration\": 280\n}"
+          }
+        },
+        {
+          "name": "Rate Trip",
+          "method": "PUT",
+          "url": "http://localhost:5000/api/trips/:id/rate",
+          "headers": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{token}}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "type": "json",
+            "raw": "{\n  \"rating\": 5,\n  \"feedback\": \"Great trip! Driver was professional.\"\n}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "AI Chat",
+      "requests": [
+        {
+          "name": "Send AI Chat Message",
+          "method": "POST",
+          "url": "http://localhost:5000/api/ai/chat",
+          "headers": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{token}}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "type": "json",
+            "raw": "{\n  \"message\": \"How much does it cost to travel from Douala to Yaoundé?\",\n  \"conversationHistory\": []\n}"
+          }
+        },
+        {
+          "name": "AI Route Cost Analysis",
+          "method": "POST",
+          "url": "http://localhost:5000/api/ai/chat",
+          "headers": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{token}}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "type": "json",
+            "raw": "{\n  \"message\": \"Analyze this route for me:\\nTransport: taxi\\nDistance: 241.36 km\\nCost: 8837 FCFA\\nDuration: 263 minutes\\n\\nIs this cost reasonable? Should I consider alternatives?\",\n  \"conversationHistory\": []\n}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Location",
+      "requests": [
+        {
+          "name": "Get Recent Locations",
+          "method": "GET",
+          "url": "http://localhost:5000/api/locations/recent",
+          "headers": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{token}}"
+            }
+          ]
+        },
+        {
+          "name": "Save Location",
+          "method": "POST",
+          "url": "http://localhost:5000/api/locations",
+          "headers": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{token}}"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "type": "json",
+            "raw": "{\n  \"address\": \"Douala, Cameroon\",\n  \"coordinates\": {\n    \"lat\": 4.0511,\n    \"lng\": 9.7679\n  },\n  \"type\": \"search\"\n}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Weather",
+      "requests": [
+        {
+          "name": "Get Weather by Coordinates",
+          "method": "GET",
+          "url": "http://localhost:5000/api/weather?lat=4.0511&lng=9.7679",
+          "headers": [
+            {
+              "name": "Authorization",
+              "value": "Bearer {{token}}"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "environments": [
+    {
+      "name": "Local Development",
+      "variables": [
+        {
+          "name": "baseUrl",
+          "value": "http://localhost:5000"
+        },
+        {
+          "name": "token",
+          "value": "your-jwt-token-here"
+        }
+      ]
+    },
+    {
+      "name": "Production",
+      "variables": [
+        {
+          "name": "baseUrl",
+          "value": "https://your-vps-domain.com"
+        },
+        {
+          "name": "token",
+          "value": "your-jwt-token-here"
+        }
+      ]
+    }
+  ]
+}

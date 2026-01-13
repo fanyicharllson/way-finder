@@ -44,6 +44,8 @@ export const authGateway = (
 
   // Extract token from "Bearer <token>"
   const token = authHeader.replace("Bearer ", "");
+    Logger.dev("++++++++++++++++++++++ Current Token +++++++++++++++++++++++++++++:", token) // Debug log to verify token retrieval
+
 
   if (!token) {
     Logger.dev(`❌ Invalid authorization header format`);
