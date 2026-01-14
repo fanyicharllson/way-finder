@@ -94,7 +94,6 @@ export default function HomeScreen() {
           <HomeHeader
             userName={userName}
             temperature={28}
-            onNotificationPress={() => console.log("Notifications")}
             isDark={isDark}
           />
 
@@ -191,8 +190,8 @@ export default function HomeScreen() {
         <View className="mb-4">
           <SectionHeader
             icon="star"
-            title="Quick Access"
-            subtitle="Based on your preferences"
+            title="Your Preferences"
+            subtitle="Quick access to your Preferences"
             isDark={isDark}
           />
           <RecommendationCard

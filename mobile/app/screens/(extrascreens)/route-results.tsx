@@ -8,6 +8,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useGetPreferences } from '@/hooks/usePreferences';
 import { useRouteSearch } from '@/hooks/useRoutes';
 import { RouteCard } from '@/components/routes/RouteCard';
+import { NotificationService } from '@/utils/notification';
 
 export default function RouteResultsScreen() {
   const { from, to, departureTime } = useLocalSearchParams<{ 
@@ -31,8 +32,33 @@ export default function RouteResultsScreen() {
     }
   }, [from, to, departureTime]);
 
-  const handleSelectRoute = (route: any) => {
+  // 🔔 Notify when budget is exceeded
+  useEffect(() => {
+    if (results?.context?.budget?.isExceeded) {
+      const routeName = `${from} → ${to}`;
+      const cheapestPrice = results.context.budget.cheapestRoutePrice;
+      const userBudget = results.context.budget.userMaxBudget;
+      
+      NotificationService.notifyBudgetExceeded(
+        routeName,
+        cheapestPrice,
+        userBudget
+      );
+    }
+  }, [results]);
+
+  const handleSelectRoute = async (route: any) => {
     if (!results) return;
+    
+    // 🔔 Notify user that trip has started
+    const destination = to;
+    const estimatedArrival = new Date(Date.now() + route.duration * 60000).toLocaleTimeString('en-US', { 
+      hour: 'numeric', 
+      minute: '2-digit' 
+    });
+    
+    await NotificationService.notifyTripStarted(destination, estimatedArrival);
+    
     router.push({
       pathname: '/screens/(tabs)/map',
       params: {

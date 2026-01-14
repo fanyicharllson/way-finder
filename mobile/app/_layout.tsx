@@ -1,9 +1,11 @@
 import { Stack } from "expo-router";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { StatusBar } from "expo-status-bar";
+import { useEffect } from "react";
 import "./globals.css";
 import Toast from "react-native-toast-message";
 import { toastConfig } from "@/components/ToastConfig";
+import { NotificationService } from "@/utils/notification";
 
 const queryClient = new QueryClient();
 // const prefix = createURL("/");
@@ -11,6 +13,11 @@ const queryClient = new QueryClient();
 // Inner App component that uses useTheme (must be inside ThemeProvider)
 function App() {
   //   const { actualTheme } = useTheme(); // Now safe to call here
+
+  useEffect(() => {
+    // Initialize notifications
+    NotificationService.initialize();
+  }, []);
 
   return (
     <>
