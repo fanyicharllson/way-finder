@@ -239,6 +239,43 @@ export default function MapScreen() {
         </TouchableOpacity>
       </View>
 
+      {/* View All Routes Button - Only show if routes exist, came from route results, and drawer is NOT expanded */}
+      {routes.length > 0 && passedRoutes && !isDrawerExpanded && (
+        <View className="absolute left-4 bottom-60">
+          <TouchableOpacity
+            onPress={() => {
+              // Navigate back to route-results with search params - React Query will use cached data
+              if (params?.from && params?.to) {
+                router.push({
+                  pathname: '/screens/(extrascreens)/route-results',
+                  params: {
+                    from: String(params.from),
+                    to: String(params.to),
+                    departureTime: params.departureTime ? String(params.departureTime) : undefined,
+                  },
+                });
+              } else {
+                router.back();
+              }
+            }}
+            className="bg-blue-500 rounded-2xl px-4 py-3 flex-row items-center gap-2"
+            style={{
+              shadowColor: "#3B82F6",
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.3,
+              shadowRadius: 8,
+              elevation: 8,
+            }}
+            activeOpacity={0.8}
+          >
+            <Ionicons name="list" size={20} color="white" />
+            <Text className="text-white font-bold text-sm">
+              View All Routes ({routes.length})
+            </Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
       {/* Bottom Sheet (only if routes exist) */}
       {routes.length > 0 && (
         <View

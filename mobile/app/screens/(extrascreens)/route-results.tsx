@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect } from 'react';
 import { View, Text, ScrollView, ActivityIndicator, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -6,7 +5,7 @@ import { useLocalSearchParams, router } from 'expo-router';
 import { useColorScheme } from 'nativewind';
 import { Ionicons } from '@expo/vector-icons';
 import { useGetPreferences } from '@/hooks/usePreferences';
-import { useRouteSearch } from '@/hooks/useRoutes';
+import { useRouteSearchQuery } from '@/hooks/useRoutes';
 import { RouteCard } from '@/components/routes/RouteCard';
 import { NotificationService } from '@/utils/notification';
 
@@ -20,17 +19,7 @@ export default function RouteResultsScreen() {
   const isDark = colorScheme === 'dark';
 
   const { data: preferences } = useGetPreferences();
-  const { mutate: searchRoutes, data: results, isPending, error } = useRouteSearch();
-
-  useEffect(() => {
-    if (from && to) {
-      searchRoutes({
-        from: { address: from },
-        to: { address: to },
-        departureTime: departureTime || undefined,
-      });
-    }
-  }, [from, to, departureTime]);
+  const { data: results, isLoading: isPending, error } = useRouteSearchQuery(from, to, departureTime);
 
   // 🔔 Notify when budget is exceeded
   useEffect(() => {
@@ -65,6 +54,9 @@ export default function RouteResultsScreen() {
         selectedRoute: JSON.stringify(route),
         allRoutes: JSON.stringify(results.routes),
         context: JSON.stringify(results.context),
+        from: from,
+        to: to,
+        departureTime: departureTime || '',
       },
     });
   };
@@ -77,6 +69,9 @@ export default function RouteResultsScreen() {
         selectedRoute: JSON.stringify(route),
         allRoutes: JSON.stringify(results.routes),
         context: JSON.stringify(results.context),
+        from: from,
+        to: to,
+        departureTime: departureTime || '',
       },
     });
   };

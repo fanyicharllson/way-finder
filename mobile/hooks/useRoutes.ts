@@ -1,9 +1,39 @@
 import { apiClient } from "@/app/api/client";
 import { showToast } from "@/utils/toast";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 
 /**
- * React Query Hook for Route Search
+ * React Query Hook for Route Search (as Query with caching)
+ */
+export const useRouteSearchQuery = (
+  from: string | undefined,
+  to: string | undefined,
+  departureTime?: string
+) => {
+  return useQuery<RouteSearchResponse, Error>({
+    queryKey: ["routes", "search", from, to, departureTime],
+    queryFn: async () => {
+      if (!from || !to) {
+        throw new Error("From and To locations are required");
+      }
+      const response = await apiClient.post<RouteSearchResponse>(
+        "/routes/search",
+        {
+          from: { address: from },
+          to: { address: to },
+          departureTime: departureTime || undefined,
+        }
+      );
+      return response.data;
+    },
+    enabled: !!from && !!to, // Only run query if from and to exist
+    staleTime: 5 * 60 * 1000, // Data stays fresh for 5 minutes
+    gcTime: 10 * 60 * 1000, // Cache stays in memory for 10 minutes
+  });
+};
+
+/**
+ * React Query Hook for Route Search (original mutation version)
  */
 export const useRouteSearch = () => {
   return useMutation<RouteSearchResponse, Error, RouteSearchRequest>({

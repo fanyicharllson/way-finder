@@ -14,7 +14,10 @@ import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useColorScheme } from "nativewind";
 import { Ionicons } from "@expo/vector-icons";
-import { useSavePreferences, useUpdatePreferences } from "@/hooks/usePreferences";
+import {
+  useSavePreferences,
+  useUpdatePreferences,
+} from "@/hooks/usePreferences";
 import {
   PreferencesFormData,
   preferencesSchema,
@@ -23,6 +26,7 @@ import {
   DEFAULT_TRANSPORT_MODES,
   PRIORITY_TYPES,
 } from "@/data/userpreferences.data";
+import { router } from "expo-router";
 
 const TransportModeSelector: React.FC<TransportModeSelectorProps> = ({
   selectedModes,
@@ -295,7 +299,7 @@ const PreferencesScreenComponent: React.FC<PreferencesScreenProps> = ({
 }) => {
   const { colorScheme } = useColorScheme();
   const isDark = colorScheme === "dark";
-  
+
   // Determine if user is editing existing preferences
   const isEditingMode = !!initialData;
 
@@ -366,7 +370,7 @@ const PreferencesScreenComponent: React.FC<PreferencesScreenProps> = ({
     // Use update hook if editing, save hook if creating new
     if (isEditingMode) {
       updatePreferencesMutation.mutate(preferenceDTO);
-         } else {
+    } else {
       savePreferencesMutation.mutate(preferenceDTO);
     }
   };
@@ -385,8 +389,8 @@ const PreferencesScreenComponent: React.FC<PreferencesScreenProps> = ({
     saveLaterMutation.mutate(preferenceDTO);
   };
 
-  const isLoading = isEditingMode 
-    ? updatePreferencesMutation.isPending 
+  const isLoading = isEditingMode
+    ? updatePreferencesMutation.isPending
     : savePreferencesMutation.isPending;
   const isSavingLater = saveLaterMutation.isPending;
 
@@ -408,11 +412,30 @@ const PreferencesScreenComponent: React.FC<PreferencesScreenProps> = ({
         >
           {/* Header */}
           <View className="mb-8">
-            <Text className="text-3xl font-bold text-gray-900 dark:text-white mb-2">
-              {isEditingMode ? "Edit Your Preferences" : "Set Your Preferences"}
-            </Text>
+            <View className="flex-row items-center mb-2">
+              {isEditingMode && (
+                <TouchableOpacity 
+                  onPress={() => router.back()}
+                  className="mr-3 w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 items-center justify-center"
+                  activeOpacity={0.7}
+                >
+                  <Ionicons
+                    name="arrow-back"
+                    size={24}
+                    color={isDark ? "#FFFFFF" : "#000000"}
+                  />
+                </TouchableOpacity>
+              )}
+              <Text className="text-3xl font-bold text-gray-900 dark:text-white flex-1">
+                {isEditingMode
+                  ? "Edit Your Preferences"
+                  : "Set Your Preferences"}
+              </Text>
+            </View>
             <Text className="text-base text-gray-600 dark:text-gray-400">
-              {isEditingMode ? "Update your travel preferences to tailor your experience" : "Customize preferences for routes anywhere in the world"}
+              {isEditingMode
+                ? "Update your travel preferences to tailor your experience"
+                : "Customize preferences for routes anywhere in the world"}
             </Text>
           </View>
 
@@ -577,7 +600,10 @@ const PreferencesScreenComponent: React.FC<PreferencesScreenProps> = ({
                 className="w-full h-14 rounded-2xl items-center justify-center border-2 border-gray-300 dark:border-gray-700"
               >
                 {isSavingLater ? (
-                  <ActivityIndicator size="small" color={isDark ? "#FFFFFF" : "#0A0F1A"} />
+                  <ActivityIndicator
+                    size="small"
+                    color={isDark ? "#FFFFFF" : "#0A0F1A"}
+                  />
                 ) : (
                   <Text className="text-base font-semibold text-gray-700 dark:text-gray-300">
                     Save for Later

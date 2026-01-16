@@ -37,18 +37,18 @@ eventBus.onEvent<PreferenceUpdatedPayload>(
   Events.PREFERENCE_UPDATED,
   async (data) => {
     try {
-      Logger.info(
+      Logger.dev(
         `⚙️ Processing PREFERENCE_UPDATED event for user: ${data.userId}`
       );
 
       // 1. Log preference changes for debugging
       const changes = Object.keys(data.changes).join(", ");
-      Logger.info(`⚙️ Preferences updated for ${data.userId} - Changed: ${changes}`);
+      Logger.dev(`⚙️ Preferences updated for ${data.userId} - Changed: ${changes}`);
       
       // 2. Cache invalidation logic
       // When Redis is implemented, this ensures stale route data is cleared
       // await redis.del(`routes:${data.userId}`);
-      Logger.info(`🗑️ [Cache] Marked for invalidation: routes:${data.userId}`);
+      Logger.dev(`🗑️ [Cache] Marked for invalidation: routes:${data.userId}`);
       
       // 3. REAL WORK: Clear old saved routes that don't match new preferences
       const updatedPrefs = await prisma.userPreference.findUnique({
@@ -64,7 +64,7 @@ eventBus.onEvent<PreferenceUpdatedPayload>(
               // You can add cost filtering when you track search costs
             },
           });
-          Logger.info(`✅ Cleared ${deleted.count} outdated searches based on new budget`);
+          Logger.dev(`✅ Cleared ${deleted.count} outdated searches based on new budget`);
         }
 
         // Update favorite routes metadata
@@ -72,10 +72,10 @@ eventBus.onEvent<PreferenceUpdatedPayload>(
           where: { userId: data.userId },
           data: { updatedAt: new Date() },
         });
-        Logger.info(`✅ Favorite routes marked for recalculation`);
+        Logger.dev(`✅ Favorite routes marked for recalculation`);
       }
 
-      Logger.info(`✅ PREFERENCE_UPDATED event processed successfully`);
+      Logger.dev(`✅ PREFERENCE_UPDATED event processed successfully`);
     } catch (error) {
       Logger.error(`❌ Error processing PREFERENCE_UPDATED event:`, error);
     }
@@ -90,18 +90,18 @@ eventBus.onEvent<PreferenceUpdatedPayload>(
  */
 eventBus.onEvent<LocationSavedPayload>(Events.LOCATION_SAVED, async (data) => {
   try {
-    Logger.info(
+    Logger.dev(
       `📍 Processing LOCATION_SAVED event for user: ${data.userId}`
     );
 
     // 1. Log location details
-    Logger.info(
+    Logger.dev(
       `📊 Analytics: Location saved - Name: ${data.name}, Address: ${data.address}, Favorite: ${data.isFavorite}`
     );
 
     // 2. If it's a favorite location, could trigger
     if (data.isFavorite) {
-      Logger.info(`⭐ Favorite location saved: ${data.name}`);
+      Logger.dev(`⭐ Favorite location saved: ${data.name}`);
       // - Pre-generate common routes (Home → Work, Work → Home)
       // - Send notification: "We've added ${name} to your favorites!"
     }

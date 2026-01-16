@@ -76,7 +76,7 @@
       "reactCompiler": true
     },
     "extra": {
-      "BACKEND_ENDPOINT": "https://374be8b2bc09.ngrok-free.app/api",
+      "BACKEND_ENDPOINT": "https://909f87581dc5.ngrok-free.app/api",
       "router": {},
       "eas": {
         "projectId": "c417df1d-00bd-46b4-83e6-b59f9fc87c26"

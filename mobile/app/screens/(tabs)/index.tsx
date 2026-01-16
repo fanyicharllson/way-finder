@@ -11,6 +11,8 @@ import { RouteSearchCard } from "@/components/home/RouteSearchCard";
 import { RecentSearchChips } from "@/components/home/RecentSearchChips";
 import { useProfile } from "@/hooks/useAuth";
 import { AIFloatingButton } from "@/components/ui/AIFloatingButton";
+import { PreferencesFloatingButton } from "@/components/ui/PreferencesFloatingButton";
+import { PreferencesModal } from "@/components/ui/PreferencesModal";
 import { SmartSuggestion } from "@/components/ai/SmartSuggestion";
 import { TravelTips } from "@/components/ai/TravelTips";
 
@@ -52,6 +54,7 @@ export default function HomeScreen() {
   const scrollViewRef = useRef<ScrollView>(null);
   const [shouldFocusDestination, setShouldFocusDestination] = useState(false);
   const [isAISectionExpanded, setIsAISectionExpanded] = useState(false);
+  const [showPreferencesModal, setShowPreferencesModal] = useState(false);
 
   const userName = user?.name.split(" ")[0] || "";
 
@@ -71,7 +74,7 @@ export default function HomeScreen() {
   const scrollToSearch = () => {
     // Scroll to the search section with a smooth animation then focus input
     scrollViewRef.current?.scrollTo({
-      y: 550, // Adjust if layout changes
+      y: 200, // Adjust if layout changes
       animated: true,
     });
     // Trigger focus once the section is in view
@@ -218,12 +221,24 @@ export default function HomeScreen() {
         {/* Bottom padding for floating tab bar */}
         <View className="h-24" />
       </ScrollView>
+      <PreferencesFloatingButton
+        onPress={() => setShowPreferencesModal(true)}
+        visible={true}
+        bottom={195}
+        right={24}
+        testID="preferences-fab"
+      />
       <AIFloatingButton
         onPress={handleAIPress}
         visible={true}
         bottom={135}
         right={24}
         testID="ai-fab"
+      />
+      <PreferencesModal
+        visible={showPreferencesModal}
+        onClose={() => setShowPreferencesModal(false)}
+        isDark={isDark}
       />
     </SafeAreaView>
   );
