@@ -146,10 +146,10 @@ export const useForgotPassword = () => {
     mutationFn: authApi.forgotPassword,
     onSuccess: (data) => {
       showToast({
-        type: "success",
-        text1: "Code Sent!",
-        text2: "Check your email for the verification code",
-        duration: 4000,
+        type: "info",
+        text1: "Request Received",
+        text2: data.message || "If your email is registered, you'll receive a code shortly",
+        duration: 6000,
       });
     },
     onError: (error: AxiosError<ApiError>) => {

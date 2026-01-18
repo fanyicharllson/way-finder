@@ -83,14 +83,14 @@ eventBus.onEvent<PasswordResetRequestedPayload>(
   Events.PASSWORD_RESET_REQUESTED,
   async (data) => {
     try {
-      Logger.info(`🔐 Processing PASSWORD_RESET_REQUESTED event for: ${data.email}`);
+      Logger.dev(`🔐 Processing PASSWORD_RESET_REQUESTED event for: ${data.email}`);
 
       // Send password reset email with code
       await sendPasswordResetEmail(data.email, data.name, data.code);
-      Logger.info(`✅ Password reset email sent to ${data.email}`);
+      Logger.dev(`✅ Password reset email sent to ${data.email}`);
 
       // Log security event (could be sent to security monitoring service)
-      Logger.info(`🔒 Password reset code generated for user ${data.userId}, expires at ${data.expiresAt}`);
+      Logger.dev(`🔒 Password reset code generated for user ${data.userId}, expires at ${data.expiresAt}`);
 
       Logger.info(`✅ PASSWORD_RESET_REQUESTED event processed successfully`);
     } catch (error) {
@@ -110,10 +110,10 @@ eventBus.onEvent<PasswordResetCompletedPayload>(
   Events.PASSWORD_RESET_COMPLETED,
   async (data) => {
     try {
-      Logger.info(`🔐 Processing PASSWORD_RESET_COMPLETED event for: ${data.email}`);
+      Logger.dev(`🔐 Processing PASSWORD_RESET_COMPLETED event for: ${data.email}`);
 
       // Log security event
-      Logger.info(`✅ Password successfully reset for user ${data.userId}`);
+      Logger.dev(`✅ Password successfully reset for user ${data.userId}`);
 
       // Get user details for confirmation email
       const user = await prisma.user.findUnique({
@@ -124,7 +124,7 @@ eventBus.onEvent<PasswordResetCompletedPayload>(
       if (user) {
         // Send confirmation email
         await sendPasswordResetConfirmationEmail(data.email, user.name);
-        Logger.info(`✅ Password reset confirmation email sent to ${data.email}`);
+        Logger.dev(`✅ Password reset confirmation email sent to ${data.email}`);
       }
 
       // Future: Invalidate all existing sessions

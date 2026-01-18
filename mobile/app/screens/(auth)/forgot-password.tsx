@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -31,6 +31,7 @@ export default function ForgotPasswordScreen() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [resendTimer, setResendTimer] = useState(0);
 
   const forgotPassword = useForgotPassword();
   const verifyCode = useVerifyResetCode();
@@ -42,6 +43,23 @@ export default function ForgotPasswordScreen() {
     password?: string;
     confirmPassword?: string;
   }>({});
+
+  // Countdown timer effect
+  useEffect(() => {
+    let interval: ReturnType<typeof setInterval> | undefined;
+    
+    if (resendTimer > 0) {
+      interval = setInterval(() => {
+        setResendTimer((prev) => prev - 1);
+      }, 1000);
+    }
+
+    return () => {
+      if (interval) {
+        clearInterval(interval);
+      }
+    };
+  }, [resendTimer]);
 
   const validateEmail = () => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -95,6 +113,7 @@ export default function ForgotPasswordScreen() {
     try {
       await forgotPassword.mutateAsync(email);
       setCurrentStep("code");
+      setResendTimer(60); 
     } catch (error) {
       // Error handled by hook
     }
@@ -397,12 +416,16 @@ export default function ForgotPasswordScreen() {
 
               <TouchableOpacity
                 onPress={handleSendCode}
-                disabled={forgotPassword.isPending}
-                className="py-3"
+                disabled={forgotPassword.isPending || resendTimer > 0}
+                className={`py-3 ${resendTimer > 0 ? "opacity-50" : ""}`}
                 activeOpacity={0.7}
               >
                 <Text className="text-purple-600 dark:text-purple-400 text-center font-semibold">
-                  {forgotPassword.isPending ? "Sending..." : "Resend Code"}
+                  {forgotPassword.isPending
+                    ? "Sending..."
+                    : resendTimer > 0
+                    ? `Resend Code in ${resendTimer}s`
+                    : "Resend Code"}
                 </Text>
               </TouchableOpacity>
             </View>
