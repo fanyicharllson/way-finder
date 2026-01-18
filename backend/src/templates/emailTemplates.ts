@@ -48,7 +48,7 @@ export const emailTemplates = {
               <p><em>The WayFinder Team(Fanyi Charllson & Lum Nchifor) </em></p>
             </div>
             <div class="footer">
-              <p>© 2025 WayFinder. Yaoundé, Cameroon.</p>
+              <p>© 2026 WayFinder. Yaoundé, Cameroon.</p>
               <p>You received this email because you signed up for WayFinder.</p>
             </div>
           </div>
@@ -95,7 +95,7 @@ export const emailTemplates = {
               <p>How was your experience? Rate your trip to help us improve! ⭐⭐⭐⭐⭐</p>
             </div>
             <div class="footer">
-              <p>© 2025 WayFinder. All rights reserved.</p>
+              <p>© 2026 WayFinder. All rights reserved.</p>
             </div>
           </div>
         </body>
@@ -138,7 +138,7 @@ export const emailTemplates = {
               <p>You can now quickly access this route from your Favorites tab! 🚀</p>
             </div>
             <div class="footer">
-              <p>© 2025 WayFinder. All rights reserved.</p>
+              <p>© 2026 WayFinder. All rights reserved.</p>
             </div>
           </div>
         </body>
@@ -183,7 +183,7 @@ export const emailTemplates = {
               <p>Save time on future searches by tapping the ⭐ icon next time you search this route.</p>
             </div>
             <div class="footer">
-              <p>© 2025 WayFinder. All rights reserved.</p>
+              <p>© 2026 WayFinder. All rights reserved.</p>
             </div>
           </div>
         </body>
@@ -245,7 +245,7 @@ export const emailTemplates = {
               <p><em>The WayFinder Team</em></p>
             </div>
             <div class="footer">
-              <p>© 2025 WayFinder. All rights reserved.</p>
+              <p>© 2026 WayFinder. All rights reserved.</p>
             </div>
           </div>
         </body>
@@ -311,7 +311,7 @@ export const emailTemplates = {
               <p><em>The WayFinder Team</em></p>
             </div>
             <div class="footer">
-              <p>© 2025 WayFinder. All rights reserved.</p>
+              <p>© 2026 WayFinder. All rights reserved.</p>
             </div>
           </div>
         </body>
@@ -374,7 +374,134 @@ export const emailTemplates = {
               <p><em>The WayFinder Team</em></p>
             </div>
             <div class="footer">
-              <p>© 2025 WayFinder. All rights reserved.</p>
+              <p>© 2026 WayFinder. All rights reserved.</p>
+            </div>
+          </div>
+        </body>
+      </html>
+    `,
+  }),
+
+  passwordReset: (name: string, code: string) => ({
+    subject: "🔒 Reset Your WayFinder Password",
+    html: `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+            .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
+            .code-box { background: white; padding: 25px; text-align: center; border-radius: 8px; margin: 25px 0; border: 2px dashed #ef4444; }
+            .code { font-size: 32px; font-weight: bold; letter-spacing: 8px; color: #ef4444; font-family: 'Courier New', monospace; }
+            .warning { background: #fef2f2; border-left: 4px solid #ef4444; padding: 15px; margin: 20px 0; border-radius: 4px; }
+            .footer { text-align: center; margin-top: 20px; color: #666; font-size: 12px; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>🔒 Password Reset Request</h1>
+            </div>
+            <div class="content">
+              <h2>Hi ${name}!</h2>
+              <p>We received a request to reset your WayFinder password. Use the verification code below to proceed:</p>
+              
+              <div class="code-box">
+                <p style="margin: 0; font-size: 14px; color: #666; margin-bottom: 10px;">Your Verification Code</p>
+                <div class="code">${code}</div>
+                <p style="margin: 10px 0 0 0; font-size: 12px; color: #999;">Valid for 30 minutes</p>
+              </div>
+
+              <p><strong>Instructions:</strong></p>
+              <ol>
+                <li>Open the WayFinder app</li>
+                <li>Enter this verification code</li>
+                <li>Create your new password</li>
+                <li>Login with your new credentials</li>
+              </ol>
+
+              <div class="warning">
+                <p style="margin: 0;"><strong>⚠️ Security Notice:</strong></p>
+                <p style="margin: 5px 0 0 0;">If you didn't request a password reset, please ignore this email. Your account remains secure.</p>
+              </div>
+
+              <p>This code will expire in <strong>30 minutes</strong> for your security.</p>
+              
+              <p>Need help? Reply to this email or contact our support team.</p>
+              
+              <p>Stay safe! 🛡️</p>
+              <p><em>The WayFinder Team</em></p>
+            </div>
+            <div class="footer">
+              <p>© 2026 WayFinder. Yaoundé, Cameroon.</p>
+              <p>This is an automated security email. Please do not reply.</p>
+            </div>
+          </div>
+        </body>
+      </html>
+    `,
+  }),
+
+  passwordResetConfirmation: (name: string) => ({
+    subject: "✅ Password Reset Successful - WayFinder",
+    html: `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <style>
+            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+            .header { background: linear-gradient(135deg, #10B981 0%, #059669 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+            .content { background: #f9f9f9; padding: 30px; border-radius: 0 0 10px 10px; }
+            .success-box { background: #D1FAE5; border-left: 4px solid #10B981; padding: 15px; margin: 20px 0; border-radius: 4px; }
+            .button { display: inline-block; padding: 12px 30px; background: #10B981; color: white; text-decoration: none; border-radius: 5px; margin: 20px 0; }
+            .security-tips { background: white; padding: 20px; border-radius: 8px; margin: 20px 0; }
+            .footer { text-align: center; margin-top: 20px; color: #666; font-size: 12px; }
+          </style>
+        </head>
+        <body>
+          <div class="container">
+            <div class="header">
+              <h1>✅ Password Reset Successful!</h1>
+            </div>
+            <div class="content">
+              <h2>Hi ${name}!</h2>
+              
+              <div class="success-box">
+                <p style="margin: 0; font-weight: bold; color: #059669;">🎉 Your password has been successfully reset!</p>
+              </div>
+
+              <p>This is a confirmation that your WayFinder account password was changed at <strong>${new Date().toLocaleString('en-US', { timeZone: 'Africa/Douala', dateStyle: 'full', timeStyle: 'short' })}</strong>.</p>
+
+              <p>You can now login to your account with your new password.</p>
+
+              <div style="text-align: center;">
+                <a href="#" class="button">Login to WayFinder</a>
+              </div>
+
+              <div class="security-tips">
+                <p style="margin: 0 0 10px 0; font-weight: bold; color: #059669;">🔒 Security Tips:</p>
+                <ul style="margin: 0; padding-left: 20px;">
+                  <li>Keep your password secure and don't share it</li>
+                  <li>Use a unique password for WayFinder</li>
+                  <li>Change your password regularly</li>
+                  <li>Enable two-factor authentication (coming soon)</li>
+                </ul>
+              </div>
+
+              <div style="background: #FEF2F2; border-left: 4px solid #EF4444; padding: 15px; margin: 20px 0; border-radius: 4px;">
+                <p style="margin: 0;"><strong>⚠️ Didn't make this change?</strong></p>
+                <p style="margin: 5px 0 0 0;">If you didn't reset your password, please contact our support team immediately at <strong>support@wayfinder.com</strong>. Your account security is our priority.</p>
+              </div>
+
+              <p>Thank you for using WayFinder! 🚀</p>
+              <p><em>The WayFinder Team</em></p>
+            </div>
+            <div class="footer">
+              <p>© 2026 WayFinder. Yaoundé, Cameroon.</p>
+              <p>This is an automated security notification.</p>
             </div>
           </div>
         </body>

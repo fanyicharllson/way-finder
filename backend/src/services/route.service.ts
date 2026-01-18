@@ -432,7 +432,7 @@ export class RouteService {
   /**
    * Get pricing context for UI display
    */
-  private getPricingContext(
+  private getPricingContext( 
     trafficLevel: "low" | "moderate" | "high",
     departureTime: Date,
     routes: RouteOption[]

@@ -59,6 +59,13 @@ export const RouteSearchCard: React.FC<RouteSearchCardProps> = ({
     fetchSuggestions: fetchToSuggestions,
   } = useLocationAutocomplete();
 
+  // Fetch current location on mount
+  useEffect(() => {
+    if (isUsingCurrentLocation) {
+      getCurrentLocation();
+    }
+  }, []);
+
   // Show toast notifications for location status
   useEffect(() => {
     if (locationError) {

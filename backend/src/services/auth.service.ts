@@ -2,7 +2,13 @@ import { PasswordUtil } from "../utils/password.util";
 import { JWTUtil } from "../utils/jwt.util";
 import { prisma } from "../config/database";
 import { eventBus } from "../events/eventBus";
-import { Events, UserRegisteredPayload, UserLoggedInPayload } from "../events/eventTypes";
+import { 
+  Events, 
+  UserRegisteredPayload, 
+  UserLoggedInPayload,
+  PasswordResetRequestedPayload,
+  PasswordResetCompletedPayload
+} from "../events/eventTypes";
 
 export class AuthService {
   async register(data: RegisterDTO): Promise<AuthResponse> {
@@ -134,5 +140,145 @@ export class AuthService {
     }
 
     return user;
+  }
+
+  // Password Reset Methods
+  async requestPasswordReset(email: string): Promise<{ message: string }> {
+    // Find user by email
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      // Don't reveal if email exists - security best practice
+      return { message: "If your email is registered, you will receive a password reset code shortly." };
+    }
+
+    // Generate 6-digit code
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+
+    // Set expiration to 30 minutes from now
+    const expiresAt = new Date();
+    expiresAt.setMinutes(expiresAt.getMinutes() + 30);
+
+    // Invalidate any existing unused codes for this user
+    await prisma.passwordReset.updateMany({
+      where: {
+        userId: user.id,
+        used: false,
+      },
+      data: {
+        used: true,
+      },
+    });
+
+    // Create new password reset record
+    await prisma.passwordReset.create({
+      data: {
+        userId: user.id,
+        code,
+        expiresAt,
+      },
+    });
+
+    // Emit PASSWORD_RESET_REQUESTED event
+    const eventPayload: PasswordResetRequestedPayload = {
+      userId: user.id,
+      email: user.email,
+      name: user.name,
+      code,
+      expiresAt,
+      timestamp: new Date(),
+    };
+    eventBus.emitEvent(Events.PASSWORD_RESET_REQUESTED, eventPayload);
+
+    return { message: "If your email is registered, you will receive a password reset code shortly." };
+  }
+
+  async verifyResetCode(email: string, code: string): Promise<{ valid: boolean; message: string }> {
+    // Find user by email
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      return { valid: false, message: "Invalid verification code" };
+    }
+
+    // Find valid password reset code
+    const resetRequest = await prisma.passwordReset.findFirst({
+      where: {
+        userId: user.id,
+        code,
+        used: false,
+        expiresAt: {
+          gte: new Date(),
+        },
+      },
+    });
+
+    if (!resetRequest) {
+      return { valid: false, message: "Invalid or expired verification code" };
+    }
+
+    return { valid: true, message: "Code verified successfully" };
+  }
+
+  async resetPassword(email: string, code: string, newPassword: string): Promise<{ message: string }> {
+    // Find user by email
+    const user = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!user) {
+      throw new Error("Invalid verification code");
+    }
+
+    // Find valid password reset code
+    const resetRequest = await prisma.passwordReset.findFirst({
+      where: {
+        userId: user.id,
+        code,
+        used: false,
+        expiresAt: {
+          gte: new Date(),
+        },
+      },
+    });
+
+    if (!resetRequest) {
+      throw new Error("Invalid or expired verification code");
+    }
+
+    // Validate new password
+    const passwordValidation = PasswordUtil.validate(newPassword);
+    if (!passwordValidation.valid) {
+      throw new Error(passwordValidation.message);
+    }
+
+    // Hash new password
+    const hashedPassword = await PasswordUtil.hash(newPassword);
+
+    // Update user password
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { password: hashedPassword },
+    });
+
+    // Mark code as used
+    await prisma.passwordReset.update({
+      where: { id: resetRequest.id },
+      data: { used: true },
+    });
+
+    // Emit PASSWORD_RESET_COMPLETED event
+    const eventPayload: PasswordResetCompletedPayload = {
+      userId: user.id,
+      email: user.email,
+      timestamp: new Date(),
+    };
+    eventBus.emitEvent(Events.PASSWORD_RESET_COMPLETED, eventPayload);
+
+    return { message: "Password reset successful" };
   }
 }

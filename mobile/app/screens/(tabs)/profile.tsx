@@ -4,7 +4,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 
 const ProfileScreen = () => {
   return (
-    <SafeAreaView className="flex-1 bg-blue-500" edges={['top']}>
+    <SafeAreaView className="flex-1 bg-gray-50 dark:bg-gray-900">
       <ScrollView 
         className="flex-1"
         contentContainerStyle={{ paddingBottom: 140 }}

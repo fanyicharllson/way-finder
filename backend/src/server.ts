@@ -23,7 +23,7 @@ import { Logger } from "./utils/logger.util";
 dotenv.config();
 
 const app: Express = express();
-const PORT = process.env.PORT || 3000;
+const PORT = parseInt(process.env.PORT || "3000", 10);
 
 // ═══════════════════════════════════════════════════════════════
 // API GATEWAY MIDDLEWARE STACK
@@ -52,7 +52,7 @@ app.get("/health", (req: Request, res: Response) => {
     message: "WayFinder API is running 🚀",
     timestamp: new Date().toISOString(),
     environment: process.env.NODE_ENV || "development",
-    uptime: process.uptime()
+    uptime: process.uptime(),
   });
 });
 
@@ -87,7 +87,7 @@ app.use((err: any, req: Request, res: Response, next: any) => {
 cleanupRateLimitRecords();
 
 // Start server
-app.listen(PORT, () => {
+app.listen(PORT, "0.0.0.0", () => {
   Logger.info(`
 ╔═══════════════════════════════════════════════════════════╗
 ║                 🚀 WayFinder Backend                      ║

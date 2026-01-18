@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, Modal } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import * as Notifications from "expo-notifications";
@@ -8,6 +8,7 @@ import { useWeather } from "@/hooks/useWeather";
 import { useLocation } from "@/hooks/useLocation";
 import { NotificationStorage } from "@/utils/notificationStorage";
 import { NotificationService } from "@/utils/notification";
+import { showToast } from "@/utils/toast";
 
 interface HomeHeaderProps {
   userName: string;
@@ -21,6 +22,7 @@ export const HomeHeader: React.FC<HomeHeaderProps> = ({
   isDark,
 }) => {
   const [showWeatherModal, setShowWeatherModal] = useState(false);
+  const [showSettingsMenu, setShowSettingsMenu] = useState(false);
   const [currentTemp, setCurrentTemp] = useState<number | null>(null);
   const [weatherCondition, setWeatherCondition] = useState<string>("");
   const [notificationCount, setNotificationCount] = useState(0);
@@ -167,7 +169,7 @@ export const HomeHeader: React.FC<HomeHeaderProps> = ({
             >
               <Ionicons
                 name="notifications-outline"
-                size={24}
+                size={20}
                 color={isDark ? "#9CA3AF" : "#4B5563"}
               />
               {/* Notification badge */}
@@ -178,6 +180,19 @@ export const HomeHeader: React.FC<HomeHeaderProps> = ({
                   </Text>
                 </View>
               )}
+            </TouchableOpacity>
+
+            {/* Settings Menu Button */}
+            <TouchableOpacity
+              onPress={() => setShowSettingsMenu(true)}
+              className="w-12 h-12 rounded-full bg-gray-100 dark:bg-gray-800 items-center justify-center"
+              activeOpacity={0.7}
+            >
+              <Ionicons
+                name="ellipsis-vertical"
+                size={20}
+                color={isDark ? "#9CA3AF" : "#4B5563"}
+              />
             </TouchableOpacity>
           </View>
         </View>
@@ -193,6 +208,63 @@ export const HomeHeader: React.FC<HomeHeaderProps> = ({
         isLoading={isLoading}
         error={error}
       />
+
+      {/* Settings Menu Modal */}
+      <Modal
+        visible={showSettingsMenu}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowSettingsMenu(false)}
+      >
+        <TouchableOpacity
+          activeOpacity={1}
+          onPress={() => setShowSettingsMenu(false)}
+          className="flex-1 bg-black/50"
+        >
+          <View className="absolute top-16 right-4 bg-white dark:bg-gray-800 rounded-lg shadow-2xl overflow-hidden min-w-[180px]">
+            <TouchableOpacity
+              onPress={() => {
+                setShowSettingsMenu(false);
+                router.push("/screens/(extrascreens)/settings" as any);
+              }}
+              className="flex-row items-center px-4 py-3 border-b border-gray-100 dark:border-gray-700 active:bg-gray-50 dark:active:bg-gray-700"
+              activeOpacity={0.7}
+            >
+              <Ionicons
+                name="settings-outline"
+                size={20}
+                color={isDark ? "#9CA3AF" : "#4B5563"}
+              />
+              <Text className="ml-3 text-gray-900 dark:text-white font-medium">
+                Settings
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => {
+                setShowSettingsMenu(false);
+                // TODO: Add about/help navigation
+                showToast({
+                  type: "info",
+                  text1: "About",
+                  text2: "About section coming soon!",
+                })
+              }}
+              className="flex-row items-center px-4 py-3 active:bg-gray-50 dark:active:bg-gray-700"
+              activeOpacity={0.7}
+            >
+              <Ionicons
+                name="information-circle-outline"
+                size={20}
+                color={isDark ? "#9CA3AF" : "#4B5563"}
+              />
+              <Text className="ml-3 text-gray-900 dark:text-white font-medium">
+                About
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </TouchableOpacity>
+      </Modal>
     </>
   );
 };

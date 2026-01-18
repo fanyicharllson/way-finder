@@ -9,6 +9,8 @@ export { Events } from "./eventTypes";
 export type {
   UserRegisteredPayload,
   UserLoggedInPayload,
+  PasswordResetRequestedPayload,
+  PasswordResetCompletedPayload,
   PreferenceCreatedPayload,
   PreferenceUpdatedPayload,
   LocationSavedPayload,

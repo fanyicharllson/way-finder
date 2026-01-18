@@ -249,16 +249,16 @@ const RegisterScreenComponent: React.FC<RegisterScreenProps> = ({
             </TouchableOpacity>
 
             {/* Divider */}
-            <View className="flex-row items-center my-6">
+            {/* <View className="flex-row items-center my-6">
               <View className="flex-1 h-px bg-gray-300 dark:bg-gray-700" />
               <Text className="mx-4 text-gray-500 dark:text-gray-400 text-sm">
                 or continue with
               </Text>
               <View className="flex-1 h-px bg-gray-300 dark:bg-gray-700" />
-            </View>
+            </View> */}
 
             {/* Social Login Buttons */}
-            <View className="flex-row justify-between mb-6">
+            {/* <View className="flex-row justify-between mb-6">
               <TouchableOpacity
                 activeOpacity={0.7}
                 className="flex-1 mr-2 h-14 bg-white dark:bg-gray-800 rounded-2xl items-center justify-center flex-row border-2 border-gray-200 dark:border-gray-700"
@@ -278,7 +278,7 @@ const RegisterScreenComponent: React.FC<RegisterScreenProps> = ({
                   Google
                 </Text>
               </TouchableOpacity>
-            </View>
+            </View> */}
 
             {/* Login Link */}
             <View className="flex-row justify-center mb-8">

@@ -8,7 +8,7 @@ export default function LoginScreen() {
       onLoginSuccess={() => {
         router.replace("/");
       }}
-      onForgotPassword={() => router.push("/screens/(auth)/forget-password")}
+      onForgotPassword={() => router.push("/screens/(auth)/forgot-password" as any)}
     />
   );
 }

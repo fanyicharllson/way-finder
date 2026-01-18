@@ -154,3 +154,61 @@ export const sendHighRatingCelebrationEmail = async (
   );
   return sendEmail(email, template.subject, template.html);
 };
+
+export const sendPasswordResetEmail = async (
+  email: string,
+  name: string,
+  code: string
+): Promise<boolean> => {
+  const template = emailTemplates.passwordReset(name, code);
+  return sendEmail(email, template.subject, template.html);
+};
+
+export const sendPasswordResetConfirmationEmail = async (
+  email: string,
+  name: string
+): Promise<boolean> => {
+  const template = emailTemplates.passwordResetConfirmation(name);
+  return sendEmail(email, template.subject, template.html);
+};
+
+// Export as a class for consistency with other services
+export class EmailService {
+  async sendWelcomeEmail(email: string, name: string): Promise<boolean> {
+    return sendWelcomeEmail(email, name);
+  }
+
+  async sendPasswordResetEmail(email: string, name: string, code: string): Promise<boolean> {
+    return sendPasswordResetEmail(email, name, code);
+  }
+
+  async sendPasswordResetConfirmationEmail(email: string, name: string): Promise<boolean> {
+    return sendPasswordResetConfirmationEmail(email, name);
+  }
+
+  async sendFavoriteAddedEmail(
+    email: string,
+    name: string,
+    routeName: string,
+    fromAddress: string,
+    toAddress: string
+  ): Promise<boolean> {
+    return sendFavoriteAddedEmail(email, name, routeName, fromAddress, toAddress);
+  }
+
+  async sendTripCompletedEmail(
+    email: string,
+    name: string,
+    origin: string,
+    destination: string,
+    cost: number,
+    mode: string
+  ): Promise<boolean> {
+    return sendTripSummaryEmail(email, name, {
+      origin,
+      destination,
+      transportMode: mode,
+      actualCost: cost,
+    });
+  }
+}

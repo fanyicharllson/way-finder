@@ -426,7 +426,7 @@ const PreferencesScreenComponent: React.FC<PreferencesScreenProps> = ({
                   />
                 </TouchableOpacity>
               )}
-              <Text className="text-3xl font-bold text-gray-900 dark:text-white flex-1">
+              <Text className="text-2xl font-bold text-gray-900 dark:text-white flex-1">
                 {isEditingMode
                   ? "Edit Your Preferences"
                   : "Set Your Preferences"}

@@ -7,6 +7,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useGetPreferences } from '@/hooks/usePreferences';
 import { useRouteSearchQuery } from '@/hooks/useRoutes';
 import { RouteCard } from '@/components/routes/RouteCard';
+import { RouteSearchProgress } from '@/components/routes/RouteSearchProgress';
 import { NotificationService } from '@/utils/notification';
 
 export default function RouteResultsScreen() {
@@ -79,45 +80,10 @@ export default function RouteResultsScreen() {
   if (isPending) {
     return (
       <SafeAreaView className="flex-1 bg-gray-50 dark:bg-gray-900">
-        <View className="flex-1 items-center justify-center px-6">
-          <View className="w-20 h-20 bg-blue-100 dark:bg-blue-900/20 rounded-full items-center justify-center mb-6">
-            <ActivityIndicator size="large" color="#3B82F6" />
-          </View>
-          
-          <Text className="text-gray-900 dark:text-white text-2xl font-bold text-center">
-            Finding Best Routes
-          </Text>
-          <Text className="text-gray-600 dark:text-gray-400 text-center mt-2">
-            Analyzing {preferences?.preferredModes?.length || 'multiple'} transport options
-          </Text>
-          
-          <View className="mt-8 gap-3 w-full max-w-xs">
-            <View className="flex-row items-center bg-green-50 dark:bg-green-900/20 p-3 rounded-xl">
-              <View className="w-6 h-6 bg-green-500 rounded-full items-center justify-center">
-                <Ionicons name="checkmark" size={16} color="white" />
-              </View>
-              <Text className="text-gray-700 dark:text-gray-300 ml-3 font-medium">
-                Checking live traffic
-              </Text>
-            </View>
-            
-            <View className="flex-row items-center bg-green-50 dark:bg-green-900/20 p-3 rounded-xl">
-              <View className="w-6 h-6 bg-green-500 rounded-full items-center justify-center">
-                <Ionicons name="checkmark" size={16} color="white" />
-              </View>
-              <Text className="text-gray-700 dark:text-gray-300 ml-3 font-medium">
-                Comparing costs
-              </Text>
-            </View>
-            
-            <View className="flex-row items-center bg-blue-50 dark:bg-blue-900/20 p-3 rounded-xl">
-              <ActivityIndicator size="small" color="#3B82F6" />
-              <Text className="text-gray-700 dark:text-gray-300 ml-3 font-medium">
-                Calculating optimal routes
-              </Text>
-            </View>
-          </View>
-        </View>
+        <RouteSearchProgress 
+          isDark={isDark}
+          transportModesCount={preferences?.preferredModes?.length || 3}
+        />
       </SafeAreaView>
     );
   }

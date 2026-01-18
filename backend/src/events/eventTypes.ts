@@ -7,6 +7,8 @@ export const Events = {
   USER_REGISTERED: "user.registered",
   USER_LOGGED_IN: "user.logged_in",
   USER_PROFILE_UPDATED: "user.profile.updated",
+  PASSWORD_RESET_REQUESTED: "user.password.reset.requested",
+  PASSWORD_RESET_COMPLETED: "user.password.reset.completed",
 
   // Search Events
   SEARCH_SAVED: "search.saved",
@@ -201,5 +203,20 @@ export interface FavoriteAddedPayload {
 export interface FavoriteRemovedPayload {
   userId: string;
   favoriteId: string;
+  timestamp: Date;
+}
+
+export interface PasswordResetRequestedPayload {
+  userId: string;
+  email: string;
+  name: string;
+  code: string;
+  expiresAt: Date;
+  timestamp: Date;
+}
+
+export interface PasswordResetCompletedPayload {
+  userId: string;
+  email: string;
   timestamp: Date;
 }

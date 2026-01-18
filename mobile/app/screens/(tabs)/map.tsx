@@ -33,6 +33,8 @@ export default function MapScreen() {
     11.5021, 3.848,
   ]);
   const [routes, setRoutes] = useState<any[]>([]);
+  const [animationProgress, setAnimationProgress] = useState(1); // 0 to 1 for route animation
+  const [showAllRoutes, setShowAllRoutes] = useState(true);
 
   // If navigated from route results, parse passed params
   const params = useLocalSearchParams();
@@ -112,6 +114,33 @@ export default function MapScreen() {
     setSelectedRoute(route);
     fitMapToRoute(route);
     setIsDrawerExpanded(false);
+    
+    // Animate route drawing
+    setAnimationProgress(0);
+    const duration = 1500; // 1.5 seconds
+    const steps = 60;
+    const increment = 1 / steps;
+    let currentStep = 0;
+    
+    const timer = setInterval(() => {
+      currentStep++;
+      setAnimationProgress(currentStep * increment);
+      if (currentStep >= steps) {
+        clearInterval(timer);
+        setAnimationProgress(1);
+      }
+    }, duration / steps);
+  };
+
+  // Get transport mode icon
+  const getModeIcon = (mode: string) => {
+    switch (mode.toLowerCase()) {
+      case 'bus': return 'bus';
+      case 'moto': return 'bicycle';
+      case 'taxi': return 'car';
+      case 'walk': return 'walk';
+      default: return 'car';
+    }
   };
 
   return (
@@ -137,31 +166,122 @@ export default function MapScreen() {
           androidRenderMode="gps"
         />
 
-        {/* Render all routes and highlight the selected one */}
+        {/* Render all routes with animation */}
         {routes.map((r) => {
           const coords = decodePolyline(r.polyline);
           const isSelected = selectedRoute && selectedRoute.id === r.id;
+          
+          // Animate selected route drawing
+          const displayCoords = isSelected && animationProgress < 1
+            ? coords.slice(0, Math.max(2, Math.floor(coords.length * animationProgress)))
+            : coords;
+          
+          // Only show route if it's selected OR if showAllRoutes is enabled
+          if (!isSelected && !showAllRoutes) return null;
+          
           return (
-            <MapboxGL.ShapeSource
-              key={`route-${r.id}`}
-              id={`route-${r.id}`}
-              shape={{
-                type: "Feature",
-                geometry: { type: "LineString", coordinates: coords },
-                properties: {},
-              }}
-            >
-              <MapboxGL.LineLayer
-                id={`route-line-${r.id}`}
-                style={{
-                  lineColor: getModeColor(r.mode),
-                  lineWidth: isSelected ? 8 : 4,
-                  lineOpacity: isSelected ? 1 : 0.5,
-                  lineCap: "round",
-                  lineJoin: "round",
+            <React.Fragment key={`route-${r.id}`}>
+              <MapboxGL.ShapeSource
+                id={`route-${r.id}`}
+                shape={{
+                  type: "Feature",
+                  geometry: { type: "LineString", coordinates: displayCoords },
+                  properties: {},
                 }}
-              />
-            </MapboxGL.ShapeSource>
+              >
+                {/* Main route line */}
+                <MapboxGL.LineLayer
+                  id={`route-line-${r.id}`}
+                  style={{
+                    lineColor: getModeColor(r.mode),
+                    lineWidth: isSelected ? 6 : 3,
+                    lineOpacity: isSelected ? 1 : 0.4,
+                    lineCap: "round",
+                    lineJoin: "round",
+                  }}
+                />
+                {/* Outline/glow for selected route */}
+                {isSelected && (
+                  <MapboxGL.LineLayer
+                    id={`route-outline-${r.id}`}
+                    style={{
+                      lineColor: getModeColor(r.mode),
+                      lineWidth: 12,
+                      lineOpacity: 0.2,
+                      lineCap: "round",
+                      lineJoin: "round",
+                    }}
+                  />
+                )}
+              </MapboxGL.ShapeSource>
+              
+              {/* Transport mode marker (middle of route) */}
+              {isSelected && coords.length > 0 && (
+                <MapboxGL.PointAnnotation
+                  id={`mode-marker-${r.id}`}
+                  coordinate={coords[Math.floor(coords.length / 2)]}
+                >
+                  <View className="items-center">
+                    <View 
+                      className="w-8 h-8 rounded-full items-center justify-center"
+                      style={{ backgroundColor: getModeColor(r.mode) }}
+                    >
+                      <Ionicons name={getModeIcon(r.mode) as any} size={16} color="white" />
+                    </View>
+                  </View>
+                </MapboxGL.PointAnnotation>
+              )}
+              
+              {/* Distance/Time Checkpoints along route */}
+              {isSelected && coords.length > 0 && [0.25, 0.5, 0.75].map((percentage, idx) => {
+                const pointIndex = Math.floor(coords.length * percentage);
+                const distanceAtPoint = (r.distance * percentage).toFixed(1);
+                const timeAtPoint = Math.round(r.duration * percentage);
+                const costAtPoint = Math.round(r.cost * percentage);
+                
+                return (
+                  <MapboxGL.PointAnnotation
+                    key={`checkpoint-${r.id}-${idx}`}
+                    id={`checkpoint-${r.id}-${idx}`}
+                    coordinate={coords[pointIndex]}
+                  >
+                    <View className="items-center">
+                      <View 
+                        className="bg-white dark:bg-gray-800 rounded-lg px-2 py-1 border-2"
+                        style={{ 
+                          borderColor: getModeColor(r.mode),
+                          shadowColor: "#000",
+                          shadowOffset: { width: 0, height: 1 },
+                          shadowOpacity: 0.2,
+                          shadowRadius: 2,
+                          elevation: 3,
+                        }}
+                      >
+                        <Text className="text-gray-900 dark:text-white text-xs font-bold">
+                          {distanceAtPoint} km
+                        </Text>
+                        <Text className="text-gray-600 dark:text-gray-400 text-[10px]">
+                          ~{timeAtPoint} min
+                        </Text>
+                      </View>
+                      {/* Small pointer triangle */}
+                      <View 
+                        className="w-0 h-0"
+                        style={{
+                          borderLeftWidth: 4,
+                          borderRightWidth: 4,
+                          borderTopWidth: 4,
+                          borderLeftColor: 'transparent',
+                          borderRightColor: 'transparent',
+                          borderTopColor: getModeColor(r.mode),
+                          marginTop: -1,
+                        }}
+                      />
+                    </View>
+                  </MapboxGL.PointAnnotation>
+                );
+              })}
+            </React.Fragment>
           );
         })}
 
@@ -208,14 +328,89 @@ export default function MapScreen() {
             className="flex-1 ml-3 text-gray-900 dark:text-white font-medium"
             numberOfLines={1}
           >
-            Bastos → Nlongkak
+            {params?.from && params?.to
+              ? `From ${params.from} to ${params.to}`
+              : "Search for routes"}
           </Text>
           <Ionicons name="create-outline" size={20} color="#3B82F6" />
         </TouchableOpacity>
       </View>
 
+      {/* Route Stats Overlay */}
+      {selectedRoute && routes.length > 1 && (
+        <View className="absolute top-32 left-4 right-4">
+          <View 
+            className="bg-white dark:bg-gray-800 rounded-2xl p-4"
+            style={{
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.15,
+              shadowRadius: 8,
+              elevation: 6,
+            }}
+          >
+            <View className="flex-row items-center justify-between">
+              <View className="flex-row items-center gap-2">
+                <View 
+                  className="w-3 h-3 rounded-full"
+                  style={{ backgroundColor: getModeColor(selectedRoute.mode) }}
+                />
+                <Text className="text-gray-900 dark:text-white font-bold text-sm capitalize">
+                  {selectedRoute.mode}
+                </Text>
+              </View>
+              <Text className="text-gray-500 dark:text-gray-400 text-xs">
+                Route {routes.findIndex(r => r.id === selectedRoute.id) + 1} of {routes.length}
+              </Text>
+            </View>
+            <View className="flex-row items-center justify-between mt-2">
+              <View className="flex-row items-center gap-4">
+                <View className="flex-row items-center gap-1">
+                  <Ionicons name="time-outline" size={14} color={isDark ? "#9CA3AF" : "#6B7280"} />
+                  <Text className="text-gray-600 dark:text-gray-400 text-xs font-medium">
+                    {selectedRoute.duration} min
+                  </Text>
+                </View>
+                <View className="flex-row items-center gap-1">
+                  <Ionicons name="cash-outline" size={14} color={isDark ? "#9CA3AF" : "#6B7280"} />
+                  <Text className="text-gray-600 dark:text-gray-400 text-xs font-medium">
+                    {selectedRoute.cost} FCFA
+                  </Text>
+                </View>
+                <View className="flex-row items-center gap-1">
+                  <Ionicons name="navigate-outline" size={14} color={isDark ? "#9CA3AF" : "#6B7280"} />
+                  <Text className="text-gray-600 dark:text-gray-400 text-xs font-medium">
+                    {selectedRoute.distance.toFixed(1)} km
+                  </Text>
+                </View>
+              </View>
+            </View>
+          </View>
+        </View>
+      )}
+
       {/* Map Controls */}
       <View className="absolute right-4 bottom-40 gap-2">
+        {/* Toggle All Routes Button */}
+        {routes.length > 1 && (
+          <TouchableOpacity
+            onPress={() => setShowAllRoutes(!showAllRoutes)}
+            className="w-12 h-12 bg-white dark:bg-gray-800 rounded-full items-center justify-center"
+            style={{
+              shadowColor: "#000",
+              shadowOffset: { width: 0, height: 2 },
+              shadowOpacity: 0.2,
+              shadowRadius: 4,
+              elevation: 4,
+            }}
+          >
+            <Ionicons 
+              name={showAllRoutes ? "layers" : "layers-outline"} 
+              size={24} 
+              color={showAllRoutes ? "#3B82F6" : (isDark ? "#9CA3AF" : "#4B5563")} 
+            />
+          </TouchableOpacity>
+        )}
         <TouchableOpacity
           onPress={() => {
             if (cameraRef.current) {

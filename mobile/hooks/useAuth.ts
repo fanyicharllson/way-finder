@@ -139,3 +139,80 @@ export const useIsAuthenticated = () => {
     staleTime: Infinity,
   });
 };
+
+// --- FORGOT PASSWORD HOOKS ---
+export const useForgotPassword = () => {
+  return useMutation({
+    mutationFn: authApi.forgotPassword,
+    onSuccess: (data) => {
+      showToast({
+        type: "success",
+        text1: "Code Sent!",
+        text2: "Check your email for the verification code",
+        duration: 4000,
+      });
+    },
+    onError: (error: AxiosError<ApiError>) => {
+      const message = error.response?.data?.message || "Failed to send reset code";
+      
+      showToast({
+        type: "error",
+        text1: "Request Failed",
+        text2: message,
+      });
+
+      console.error("❌ Forgot password error:", error);
+    },
+  });
+};
+
+export const useVerifyResetCode = () => {
+  return useMutation({
+    mutationFn: ({ email, code }: { email: string; code: string }) =>
+      authApi.verifyResetCode(email, code),
+    onSuccess: () => {
+      showToast({
+        type: "success",
+        text1: "Code Verified! ✅",
+        text2: "You can now create a new password",
+      });
+    },
+    onError: (error: AxiosError<ApiError>) => {
+      const message = error.response?.data?.message || "Invalid or expired code";
+      
+      showToast({
+        type: "error",
+        text1: "Verification Failed",
+        text2: message,
+      });
+
+      console.error("❌ Verify code error:", error);
+    },
+  });
+};
+
+export const useResetPassword = () => {
+  return useMutation({
+    mutationFn: ({ email, code, newPassword }: { email: string; code: string; newPassword: string }) =>
+      authApi.resetPassword(email, code, newPassword),
+    onSuccess: () => {
+      showToast({
+        type: "success",
+        text1: "Password Reset! 🎉",
+        text2: "You can now login with your new password",
+        duration: 4000,
+      });
+    },
+    onError: (error: AxiosError<ApiError>) => {
+      const message = error.response?.data?.message || "Failed to reset password";
+      
+      showToast({
+        type: "error",
+        text1: "Reset Failed",
+        text2: message,
+      });
+
+      console.error("❌ Reset password error:", error);
+    },
+  });
+};

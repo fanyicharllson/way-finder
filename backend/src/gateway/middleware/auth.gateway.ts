@@ -4,7 +4,7 @@ import { Logger } from "../../utils/logger.util";
 
 /**
  * API Gateway - Authentication Middleware
- * 
+ *
  * Validates JWT tokens from Authorization header
  * Protects private routes (except auth endpoints)
  */
@@ -14,6 +14,9 @@ const PUBLIC_ROUTES = [
   "/api/auth/register",
   "/api/auth/login",
   "/health",
+  "/api/auth/forgot-password",
+  "/api/auth/verify-reset-code",
+  "/api/auth/reset-password",
 ];
 
 export const authGateway = (
@@ -55,12 +58,12 @@ export const authGateway = (
   try {
     // Verify token
     const decoded = JWTUtil.verify(token);
-    
+
     // Attach user info to request
     (req as any).user = decoded;
     (req as any).userId = decoded.userId;
 
-    Logger.auth('Token verified for user', decoded.email);
+    Logger.auth("Token verified for user", decoded.email);
     next();
   } catch (error) {
     Logger.dev(`❌ Invalid or expired token`);

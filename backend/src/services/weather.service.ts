@@ -40,6 +40,7 @@ class WeatherService {
 
     // If no API key, return default weather
     if (!this.apiKey) {
+      Logger.dev("No api key at line 43 in weather.service.ts")
       return this.getDefaultWeather(lat, lng);
     }
 

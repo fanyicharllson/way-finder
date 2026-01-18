@@ -33,6 +33,33 @@ export const authApi = {
   logout: async (): Promise<void> => {
     await apiClient.post<ApiResponse<null>>("/auth/logout");
   },
+
+  // Forgot Password - Request reset code
+  forgotPassword: async (email: string): Promise<{ message: string }> => {
+    const response = await apiClient.post<ApiResponse<{ message: string }>>(
+      "/auth/forgot-password",
+      { email }
+    );
+    return response.data.data || { message: response.data.message };
+  },
+
+  // Verify Reset Code
+  verifyResetCode: async (email: string, code: string): Promise<{ message: string }> => {
+    const response = await apiClient.post<ApiResponse<{ message: string }>>(
+      "/auth/verify-reset-code",
+      { email, code }
+    );
+    return response.data.data || { message: response.data.message };
+  },
+
+  // Reset Password
+  resetPassword: async (email: string, code: string, newPassword: string): Promise<{ message: string }> => {
+    const response = await apiClient.post<ApiResponse<{ message: string }>>(
+      "/auth/reset-password",
+      { email, code, newPassword }
+    );
+    return response.data.data || { message: response.data.message };
+  },
 };
 
 

@@ -3,7 +3,7 @@ import { Logger } from "../../utils/logger.util";
 
 /**
  * API Gateway - CORS Configuration Middleware
- * 
+ *
  * Centralized CORS handling for all routes
  * Single place to configure allowed origins
  */
@@ -19,6 +19,7 @@ export const corsGateway = (
     "http://localhost:4201",
     "http://localhost:5173",
     "https://571c58353266.ngrok-free",
+    "http://10.248.33.12:8081",
     process.env.FRONTEND_URL,
   ].filter(Boolean);
 

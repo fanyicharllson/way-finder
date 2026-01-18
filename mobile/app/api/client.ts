@@ -7,12 +7,13 @@ import { ApiError } from "./types";
 import Constants from "expo-constants";
 
 
-const BASE_URL =
-  Constants.expoConfig?.extra?.BACKEND_ENDPOINT ||
-  "https://0a9e379add4b.ngrok-free.app/api";
+const API_BASE_URL = 
+  process.env.EXPO_PUBLIC_BACKEND_URL || 
+  Constants.expoConfig?.extra?.BACKEND_ENDPOINT || 
+  'http://10.248.33.12:5000/api';
 
 export const apiClient = axios.create({
-  baseURL: BASE_URL,
+  baseURL: API_BASE_URL,
   headers: {
     "Content-Type": "application/json",
   },
@@ -24,7 +25,7 @@ let isRedirectingToLogin = false;
 
 console.log("\n");
 console.log("######################################");
-console.log("🌐 API Base URL:", BASE_URL);
+console.log("🌐 API Base URL:", API_BASE_URL);
 console.log("######################################");
 
 // Request Interceptor - Add token to requests
