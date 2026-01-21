@@ -9,7 +9,7 @@ The GitHub Action is configured to:
 
 ---
 
-## 📋 Initial Setup (Do This Once)
+## 📋 Initial Setup Do This Once
 
 ### 1. Create Docker Hub Repository
 1. Go to [hub.docker.com](https://hub.docker.com)
