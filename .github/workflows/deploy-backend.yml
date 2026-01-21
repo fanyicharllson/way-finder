@@ -57,8 +57,10 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
-            # Navigate to app directory
-            cd /opt/wayfinder || mkdir -p /opt/wayfinder && cd /opt/wayfinder
+            # Create app directory with proper permissions
+            sudo mkdir -p /opt/wayfinder
+            sudo chown -R $USER:$USER /opt/wayfinder
+            cd /opt/wayfinder
   
             # Create/update .env file
             cat > .env << 'EOF'
@@ -66,14 +68,14 @@ jobs:
             EOF
   
             # Pull latest image from Docker Hub
-            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/wayfinder-backend:latest
+            sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/wayfinder-backend:latest
   
             # Stop and remove old container
-            docker stop wayfinder-backend || true
-            docker rm wayfinder-backend || true
+            sudo docker stop wayfinder-backend || true
+            sudo docker rm wayfinder-backend || true
   
             # Run new container
-            docker run -d \
+            sudo docker run -d \
               --name wayfinder-backend \
               --restart unless-stopped \
               -p 5000:5000 \
@@ -81,8 +83,8 @@ jobs:
               ${{ secrets.DOCKERHUB_USERNAME }}/wayfinder-backend:latest
   
             # Clean up old images
-            docker image prune -af --filter "until=72h"
+            sudo docker image prune -af --filter "until=72h"
   
             # Show running containers
             echo "✅ Deployment complete!"
-            docker ps | grep wayfinder-backend
+            sudo docker ps | grep wayfinder-backend
