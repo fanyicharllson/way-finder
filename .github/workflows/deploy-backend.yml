@@ -43,47 +43,46 @@ jobs:
           echo "🔖 SHA tag: ${{ secrets.DOCKERHUB_USERNAME }}/wayfinder-backend:${{ github.sha }}"
 
   # ==========================================
-  # 🚧 VPS DEPLOYMENT (UNCOMMENT WHEN READY)
-  # ==========================================
-  # 
-  # deploy-to-vps:
-  #   needs: build-and-push
-  #   runs-on: ubuntu-latest
-  #   
-  #   steps:
-  #     - name: Deploy to VPS
-  #       uses: appleboy/ssh-action@v1.0.0
-  #       with:
-  #         host: ${{ secrets.VPS_HOST }}
-  #         username: ${{ secrets.VPS_USER }}
-  #         key: ${{ secrets.VPS_SSH_KEY }}
-  #         script: |
-  #           # Navigate to app directory
-  #           cd /opt/wayfinder || mkdir -p /opt/wayfinder && cd /opt/wayfinder
-  #
-  #           # Create/update .env file
-  #           cat > .env << 'EOF'
-  #           ${{ secrets.ENV_FILE }}
-  #           EOF
-  #
-  #           # Pull latest image from Docker Hub
-  #           docker pull ${{ secrets.DOCKERHUB_USERNAME }}/wayfinder-backend:latest
-  #
-  #           # Stop and remove old container
-  #           docker stop wayfinder-backend || true
-  #           docker rm wayfinder-backend || true
-  #
-  #           # Run new container
-  #           docker run -d \
-  #             --name wayfinder-backend \
-  #             --restart unless-stopped \
-  #             -p 5000:5000 \
-  #             --env-file .env \
-  #             ${{ secrets.DOCKERHUB_USERNAME }}/wayfinder-backend:latest
-  #
-  #           # Clean up old images (keep last 3 days)
-  #           docker image prune -af --filter "until=72h"
-  #
-  #           # Show running containers
-  #           echo "✅ Deployment complete!"
-  #           docker ps | grep wayfinder-backend
+  # 🚧 VPS DEPLOYMENT 
+  # ========================================== 
+  deploy-to-vps:
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Deploy to VPS
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          script: |
+            # Navigate to app directory
+            cd /opt/wayfinder || mkdir -p /opt/wayfinder && cd /opt/wayfinder
+  
+            # Create/update .env file
+            cat > .env << 'EOF'
+            ${{ secrets.ENV_FILE }}
+            EOF
+  
+            # Pull latest image from Docker Hub
+            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/wayfinder-backend:latest
+  
+            # Stop and remove old container
+            docker stop wayfinder-backend || true
+            docker rm wayfinder-backend || true
+  
+            # Run new container
+            docker run -d \
+              --name wayfinder-backend \
+              --restart unless-stopped \
+              -p 5000:5000 \
+              --env-file .env \
+              ${{ secrets.DOCKERHUB_USERNAME }}/wayfinder-backend:latest
+  
+            # Clean up old images (keep last 3 days)
+            docker image prune -af --filter "until=72h"
+  
+            # Show running containers
+            echo "✅ Deployment complete!"
+            docker ps | grep wayfinder-backend
