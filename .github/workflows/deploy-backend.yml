@@ -57,15 +57,18 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
+            # Set the PATH explicitly to include the docker location
+            export PATH=$PATH:/usr/bin:/usr/local/bin
+
             # Ensure app directory exists and navigate to it
             mkdir -p /opt/wayfinder
             cd /opt/wayfinder
-
+  
             # Create/update .env file
             cat > .env << 'EOF'
             ${{ secrets.ENV_FILE }}
             EOF
-
+  
             # Pull latest image from Docker Hub using sudo
             sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/wayfinder-backend:latest
 
