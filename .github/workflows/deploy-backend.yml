@@ -4,14 +4,14 @@ on:
   push:
     branches: [main]
     paths:
-      - 'backend/**'
-      - '.github/workflows/deploy-backend.yml'
-  workflow_dispatch:  # Manual trigger
+      - "backend/**"
+      - ".github/workflows/deploy-backend.yml"
+  workflow_dispatch: # Manual trigger
 
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -43,12 +43,12 @@ jobs:
           echo "🔖 SHA tag: ${{ secrets.DOCKERHUB_USERNAME }}/wayfinder-backend:${{ github.sha }}"
 
   # ==========================================
-  # 🚧 VPS DEPLOYMENT 
-  # ========================================== 
+  # 🚧 VPS DEPLOYMENT
+  # ==========================================
   deploy-to-vps:
     needs: build-and-push
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: Deploy to VPS
         uses: appleboy/ssh-action@v1.0.0
@@ -57,32 +57,33 @@ jobs:
           username: ${{ secrets.VPS_USER }}
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
-            # Navigate to app directory
-            cd /opt/wayfinder || mkdir -p /opt/wayfinder && cd /opt/wayfinder
-  
+            # Ensure app directory exists and navigate to it
+            mkdir -p /opt/wayfinder
+            cd /opt/wayfinder
+
             # Create/update .env file
             cat > .env << 'EOF'
             ${{ secrets.ENV_FILE }}
             EOF
-  
-            # Pull latest image from Docker Hub
-            docker pull ${{ secrets.DOCKERHUB_USERNAME }}/wayfinder-backend:latest
-  
-            # Stop and remove old container
-            docker stop wayfinder-backend || true
-            docker rm wayfinder-backend || true
-  
-            # Run new container
-            docker run -d \
+
+            # Pull latest image from Docker Hub using sudo
+            sudo docker pull ${{ secrets.DOCKERHUB_USERNAME }}/wayfinder-backend:latest
+
+            # Stop and remove old container using sudo
+            sudo docker stop wayfinder-backend || true
+            sudo docker rm wayfinder-backend || true
+
+            # Run new container using sudo
+            sudo docker run -d \
               --name wayfinder-backend \
               --restart unless-stopped \
               -p 5000:5000 \
               --env-file .env \
               ${{ secrets.DOCKERHUB_USERNAME }}/wayfinder-backend:latest
-  
-            # Clean up old images (keep last 3 days)
-            docker image prune -af --filter "until=72h"
-  
-            # Show running containers
+
+            # Clean up old images using sudo
+            sudo docker image prune -af --filter "until=72h"
+
+            # Show running containers using sudo
             echo "✅ Deployment complete!"
-            docker ps | grep wayfinder-backend
+            sudo docker ps | grep wayfinder-backend
