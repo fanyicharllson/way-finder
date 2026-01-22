@@ -16,6 +16,7 @@ import {
   requestLogger,
   authGateway,
   corsGateway,
+  rateLimitGateway,
   cleanupRateLimitRecords,
 } from "./gateway";
 import { Logger } from "./utils/logger.util";
@@ -42,7 +43,7 @@ app.use(express.urlencoded({ extended: true }));
 // API Gateway Middleware (in order)
 app.use(requestLogger); // 1. Log all requests
 app.use(corsGateway); // 2. Handle CORS
-// app.use(rateLimitGateway); // 3. Rate limiting
+app.use(rateLimitGateway); // 3. Rate limiting
 app.use(authGateway); // 4. Authentication check
 
 // ═══════════════════════════════════════════════════════════════
