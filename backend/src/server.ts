@@ -25,6 +25,9 @@ dotenv.config();
 const app: Express = express();
 const PORT = parseInt(process.env.PORT || "3000", 10);
 
+// Trust proxy - required when behind Nginx reverse proxy
+app.set("trust proxy", true);
+
 // ═══════════════════════════════════════════════════════════════
 // API GATEWAY MIDDLEWARE STACK
 // ═══════════════════════════════════════════════════════════════

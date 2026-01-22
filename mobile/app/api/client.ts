@@ -10,7 +10,7 @@ import Constants from "expo-constants";
 const API_BASE_URL = 
   process.env.EXPO_PUBLIC_BACKEND_URL || 
   Constants.expoConfig?.extra?.BACKEND_ENDPOINT || 
-  'http://10.248.33.12:5000/api';
+  'https://wayfinder-api.charlseempire.tech/api';
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,

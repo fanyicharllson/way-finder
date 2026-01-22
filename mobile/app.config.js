@@ -76,7 +76,7 @@ export default {
       reactCompiler: true
     },
     extra: {
-      BACKEND_ENDPOINT: process.env.EXPO_PUBLIC_BACKEND_URL || "http://104.248.41.42:5000/api",
+      BACKEND_ENDPOINT: process.env.EXPO_PUBLIC_BACKEND_URL || "https://wayfinder-api.charlseempire.tech/api",
       router: {},
       eas: {
         projectId: "c417df1d-00bd-46b4-83e6-b59f9fc87c26"
