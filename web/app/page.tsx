@@ -184,15 +184,17 @@ export default function Home() {
                   name: "Fanyi Charllson Fanyi",
                   role: "Lead Developer",
                   img: "/images/developer1.jpg",
+                  bio: "A seasoned developer with a passion for building scalable and maintainable mobile applications.",
                 },
                 {
                   name: "Lum Nchifor",
                   role: "Frontend Engineer",
                   img: "/images/developer2.jpg",
+                  bio: "A passionate frontend engineer with a focus on building intuitive and user-friendly interfaces.",
                 },
               ].map((member, idx) => (
-                <div key={idx} className="flex gap-4 items-center group">
-                  <div className="relative">
+                <div key={idx} className="flex flex-col items-center text-center group">
+                  <div className="relative mb-4">
                     <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-xl blur opacity-0 group-hover:opacity-100 transition"></div>
                     <img
                       src={member.img || "/placeholder.svg"}
@@ -200,10 +202,9 @@ export default function Home() {
                       className="w-24 h-24 rounded-xl object-cover relative"
                     />
                   </div>
-                  <div>
-                    <h3 className="text-xl font-bold text-white">{member.name}</h3>
-                    <p className="text-cyan-400">{member.role}</p>
-                  </div>
+                  <h3 className="text-xl font-bold text-white">{member.name}</h3>
+                  <p className="text-cyan-400 mb-2">{member.role}</p>
+                  <p className="text-slate-400">{member.bio}</p>
                 </div>
               ))}
             </div>
