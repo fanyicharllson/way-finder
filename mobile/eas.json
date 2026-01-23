@@ -8,14 +8,20 @@
       "developmentClient": true,
       "distribution": "internal",
       "android": {
-        "buildType": "apk"
+        "buildType": "apk",
+        "env": {
+          "MAPBOX_DOWNLOADS_TOKEN": "$MAPBOX_DOWNLOADS_TOKEN"
+        }
       }
     },
     "preview": {
       "distribution": "internal",
       "android": {
         "buildType": "apk",
-        "gradleCommand": ":app:assembleRelease"
+        "gradleCommand": ":app:assembleRelease",
+        "env": {
+          "MAPBOX_DOWNLOADS_TOKEN": "$MAPBOX_DOWNLOADS_TOKEN"
+        }
       }
     },
     "production": {
