@@ -65,7 +65,7 @@ jobs:
             ${{ secrets.ENV_FILE }}
             EOF
   
-            # 🔍 DEBUG: Show what was written to .env (without exposing secrets)
+            # 🔍 DEBUG: Show what was wriitten to .env (without exposing secrets)
             echo "🔍 Checking .env format..."
             grep -E "JWT_EXPIRES_IN|EMAIL_FROM" /opt/wayfinder/.env || echo "❌ Variables not found!"
   

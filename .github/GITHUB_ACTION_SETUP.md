@@ -16,6 +16,7 @@ The GitHub Action is configured to:
 2. Click **"Create Repository"**
 3. Name it: `wayfinder-backend`
 4. Set to **Public** or **Private** (your choice)
+class presentation
 
 ### 2. Generate Docker Hub Access Token
 1. Docker Hub → **Account Settings** → **Security**
