@@ -1,5 +1,6 @@
-import { Button } from "../Components/ui/button"
-import { ArrowRight, MapPin, DollarSign, Zap, Users } from "lucide-react"
+import { Button } from "../Components/ui/button";
+import { ArrowRight, MapPin, DollarSign, Zap, Users } from "lucide-react";
+import DownloadButton from "../Components/DownloadButton";
 
 export default function Home() {
   return (
@@ -8,17 +9,30 @@ export default function Home() {
       <nav className="fixed top-0 w-full z-50 bg-slate-950/80 backdrop-blur-md border-b border-slate-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <img src="/images/wayfinderlogo.png" alt="WayFinder Logo" className="w-8 h-8" />
+            <img
+              src="/images/wayfinderlogo.png"
+              alt="WayFinder Logo"
+              className="w-8 h-8"
+            />
             <span className="text-xl font-bold text-white">WayFinder</span>
           </div>
           <div className="hidden md:flex items-center gap-8">
-            <a href="#features" className="text-slate-300 hover:text-white transition">
+            <a
+              href="#features"
+              className="text-slate-300 hover:text-white transition"
+            >
               Features
             </a>
-            <a href="#how-it-works" className="text-slate-300 hover:text-white transition">
+            <a
+              href="#how-it-works"
+              className="text-slate-300 hover:text-white transition"
+            >
               How it Works
             </a>
-            <a href="#team" className="text-slate-300 hover:text-white transition">
+            <a
+              href="#team"
+              className="text-slate-300 hover:text-white transition"
+            >
               Team
             </a>
           </div>
@@ -37,18 +51,12 @@ export default function Home() {
             </span>
           </h1>
           <p className="text-xl text-slate-400 max-w-2xl mx-auto text-balance">
-            The smart commute planner that shows you all possible routes using different transport modes and their
-            prices in real-time.
+            The smart commute planner that shows you all possible routes using
+            different transport modes and their prices in real-time.
           </p>
         </div>
         <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
-          <Button
-            size="lg"
-            className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white border-0 text-lg h-12 px-8"
-          >
-            Download App
-            <ArrowRight className="ml-2 w-5 h-5" />
-          </Button>
+          <DownloadButton />
         </div>
 
         {/* Hero Image - App Screenshot Showcase */}
@@ -56,24 +64,44 @@ export default function Home() {
           <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/20 via-blue-500/20 to-emerald-500/20 blur-3xl -z-10 rounded-3xl"></div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-12">
             <div className="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-2xl overflow-hidden hover:border-cyan-500/50 transition">
-              <img src="/images/homescreen.jpg" alt="Home Screen" className="w-full" />
+              <img
+                src="/images/homescreen.jpg"
+                alt="Home Screen"
+                className="w-full"
+              />
               <div className="p-4 text-left">
-                <h3 className="font-bold text-white mb-2">Smart Route Search</h3>
-                <p className="text-sm text-slate-400">Enter your destination and instantly see all available routes</p>
+                <h3 className="font-bold text-white mb-2">
+                  Smart Route Search
+                </h3>
+                <p className="text-sm text-slate-400">
+                  Enter your destination and instantly see all available routes
+                </p>
               </div>
             </div>
             <div className="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-2xl overflow-hidden hover:border-blue-500/50 transition">
-              <img src="/images/MAP.jpg" alt="Price Comparison" className="w-full" />
+              <img
+                src="/images/MAP.jpg"
+                alt="Price Comparison"
+                className="w-full"
+              />
               <div className="p-4 text-left">
                 <h3 className="font-bold text-white mb-2">Price Comparison</h3>
-                <p className="text-sm text-slate-400">Compare costs across buses, taxis, motos, and more</p>
+                <p className="text-sm text-slate-400">
+                  Compare costs across buses, taxis, motos, and more
+                </p>
               </div>
             </div>
             <div className="bg-slate-800/50 backdrop-blur border border-slate-700 rounded-2xl overflow-hidden hover:border-emerald-500/50 transition">
-              <img src="/images/triphistory.jpg" alt="Trip History" className="w-full" />
+              <img
+                src="/images/triphistory.jpg"
+                alt="Trip History"
+                className="w-full"
+              />
               <div className="p-4 text-left">
                 <h3 className="font-bold text-white mb-2">Trip Analytics</h3>
-                <p className="text-sm text-slate-400">Track your trips and spending patterns over time</p>
+                <p className="text-sm text-slate-400">
+                  Track your trips and spending patterns over time
+                </p>
               </div>
             </div>
           </div>
@@ -87,8 +115,12 @@ export default function Home() {
       >
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">Why Choose WayFinder?</h2>
-            <p className="text-slate-400 text-lg">Everything you need for smarter commuting</p>
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+              Why Choose WayFinder?
+            </h2>
+            <p className="text-slate-400 text-lg">
+              Everything you need for smarter commuting
+            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -96,7 +128,8 @@ export default function Home() {
               {
                 icon: MapPin,
                 title: "Real-Time Routes",
-                description: "Access all available routes to your destination instantly",
+                description:
+                  "Access all available routes to your destination instantly",
               },
               {
                 icon: DollarSign,
@@ -106,12 +139,14 @@ export default function Home() {
               {
                 icon: Zap,
                 title: "AI-Powered Assistant",
-                description: "Get personalized route suggestions based on your preferences",
+                description:
+                  "Get personalized route suggestions based on your preferences",
               },
               {
                 icon: Users,
                 title: "Multiple Transport",
-                description: "Choose from buses, taxis, motos, and more options",
+                description:
+                  "Choose from buses, taxis, motos, and more options",
               },
             ].map((feature, idx) => (
               <div
@@ -119,7 +154,9 @@ export default function Home() {
                 className="group p-6 bg-slate-800/50 backdrop-blur border border-slate-700 rounded-xl hover:border-cyan-500/50 transition hover:bg-slate-700/50"
               >
                 <feature.icon className="w-10 h-10 text-cyan-400 mb-4 group-hover:scale-110 transition" />
-                <h3 className="text-lg font-bold text-white mb-2">{feature.title}</h3>
+                <h3 className="text-lg font-bold text-white mb-2">
+                  {feature.title}
+                </h3>
                 <p className="text-slate-400 text-sm">{feature.description}</p>
               </div>
             ))}
@@ -131,8 +168,12 @@ export default function Home() {
       <section id="how-it-works" className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">How It Works</h2>
-            <p className="text-slate-400 text-lg">Three simple steps to find your route</p>
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+              How It Works
+            </h2>
+            <p className="text-slate-400 text-lg">
+              Three simple steps to find your route
+            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -145,7 +186,8 @@ export default function Home() {
               {
                 step: "02",
                 title: "View All Routes",
-                description: "See all available routes with prices and travel times",
+                description:
+                  "See all available routes with prices and travel times",
               },
               {
                 step: "03",
@@ -157,8 +199,12 @@ export default function Home() {
                 {idx < 2 && (
                   <div className="hidden md:block absolute top-1/4 -right-4 w-8 h-1 bg-gradient-to-r from-cyan-400 to-transparent"></div>
                 )}
-                <div className="text-6xl font-bold text-cyan-500/20 mb-4">{item.step}</div>
-                <h3 className="text-2xl font-bold text-white mb-2">{item.title}</h3>
+                <div className="text-6xl font-bold text-cyan-500/20 mb-4">
+                  {item.step}
+                </div>
+                <h3 className="text-2xl font-bold text-white mb-2">
+                  {item.title}
+                </h3>
                 <p className="text-slate-400">{item.description}</p>
               </div>
             ))}
@@ -173,8 +219,12 @@ export default function Home() {
       >
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">Meet Our Team</h2>
-            <p className="text-slate-400 text-lg">Passionate developers building the future of commuting</p>
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
+              Meet Our Team
+            </h2>
+            <p className="text-slate-400 text-lg">
+              Passionate developers building the future of commuting
+            </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
@@ -201,7 +251,9 @@ export default function Home() {
                     />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-white">{member.name}</h3>
+                    <h3 className="text-xl font-bold text-white">
+                      {member.name}
+                    </h3>
                     <p className="text-cyan-400">{member.role}</p>
                   </div>
                 </div>
@@ -209,12 +261,14 @@ export default function Home() {
             </div>
             <div className="space-y-4">
               <p className="text-slate-300 text-lg leading-relaxed">
-                Our team combines expertise in transportation logistics, AI, and mobile development to create the most
-                intuitive commute planning experience.
+                Our team combines expertise in transportation logistics, AI, and
+                mobile development to create the most intuitive commute planning
+                experience.
               </p>
               <p className="text-slate-400">
-                With a shared vision of making urban commuting affordable and transparent, we're building tools that
-                empower users to make smart travel decisions every day.
+                With a shared vision of making urban commuting affordable and
+                transparent, we're building tools that empower users to make
+                smart travel decisions every day.
               </p>
               <Button className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white border-0 mt-4">
                 Join Our Mission
@@ -229,15 +283,15 @@ export default function Home() {
       <section className="py-20 px-4 sm:px-6 lg:px-8">
         <div className="max-w-4xl mx-auto text-center">
           <div className="bg-gradient-to-r from-cyan-500/10 to-blue-500/10 backdrop-blur border border-cyan-500/30 rounded-2xl p-12">
-            <h2 className="text-4xl font-bold text-white mb-4">Ready to Transform Your Commute?</h2>
-            <p className="text-slate-300 text-lg mb-8">Download WayFinder today and start finding smarter routes.</p>
-            <Button
-              size="lg"
-              className="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white border-0 text-lg h-12 px-8"
-            >
-              Download Now
-              <ArrowRight className="ml-2 w-5 h-5" />
-            </Button>
+            <h2 className="text-4xl font-bold text-white mb-4">
+              Ready to Transform Your Commute?
+            </h2>
+            <p className="text-slate-300 text-lg mb-8">
+              Download WayFinder today and start finding smarter routes.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-16">
+              <DownloadButton />
+            </div>
           </div>
         </div>
       </section>
@@ -248,7 +302,9 @@ export default function Home() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
             <div>
               <h4 className="font-bold text-white mb-4">WayFinder</h4>
-              <p className="text-slate-400 text-sm">Smart commute planning for urban life.</p>
+              <p className="text-slate-400 text-sm">
+                Smart commute planning for urban life.
+              </p>
             </div>
             <div>
               <h4 className="font-bold text-white mb-4">Product</h4>
@@ -259,7 +315,10 @@ export default function Home() {
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-white transition">
+                  <a
+                    href="https://wayfinder-api.charlseempire.tech/downloads/wayfinder.apk"
+                    className="hover:text-white transition"
+                  >
                     Download
                   </a>
                 </li>
@@ -312,15 +371,26 @@ export default function Home() {
             </div>
           </div>
           <div className="border-t border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center">
-            <p className="text-slate-500 text-sm">© 2026 WayFinder. All rights reserved.</p>
+            <p className="text-slate-500 text-sm">
+              © 2026 WayFinder. All rights reserved.
+            </p>
             <div className="flex gap-6 mt-4 md:mt-0">
-              <a href="#" className="text-slate-400 hover:text-white transition">
+              <a
+                href="#"
+                className="text-slate-400 hover:text-white transition"
+              >
                 Twitter
               </a>
-              <a href="#" className="text-slate-400 hover:text-white transition">
+              <a
+                href="#"
+                className="text-slate-400 hover:text-white transition"
+              >
                 Facebook
               </a>
-              <a href="#" className="text-slate-400 hover:text-white transition">
+              <a
+                href="#"
+                className="text-slate-400 hover:text-white transition"
+              >
                 Instagram
               </a>
             </div>
@@ -328,5 +398,68 @@ export default function Home() {
         </div>
       </footer>
     </div>
-  )
+  );
+}
+
+// Thank You Page
+export function ThankYouPage() {
+  return (
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+      <div className="bg-slate-900/80 rounded-3xl shadow-xl p-10 max-w-lg w-full text-center border border-cyan-700">
+        <div className="flex justify-center mb-6">
+          <svg
+            className="w-16 h-16 text-cyan-400 animate-bounce"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M12 4v16m8-8H4"
+            />
+          </svg>
+        </div>
+        <h1 className="text-3xl md:text-4xl font-bold text-white mb-4">
+          Thank You for Downloading!
+        </h1>
+        <p className="text-lg text-slate-300 mb-6">
+          Your download should start automatically in a few seconds.
+          <br />
+          If it doesn't,{" "}
+          <a
+            href="https://wayfinder-api.charlseempire.tech/downloads/wayfinder.apk"
+            className="text-cyan-400 underline"
+          >
+            click here
+          </a>
+          .
+        </p>
+        <div className="flex justify-center">
+          <svg
+            className="w-10 h-10 text-cyan-400 animate-spin"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              className="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              strokeWidth="4"
+            ></circle>
+            <path
+              className="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8v8z"
+            ></path>
+          </svg>
+        </div>
+      </div>
+    </div>
+  );
 }
