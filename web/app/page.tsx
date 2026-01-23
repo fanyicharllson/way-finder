@@ -1,4 +1,4 @@
-import { Button } from "../components/ui/button"
+import { Button } from "../Components/ui/button"
 import { ArrowRight, MapPin, DollarSign, Zap, Users } from "lucide-react"
 
 export default function Home() {
